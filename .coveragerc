@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = vmware
+omit = vmware/tests/*,vmware/openstack/*
+
+[report]
+ignore-errors = True
