@@ -1,11 +1,20 @@
-hacking>=0.5.6,<0.8
+# Hacking already pins down pep8, pyflakes and flake8
+hacking>=0.8.0,<0.9
 
-coverage>=3.6
 discover
 fixtures>=0.3.14
+mock>=1.0
+mox3>=0.7.0
 python-subunit
-sphinx>=1.1.2
-oslo.sphinx
 testrepository>=0.0.17
-testscenarios>=0.4,<0.5
+testscenarios>=0.4
 testtools>=0.9.32
+
+# when we can require tox>= 1.4, this can go into tox.ini:
+#  [testenv:cover]
+#  deps = {[testenv]deps} coverage
+coverage>=3.6
+
+# this is required for the docs build jobs
+sphinx>=1.1.2,<1.2
+oslosphinx

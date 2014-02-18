@@ -19,7 +19,7 @@ test_vmware
 Tests for `vmware` module.
 """
 
-from . import base
+from tests import base
 
 
 class TestVmware(base.TestCase):
