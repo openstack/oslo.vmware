@@ -200,7 +200,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         def api(*args, **kwargs):
             raise exceptions.VimFaultException(
-                [exceptions.NOT_AUTHENTICATED_FAULT], None)
+                [exceptions.NOT_AUTHENTICATED], None)
 
         module = mock.Mock()
         module.api = api
@@ -249,7 +249,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        self.assertRaises(exceptions.VimException,
+        self.assertRaises(exceptions.VMwareDriverException,
                           lambda: api_session.wait_for_task(task))
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
@@ -329,3 +329,38 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_once_with(
             vim_util, 'get_object_property', api_session.vim, lease,
             'state')
+
+    def _poll_task_well_known_exceptions(self, fault,
+                                         expected_exception):
+        api_session = self._create_api_session(False)
+
+        def fake_invoke_api(self, module, method, *args, **kwargs):
+            task_info = mock.Mock()
+            task_info.progress = -1
+            task_info.state = 'error'
+            error = mock.Mock()
+            error.localizedMessage = "Error message"
+            error_fault = mock.Mock()
+            error_fault.__class__.__name__ = fault
+            error.fault = error_fault
+            task_info.error = error
+            return task_info
+
+        with (
+            mock.patch.object(api_session, 'invoke_api', fake_invoke_api)
+        ):
+            self.assertRaises(expected_exception,
+                              api_session._poll_task, 'fake-task')
+
+    def test_poll_task_well_known_exceptions(self):
+        for k, v in exceptions._fault_classes_registry.iteritems():
+            self._poll_task_well_known_exceptions(k, v)
+
+    def test_poll_task_unknown_exception(self):
+        _unknown_exceptions = {
+            'NoDiskSpace': exceptions.VMwareDriverException,
+            'RuntimeFault': exceptions.VMwareDriverException
+        }
+
+        for k, v in _unknown_exceptions.iteritems():
+            self._poll_task_well_known_exceptions(k, v)
