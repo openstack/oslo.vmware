@@ -18,6 +18,7 @@ Functions and classes for image transfer between ESX/VC & image service.
 """
 
 import errno
+import logging
 
 from eventlet import event
 from eventlet import greenthread
@@ -26,7 +27,6 @@ from eventlet import timeout
 
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common import log as logging
 from oslo.vmware import rw_handles
 
 

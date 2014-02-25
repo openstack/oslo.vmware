@@ -22,6 +22,7 @@ glance server.
 """
 
 import httplib
+import logging
 import socket
 import urllib
 import urllib2
@@ -31,7 +32,6 @@ import netaddr
 
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common import log as logging
 from oslo.vmware import vim_util
 
 
