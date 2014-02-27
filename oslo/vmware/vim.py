@@ -18,13 +18,13 @@ Classes for making VMware VI SOAP calls.
 """
 
 import httplib
+import logging
 import urllib2
 
 import suds
 
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common import log as logging
 from oslo.vmware import vim_util
 
 

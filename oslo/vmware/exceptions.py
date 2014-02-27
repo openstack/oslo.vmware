@@ -17,10 +17,11 @@
 Exception definitions.
 """
 
+import logging
+
 import six
 
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
 

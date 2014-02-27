@@ -21,10 +21,11 @@ automatic session re-establishment and retry of API invocations
 in case of connection problems or server API call overload.
 """
 
+import logging
+
+from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common import log as logging
-from oslo.vmware.openstack.common import loopingcall
 from oslo.vmware import vim
 from oslo.vmware import vim_util
 
