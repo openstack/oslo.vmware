@@ -119,7 +119,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.vim
         self.VimMock.assert_called_with(protocol=api_session._scheme,
                                         host=VMwareAPISessionTest.SERVER_IP,
-                                        wsdl_loc=api_session._wsdl_loc)
+                                        wsdl_loc=api_session._vim_wsdl_loc)
 
     def test_create_session(self):
         session = mock.Mock()

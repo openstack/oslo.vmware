@@ -28,6 +28,7 @@ import six
 from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware import pbm
 from oslo.vmware import vim
 from oslo.vmware import vim_util
 
@@ -132,7 +133,7 @@ class VMwareAPISession(object):
 
     def __init__(self, host, server_username, server_password,
                  api_retry_count, task_poll_interval, scheme='https',
-                 create_session=True, wsdl_loc=None):
+                 create_session=True, wsdl_loc=None, pbm_wsdl_loc=None):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address[:port] or host name[:port]
@@ -145,8 +146,8 @@ class VMwareAPISession(object):
         :param scheme: protocol-- http or https
         :param _create_session: whether to setup a connection at the time of
                                instance creation
-        :param wsdl_loc: WSDL file location for invoking SOAP calls on server
-                         using suds
+        :param wsdl_loc: VIM API WSDL file location
+        :param pbm_wsdl_loc: PBM service WSDL file location
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException
         """
@@ -156,10 +157,12 @@ class VMwareAPISession(object):
         self._api_retry_count = api_retry_count
         self._task_poll_interval = task_poll_interval
         self._scheme = scheme
-        self._wsdl_loc = wsdl_loc
+        self._vim_wsdl_loc = wsdl_loc
+        self._pbm_wsdl_loc = pbm_wsdl_loc
         self._session_id = None
         self._session_username = None
         self._vim = None
+        self._pbm = None
         if create_session:
             self._create_session()
 
@@ -168,8 +171,21 @@ class VMwareAPISession(object):
         if not self._vim:
             self._vim = vim.Vim(protocol=self._scheme,
                                 host=self._host,
-                                wsdl_loc=self._wsdl_loc)
+                                wsdl_loc=self._vim_wsdl_loc)
         return self._vim
+
+    @property
+    def pbm(self):
+        if not self._pbm and self._pbm_wsdl_loc:
+            self._pbm = pbm.PBMClient(self._pbm_wsdl_loc,
+                                      protocol=self._scheme,
+                                      host=self._host)
+            if self._session_id:
+                # To handle the case where pbm property is accessed after
+                # session creation. If pbm property is accessed before session
+                # creation, we set the cookie in _create_session.
+                self._pbm.set_cookie(self._get_session_cookie())
+        return self._pbm
 
     @RetryDecorator(exceptions=(exceptions.VimConnectionException,))
     def _create_session(self):
@@ -208,6 +224,10 @@ class VMwareAPISession(object):
                            "session with ID = %s."),
                          prev_session_id,
                          exc_info=True)
+
+        # Set PBM client cookie.
+        if self._pbm:
+            self._pbm.set_cookie(self._get_session_cookie())
 
     def __del__(self):
         """Log out and terminate the current session."""
@@ -452,3 +472,14 @@ class VMwareAPISession(object):
                      lease,
                      exc_info=True)
             return "Unknown"
+
+    def _get_session_cookie(self):
+        """Get the cookie corresponding to the current session.
+
+        :returns: cookie corresponding to the current session
+        """
+        cookies = self.vim.client.options.transport.cookiejar
+        for c in cookies:
+            if c.name.lower() == 'vmware_soap_session':
+                return c.value
+        return None

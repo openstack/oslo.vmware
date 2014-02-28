@@ -17,6 +17,7 @@
 The VMware API utility module.
 """
 
+import netaddr
 import suds
 
 
@@ -365,3 +366,16 @@ def get_object_property(vim, moref, property_name):
         if prop:
             prop_val = prop[0].val
     return prop_val
+
+
+def get_soap_url(protocol, host, path='sdk'):
+    """Return ESX/VC server's SOAP service URL.
+
+    :param protocol: https or http
+    :param host: server IP address[:port] or host name[:port]
+    :param path: path part of the SOAP URL
+    :returns: SOAP service URL
+    """
+    if netaddr.valid_ipv6(host):
+        return '%s://[%s]/%s' % (protocol, host, path)
+    return '%s://%s/%s' % (protocol, host, path)

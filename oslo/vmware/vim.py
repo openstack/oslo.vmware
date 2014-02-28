@@ -79,7 +79,7 @@ class Vim(object):
         """
         if not wsdl_loc:
             wsdl_loc = Vim._get_wsdl_loc(protocol, host)
-        soap_url = Vim._get_soap_url(protocol, host)
+        soap_url = vim_util.get_soap_url(protocol, host)
         self._client = suds.client.Client(wsdl_loc,
                                           location=soap_url,
                                           plugins=[VimMessagePlugin()])
@@ -94,16 +94,6 @@ class Vim(object):
         :returns: default WSDL file location hosted at the server
         """
         return '%s://%s/sdk/vimService.wsdl' % (protocol, host)
-
-    @staticmethod
-    def _get_soap_url(protocol, host):
-        """Get ESX/VC server's SOAP service URL.
-
-        :param protocol: http or https
-        :param host: server IP address[:port] or host name[:port]
-        :returns: URL of ESX/VC server's SOAP service
-        """
-        return '%s://%s/sdk' % (protocol, host)
 
     @property
     def service_content(self):
