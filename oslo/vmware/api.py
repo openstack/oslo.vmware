@@ -23,6 +23,8 @@ in case of connection problems or server API call overload.
 
 import logging
 
+import six
+
 from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
@@ -369,7 +371,7 @@ class VMwareAPISession(object):
                 LOG.debug(_("Task: %s status is success."), task)
                 raise loopingcall.LoopingCallDone(task_info)
             else:
-                error_msg = unicode(task_info.error.localizedMessage)
+                error_msg = six.text_type(task_info.error.localizedMessage)
                 excep_msg = _("Task: %(task)s failed with error: "
                               "%(error)s.") % {'task': task,
                                                'error': error_msg}

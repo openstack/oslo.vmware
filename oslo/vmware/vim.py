@@ -21,6 +21,7 @@ import httplib
 import logging
 import urllib2
 
+import six
 import suds
 
 from oslo.vmware import exceptions
@@ -221,13 +222,13 @@ class Vim(object):
 
                 # Socket errors which need special handling; some of these
                 # might be caused by server API call overload.
-                if (unicode(excep).find(ADDRESS_IN_USE_ERROR) != -1 or
-                        unicode(excep).find(CONN_ABORT_ERROR)) != -1:
+                if (six.text_type(excep).find(ADDRESS_IN_USE_ERROR) != -1 or
+                        six.text_type(excep).find(CONN_ABORT_ERROR)) != -1:
                     raise exceptions.VimSessionOverLoadException(
                         _("Socket error in %s.") % attr_name, excep)
                 # Type error which needs special handling; it might be caused
                 # by server API call overload.
-                elif unicode(excep).find(RESP_NOT_XML_ERROR) != -1:
+                elif six.text_type(excep).find(RESP_NOT_XML_ERROR) != -1:
                     raise exceptions.VimSessionOverLoadException(
                         _("Type error in %s.") % attr_name, excep)
                 else:
