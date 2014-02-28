@@ -1,11 +1,11 @@
-stevedore>=0.12
+stevedore>=0.14
 netaddr>=0.7.6
 
 # for timeutils
 iso8601>=0.1.8
 
 # for jsonutils
-six>=1.4.1
+six>=1.5.2
 
 # used by openstack/common/gettextutils.py
 Babel>=1.3
