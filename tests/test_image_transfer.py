@@ -19,6 +19,7 @@ Unit tests for functions and classes for image transfer.
 
 import math
 
+from eventlet import greenthread
 import mock
 
 from oslo.vmware import exceptions
@@ -76,7 +77,8 @@ class ImageWriterTest(base.TestCase):
         return image_transfer.ImageWriter(self.context, self.input_file,
                                           self.image_service, self.image_id)
 
-    def test_start(self):
+    @mock.patch.object(greenthread, 'sleep')
+    def test_start(self, mock_sleep):
         writer = self._create_image_writer()
         status_list = ['queued', 'saving', 'active']
 
@@ -86,9 +88,7 @@ class ImageWriterTest(base.TestCase):
 
         self.image_service.show.side_effect = image_service_show_side_effect
         exp_calls = [mock.call(self.context, self.image_id)] * len(status_list)
-        with mock.patch.object(image_transfer,
-                               'IMAGE_SERVICE_POLL_INTERVAL', 0):
-            writer.start()
+        writer.start()
         self.assertTrue(writer.wait())
         self.image_service.update.assert_called_once_with(self.context,
                                                           self.image_id, {},

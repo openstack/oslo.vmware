@@ -17,6 +17,7 @@
 Unit tests for session management and API invocation classes.
 """
 
+from eventlet import greenthread
 import mock
 
 from oslo.vmware import api
@@ -56,7 +57,7 @@ class RetryDecoratorTest(base.TestCase):
                 raise response
             return response
 
-        sleep_time_incr = 1
+        sleep_time_incr = 0.01
         retry_count = 2
         retry = api.RetryDecorator(10, sleep_time_incr, 10,
                                    (exceptions.VimSessionOverLoadException,))
@@ -180,7 +181,8 @@ class VMwareAPISessionTest(base.TestCase):
 
         module = mock.Mock()
         module.api = api
-        self.assertEqual(ret, api_session.invoke_api(module, 'api'))
+        with mock.patch.object(greenthread, 'sleep'):
+            self.assertEqual(ret, api_session.invoke_api(module, 'api'))
 
     def test_invoke_api_with_vim_fault_exception(self):
         api_session = self._create_api_session(True)
@@ -225,9 +227,10 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        ret = api_session.wait_for_task(task)
-        self.assertEqual('success', ret.state)
-        self.assertEqual(100, ret.progress)
+        with mock.patch.object(greenthread, 'sleep'):
+            ret = api_session.wait_for_task(task)
+            self.assertEqual('success', ret.state)
+            self.assertEqual(100, ret.progress)
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
@@ -249,8 +252,9 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        self.assertRaises(exceptions.VMwareDriverException,
-                          lambda: api_session.wait_for_task(task))
+        with mock.patch.object(greenthread, 'sleep'):
+            self.assertRaises(exceptions.VMwareDriverException,
+                              lambda: api_session.wait_for_task(task))
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
@@ -263,8 +267,9 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(
             side_effect=exceptions.VimException(None))
         task = mock.Mock()
-        self.assertRaises(exceptions.VimException,
-                          lambda: api_session.wait_for_task(task))
+        with mock.patch.object(greenthread, 'sleep'):
+            self.assertRaises(exceptions.VimException,
+                              lambda: api_session.wait_for_task(task))
         api_session.invoke_api.assert_called_once_with(vim_util,
                                                        'get_object_property',
                                                        api_session.vim, task,
@@ -280,7 +285,8 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
-        api_session.wait_for_lease_ready(lease)
+        with mock.patch.object(greenthread, 'sleep'):
+            api_session.wait_for_lease_ready(lease)
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, lease,
@@ -296,8 +302,9 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
-        self.assertRaises(exceptions.VimException,
-                          lambda: api_session.wait_for_lease_ready(lease))
+        with mock.patch.object(greenthread, 'sleep'):
+            self.assertRaises(exceptions.VimException,
+                              lambda: api_session.wait_for_lease_ready(lease))
         exp_calls = [mock.call(vim_util, 'get_object_property',
                                api_session.vim, lease, 'state')] * 2
         exp_calls.append(mock.call(vim_util, 'get_object_property',
