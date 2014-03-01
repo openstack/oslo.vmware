@@ -23,6 +23,7 @@ import mock
 
 from oslo.vmware import exceptions
 from oslo.vmware import image_transfer
+from oslo.vmware import rw_handles
 from tests import base
 
 
@@ -145,7 +146,7 @@ class FileReadWriteTaskTest(base.TestCase):
         data_items = [[1] * 10, [1] * 20, [1] * 5, []]
 
         def input_file_read_side_effect(arg):
-            self.assertFalse(arg)
+            self.assertEqual(arg, rw_handles.READ_CHUNKSIZE)
             data = data_items[input_file_read_side_effect.i]
             input_file_read_side_effect.i += 1
             return data
@@ -176,4 +177,4 @@ class FileReadWriteTaskTest(base.TestCase):
         rw_task = image_transfer.FileReadWriteTask(input_file, output_file)
         rw_task.start()
         self.assertRaises(exceptions.ImageTransferException, rw_task.wait)
-        input_file.read.assert_called_once_with(None)
+        input_file.read.assert_called_once_with(rw_handles.READ_CHUNKSIZE)

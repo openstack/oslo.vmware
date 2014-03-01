@@ -258,7 +258,7 @@ class FileReadWriteTask(object):
             self._running = True
             while self._running:
                 try:
-                    data = self._input_file.read(None)
+                    data = self._input_file.read(rw_handles.READ_CHUNKSIZE)
                     if not data:
                         LOG.debug(_("File read-write task is done."))
                         self.stop()
@@ -430,6 +430,36 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
               image_id)
 
 
+def download_stream_optimized_data(context, timeout_secs, read_handle,
+                                   **kwargs):
+    """Download stream optimized data to VMware server.
+
+    :param context: image service write context
+    :param timeout_secs: time in seconds to wait for the download to complete
+    :param read_handle: handle from which to read the image data
+    :param kwargs: keyword arguments to configure the destination
+                   VMDK write handle
+    :returns: managed object reference of the VM created for import to VMware
+              server
+    :raises: VimException, VimFaultException, VimAttributeException,
+             VimSessionOverLoadException, VimConnectionException,
+             ImageTransferException, ValueError
+    """
+    file_size = int(kwargs.get('image_size'))
+    write_handle = rw_handles.VmdkWriteHandle(kwargs.get('session'),
+                                              kwargs.get('host'),
+                                              kwargs.get('resource_pool'),
+                                              kwargs.get('vm_folder'),
+                                              kwargs.get('vm_import_spec'),
+                                              file_size)
+    _start_transfer(context,
+                    timeout_secs,
+                    read_handle,
+                    file_size,
+                    write_file_handle=write_handle)
+    return write_handle.get_imported_vm()
+
+
 def download_stream_optimized_image(context, timeout_secs, image_service,
                                     image_id, **kwargs):
     """Download stream optimized image from image service to VMware server.
@@ -453,22 +483,13 @@ def download_stream_optimized_image(context, timeout_secs, image_service,
     # TODO(vbala) catch specific exceptions raised by download call
     read_iter = image_service.download(context, image_id)
     read_handle = rw_handles.ImageReadHandle(read_iter)
-    file_size = int(kwargs.get('image_size'))
-    write_handle = rw_handles.VmdkWriteHandle(kwargs.get('session'),
-                                              kwargs.get('host'),
-                                              kwargs.get('resource_pool'),
-                                              kwargs.get('vm_folder'),
-                                              kwargs.get('vm_import_spec'),
-                                              file_size)
-    _start_transfer(context,
-                    timeout_secs,
-                    read_handle,
-                    file_size,
-                    write_file_handle=write_handle)
+    imported_vm = download_stream_optimized_data(context, timeout_secs,
+                                                 read_handle, **kwargs)
+
     LOG.debug(_("Downloaded image: %s from image service as a stream "
                 "optimized file."),
               image_id)
-    return write_handle.get_imported_vm()
+    return imported_vm
 
 
 def upload_image(context, timeout_secs, image_service, image_id, owner_id,
