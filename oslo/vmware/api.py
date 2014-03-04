@@ -126,7 +126,7 @@ class VMwareAPISession(object):
 
     Example:
         api_session = VMwareAPISession('10.1.2.3', 'administrator', 'password',
-                                       10, 0.1, _create_session=False)
+                                       10, 0.1, create_session=False)
         result = api_session.invoke_api(vim_util, 'get_objects',
                                         api_session.vim, 'HostSystem', 100)
     """
@@ -144,7 +144,7 @@ class VMwareAPISession(object):
         :param task_poll_interval: sleep time in seconds for polling an
                                    on-going async task as part of the API call
         :param scheme: protocol-- http or https
-        :param _create_session: whether to setup a connection at the time of
+        :param create_session: whether to setup a connection at the time of
                                instance creation
         :param wsdl_loc: VIM API WSDL file location
         :param pbm_wsdl_loc: PBM service WSDL file location
