@@ -2,7 +2,7 @@ stevedore>=0.14
 netaddr>=0.7.6
 
 # for timeutils
-iso8601>=0.1.8
+iso8601>=0.1.9
 
 # for jsonutils
 six>=1.5.2
