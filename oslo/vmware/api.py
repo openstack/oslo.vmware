@@ -226,7 +226,7 @@ class VMwareAPISession(object):
                          exc_info=True)
 
         # Set PBM client cookie.
-        if self._pbm:
+        if self._pbm is not None:
             self._pbm.set_cookie(self._get_session_cookie())
 
     def __del__(self):
