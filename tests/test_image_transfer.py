@@ -178,3 +178,66 @@ class FileReadWriteTaskTest(base.TestCase):
         rw_task.start()
         self.assertRaises(exceptions.ImageTransferException, rw_task.wait)
         input_file.read.assert_called_once_with(rw_handles.READ_CHUNKSIZE)
+
+
+class ImageTransferUtilityTest(base.TestCase):
+    """Tests for image_transfer utility methods."""
+
+    @mock.patch('oslo.vmware.rw_handles.FileWriteHandle')
+    @mock.patch('oslo.vmware.rw_handles.ImageReadHandle')
+    @mock.patch.object(image_transfer, '_start_transfer')
+    def test_download_flat_image(
+            self,
+            fake_transfer,
+            fake_rw_handles_ImageReadHandle,
+            fake_rw_handles_FileWriteHandle):
+
+        context = mock.Mock()
+        image_id = mock.Mock()
+        image_service = mock.Mock()
+        image_service.download = mock.Mock()
+        image_service.download.return_value = 'fake_iter'
+
+        fake_ImageReadHandle = 'fake_ImageReadHandle'
+        fake_FileWriteHandle = 'fake_FileWriteHandle'
+        cookies = []
+        timeout_secs = 10
+        image_size = 1000
+        host = '127.0.0.1'
+        dc_path = 'dc1'
+        ds_name = 'ds1'
+        file_path = '/fake_path'
+
+        fake_rw_handles_ImageReadHandle.return_value = fake_ImageReadHandle
+        fake_rw_handles_FileWriteHandle.return_value = fake_FileWriteHandle
+
+        image_transfer.download_flat_image(
+            context,
+            timeout_secs,
+            image_service,
+            image_id,
+            image_size=image_size,
+            host=host,
+            data_center_name=dc_path,
+            datastore_name=ds_name,
+            cookies=cookies,
+            file_path=file_path)
+
+        image_service.download.assert_called_once_with(context, image_id)
+
+        fake_rw_handles_ImageReadHandle.assert_called_once_with('fake_iter')
+
+        fake_rw_handles_FileWriteHandle.assert_called_once_with(
+            host,
+            dc_path,
+            ds_name,
+            cookies,
+            file_path,
+            image_size)
+
+        fake_transfer.assert_called_once_with(
+            context,
+            timeout_secs,
+            fake_ImageReadHandle,
+            image_size,
+            write_file_handle=fake_FileWriteHandle)
