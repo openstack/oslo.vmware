@@ -64,10 +64,6 @@ class FileHandle(object):
             LOG.warn(_("Error occurred while closing the file handle"),
                      exc_info=True)
 
-    def __del__(self):
-        """Close the file handle on garbage collection."""
-        self.close()
-
     def _build_vim_cookie_header(self, vim_cookies):
         """Build ESX host session cookie header."""
         cookie_header = ""

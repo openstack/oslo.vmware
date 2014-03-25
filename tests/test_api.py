@@ -210,6 +210,41 @@ class VMwareAPISessionTest(base.TestCase):
         ret = api_session.invoke_api(module, 'api')
         self.assertEqual(response, ret)
 
+    def test_logout_with_exception(self):
+        session = mock.Mock()
+        session.key = "12345"
+        api_session = self._create_api_session(False)
+        vim_obj = api_session.vim
+        vim_obj.Login.return_value = session
+        vim_obj.Logout.side_effect = exceptions.VimFaultException([], None)
+        api_session._create_session()
+        api_session.logout()
+        self.assertEqual("12345", api_session._session_id)
+
+    def test_logout_no_session(self):
+        api_session = self._create_api_session(False)
+        vim_obj = api_session.vim
+        api_session.logout()
+        self.assertEqual(0, vim_obj.Logout.call_count)
+
+    def test_logout_calls_vim_logout(self):
+        session = mock.Mock()
+        session.key = "12345"
+        api_session = self._create_api_session(False)
+        vim_obj = api_session.vim
+        vim_obj.Login.return_value = session
+        vim_obj.Logout.return_value = None
+
+        api_session._create_session()
+        session_manager = vim_obj.service_content.sessionManager
+        vim_obj.Login.assert_called_once_with(
+            session_manager, userName=VMwareAPISessionTest.USERNAME,
+            password=VMwareAPISessionTest.PASSWORD)
+        api_session.logout()
+        vim_obj.Logout.assert_called_once_with(
+            session_manager)
+        self.assertIsNone(api_session._session_id)
+
     def test_invoke_api_with_expected_exception(self):
         api_session = self._create_api_session(True)
         ret = mock.Mock()

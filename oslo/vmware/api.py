@@ -229,7 +229,7 @@ class VMwareAPISession(object):
         if self._pbm is not None:
             self._pbm.set_cookie(self._get_session_cookie())
 
-    def __del__(self):
+    def logout(self):
         """Log out and terminate the current session."""
         if self._session_id:
             LOG.info(_("Logging out and terminating the current session with "
@@ -237,6 +237,7 @@ class VMwareAPISession(object):
                      self._session_id)
             try:
                 self.vim.Logout(self.vim.service_content.sessionManager)
+                self._session_id = None
             except Exception:
                 LOG.exception(_("Error occurred while logging out and "
                                 "terminating the current session with "

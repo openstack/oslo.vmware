@@ -34,12 +34,6 @@ class FileHandleTest(base.TestCase):
         vmw_http_file.close()
         file_handle.close.assert_called_once_with()
 
-    def test_del(self):
-        file_handle = mock.Mock()
-        vmw_http_file = rw_handles.FileHandle(file_handle)
-        del(vmw_http_file)
-        file_handle.close.assert_called_once_with()
-
     def test_find_vmdk_url(self):
         device_url_0 = mock.Mock()
         device_url_0.disk = False
