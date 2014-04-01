@@ -165,6 +165,8 @@ class Vim(object):
                     # of the managed object.
                     managed_object = vim_util.get_moref(managed_object,
                                                         managed_object)
+                if managed_object is None:
+                    return
                 request = getattr(self.client.service, attr_name)
                 LOG.debug(_("Invoking %(attr_name)s on %(moref)s."),
                           {'attr_name': attr_name,

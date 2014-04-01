@@ -25,6 +25,7 @@ import suds
 
 from oslo.vmware import exceptions
 from oslo.vmware import vim
+from oslo.vmware import vim_util
 from tests import base
 
 
@@ -230,6 +231,13 @@ class VimTest(base.TestCase):
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimConnectionException,
                           lambda: vim_obj.powerOn(managed_object))
+
+    @mock.patch.object(vim_util, 'get_moref', return_value=None)
+    def test_vim_request_handler_no_value(self, mock_moref):
+        managed_object = 'VirtualMachine'
+        vim_obj = vim.Vim()
+        ret = vim_obj.UnregisterVM(managed_object)
+        self.assertIsNone(ret)
 
     def _test_vim_request_handler_with_exception(self, message, exception):
         managed_object = 'VirtualMachine'
