@@ -83,16 +83,18 @@ def get_all_profiles(session):
     profile_manager = pbm.service_content.profileManager
     res_type = pbm.client.factory.create('ns0:PbmProfileResourceType')
     res_type.resourceType = 'STORAGE'
-
+    profiles = []
     profile_ids = session.invoke_api(pbm,
                                      'PbmQueryProfile',
                                      profile_manager,
                                      resourceType=res_type)
     LOG.debug(_("Fetched profile IDs: %s."), profile_ids)
-    return session.invoke_api(pbm,
-                              'PbmRetrieveContent',
-                              profile_manager,
-                              profileIds=profile_ids)
+    if profile_ids:
+        profiles = session.invoke_api(pbm,
+                                      'PbmRetrieveContent',
+                                      profile_manager,
+                                      profileIds=profile_ids)
+    return profiles
 
 
 def get_profile_id_by_name(session, profile_name):

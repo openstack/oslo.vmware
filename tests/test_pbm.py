@@ -47,6 +47,18 @@ class PBMUtilityTest(base.TestCase):
         pbm.get_all_profiles(session)
         self.assertEqual(2, session.invoke_api.call_count)
 
+    def test_get_all_profiles_with_no_profiles(self):
+        session = mock.Mock()
+        session.pbm = mock.Mock()
+        session.invoke_api.return_value = []
+        profiles = pbm.get_all_profiles(session)
+        session.invoke_api.assert_called_once_with(
+            session.pbm,
+            'PbmQueryProfile',
+            session.pbm.service_content.profileManager,
+            resourceType=session.pbm.client.factory.create())
+        self.assertEqual([], profiles)
+
     def _create_profile(self, profile_id, name):
         profile = mock.Mock()
         profile.profileId = profile_id
