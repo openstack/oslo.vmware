@@ -131,11 +131,19 @@ class VimTest(base.TestCase):
         def side_effect(mo, **kwargs):
             self.assertEqual(managed_object, mo._type)
             self.assertEqual(managed_object, mo.value)
-            doc = mock.Mock()
-            detail = doc.childAtPath.return_value
+            fault_string = mock.Mock()
+            fault_string.getText.return_value = "MyFault"
+
+            fault_children = mock.Mock()
+            fault_children.name = "name"
+            fault_children.getText.return_value = "value"
             child = mock.Mock()
             child.get.return_value = fault_list[0]
+            child.getChildren.return_value = [fault_children]
+            detail = mock.Mock()
             detail.getChildren.return_value = [child]
+            doc = mock.Mock()
+            doc.childAtPath = mock.Mock(side_effect=[fault_string, detail])
             raise suds.WebFault(None, doc)
 
         vim_obj = vim.Vim()
@@ -147,6 +155,8 @@ class VimTest(base.TestCase):
             vim_obj.powerOn(managed_object)
         except exceptions.VimFaultException as ex:
             self.assertEqual(fault_list, ex.fault_list)
+            self.assertEqual({'name': 'value'}, ex.details)
+            self.assertEqual("MyFault", ex.msg)
 
     def test_vim_request_handler_with_attribute_error(self):
         managed_object = 'VirtualMachine'
@@ -268,3 +278,37 @@ class VimTest(base.TestCase):
     def test_vim_request_handler_with_generic_error(self):
         self._test_vim_request_handler_with_exception(
             'GENERIC_ERROR', exceptions.VimException)
+
+    def test_exception_summary_exception_as_list(self):
+        # assert that if a list is fed to the VimException object
+        # that it will error.
+        self.assertRaises(ValueError,
+                          exceptions.VimException,
+                          [], ValueError('foo'))
+
+    def test_exception_summary_string(self):
+        e = exceptions.VimException("string", ValueError("foo"))
+        string = str(e)
+        self.assertEqual("string\nCause: foo", string)
+
+    def test_vim_fault_exception_string(self):
+        self.assertRaises(ValueError,
+                          exceptions.VimFaultException,
+                          "bad", ValueError("argument"))
+
+    def test_vim_fault_exception(self):
+        vfe = exceptions.VimFaultException([ValueError("example")], "cause")
+        string = str(vfe)
+        self.assertEqual("cause\nFaults: [ValueError('example',)]", string)
+
+    def test_vim_fault_exception_with_cause_and_details(self):
+        vfe = exceptions.VimFaultException([ValueError("example")],
+                                           "MyMessage",
+                                           "FooBar",
+                                           {'foo': 'bar'})
+        string = str(vfe)
+        self.assertEqual("MyMessage\n"
+                         "Cause: FooBar\n"
+                         "Faults: [ValueError('example',)]\n"
+                         "Details: {'foo': 'bar'}",
+                         string)

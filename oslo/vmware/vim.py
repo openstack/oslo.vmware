@@ -186,13 +186,18 @@ class Vim(object):
 
             except suds.WebFault as excep:
                 doc = excep.document
+                fault_string = doc.childAtPath("/Envelope/Body/Fault/"
+                                               "faultstring").getText()
                 detail = doc.childAtPath('/Envelope/Body/Fault/detail')
                 fault_list = []
+                details = {}
                 if detail:
-                    for child in detail.getChildren():
-                        fault_list.append(child.get('type'))
-                raise exceptions.VimFaultException(
-                    fault_list, _("Web fault in %s.") % attr_name, excep)
+                    for fault in detail.getChildren():
+                        fault_list.append(fault.get("type"))
+                        for child in fault.getChildren():
+                            details[child.name] = child.getText()
+                raise exceptions.VimFaultException(fault_list, fault_string,
+                                                   excep, details)
 
             except AttributeError as excep:
                 raise exceptions.VimAttributeException(
