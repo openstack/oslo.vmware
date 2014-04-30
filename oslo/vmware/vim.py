@@ -114,7 +114,7 @@ class Vim(object):
         :param response: response from RetrievePropertiesEx API call
         :raises: VimFaultException
         """
-        LOG.debug(_("Checking RetrievePropertiesEx API response for faults."))
+        LOG.debug("Checking RetrievePropertiesEx API response for faults.")
         fault_list = []
         if not response:
             # This is the case when the session has timed out. ESX SOAP
@@ -124,8 +124,8 @@ class Vim(object):
             # session. It is as bad as a terminated session for we cannot
             # use the session. Therefore setting fault to NotAuthenticated
             # fault.
-            LOG.debug(_("RetrievePropertiesEx API response is empty; setting "
-                        "fault to %s."),
+            LOG.debug("RetrievePropertiesEx API response is empty; setting "
+                      "fault to %s.",
                       exceptions.NOT_AUTHENTICATED)
             fault_list = [exceptions.NOT_AUTHENTICATED]
         else:
@@ -141,7 +141,7 @@ class Vim(object):
             raise exceptions.VimFaultException(fault_list,
                                                _("Error occurred while calling"
                                                  " RetrievePropertiesEx."))
-        LOG.debug(_("No faults found in RetrievePropertiesEx API response."))
+        LOG.debug("No faults found in RetrievePropertiesEx API response.")
 
     def __getattr__(self, attr_name):
         """Returns the method to invoke API identified by param attr_name."""
@@ -168,14 +168,14 @@ class Vim(object):
                 if managed_object is None:
                     return
                 request = getattr(self.client.service, attr_name)
-                LOG.debug(_("Invoking %(attr_name)s on %(moref)s."),
+                LOG.debug("Invoking %(attr_name)s on %(moref)s.",
                           {'attr_name': attr_name,
                            'moref': managed_object})
                 response = request(managed_object, **kwargs)
                 if (attr_name.lower() == 'retrievepropertiesex'):
                     Vim._retrieve_properties_ex_fault_checker(response)
-                LOG.debug(_("Invocation of %(attr_name)s on %(moref)s "
-                            "completed successfully."),
+                LOG.debug("Invocation of %(attr_name)s on %(moref)s "
+                          "completed successfully.",
                           {'attr_name': attr_name,
                            'moref': managed_object})
                 return response

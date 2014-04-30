@@ -66,7 +66,7 @@ class BlockingQueue(queue.LightQueue):
             self._transferred += len(data_item)
             return data_item
         else:
-            LOG.debug(_("Completed transfer of size %s."), self._transferred)
+            LOG.debug("Completed transfer of size %s.", self._transferred)
             return ""
 
     def write(self, data):
@@ -74,7 +74,7 @@ class BlockingQueue(queue.LightQueue):
 
         :param data: data to be written
         """
-        LOG.debug(_("Writing %d data items into the queue."), len(data))
+        LOG.debug("Writing %d data items into the queue.", len(data))
         self.put(data)
 
     # Below methods are provided in order to enable treating the queue
@@ -143,8 +143,8 @@ class ImageWriter(object):
 
             :raises: ImageTransferException
             """
-            LOG.debug(_("Calling image service update on image: %(image)s "
-                        "with meta: %(meta)s"),
+            LOG.debug("Calling image service update on image: %(image)s "
+                      "with meta: %(meta)s",
                       {'image': self._image_id,
                        'meta': self._image_meta})
 
@@ -155,14 +155,14 @@ class ImageWriter(object):
                                            data=self._input_file)
                 self._running = True
                 while self._running:
-                    LOG.debug(_("Retrieving status of image: %s."),
+                    LOG.debug("Retrieving status of image: %s.",
                               self._image_id)
                     image_meta = self._image_service.show(self._context,
                                                           self._image_id)
                     image_status = image_meta.get('status')
                     if image_status == 'active':
                         self.stop()
-                        LOG.debug(_("Image: %s is now active."),
+                        LOG.debug("Image: %s is now active.",
                                   self._image_id)
                         self._done.send(True)
                     elif image_status == 'killed':
@@ -173,8 +173,8 @@ class ImageWriter(object):
                         excep = exceptions.ImageTransferException(excep_msg)
                         self._done.send_exception(excep)
                     elif image_status in ['saving', 'queued']:
-                        LOG.debug(_("Image: %(image)s is in %(state)s state; "
-                                    "sleeping for %(sleep)d seconds."),
+                        LOG.debug("Image: %(image)s is in %(state)s state; "
+                                  "sleeping for %(sleep)d seconds.",
                                   {'image': self._image_id,
                                    'state': image_status,
                                    'sleep': IMAGE_SERVICE_POLL_INTERVAL})
@@ -195,8 +195,8 @@ class ImageWriter(object):
                 excep = exceptions.ImageTransferException(excep_msg, excep)
                 self._done.send_exception(excep)
 
-        LOG.debug(_("Starting image write task for image: %(image)s with"
-                    " source: %(source)s."),
+        LOG.debug("Starting image write task for image: %(image)s with"
+                  " source: %(source)s.",
                   {'source': self._input_file,
                    'image': self._image_id})
         greenthread.spawn(_inner)
@@ -204,7 +204,7 @@ class ImageWriter(object):
 
     def stop(self):
         """Stop the image writing task."""
-        LOG.debug(_("Stopping the writing task for image: %s."),
+        LOG.debug("Stopping the writing task for image: %s.",
                   self._image_id)
         self._running = False
 
@@ -260,7 +260,7 @@ class FileReadWriteTask(object):
                 try:
                     data = self._input_file.read(rw_handles.READ_CHUNKSIZE)
                     if not data:
-                        LOG.debug(_("File read-write task is done."))
+                        LOG.debug("File read-write task is done.")
                         self.stop()
                         self._done.send(True)
                     self._output_file.write(data)
@@ -280,8 +280,8 @@ class FileReadWriteTask(object):
                     excep = exceptions.ImageTransferException(excep_msg, excep)
                     self._done.send_exception(excep)
 
-        LOG.debug(_("Starting file read-write task with source: %(source)s "
-                    "and destination: %(dest)s."),
+        LOG.debug("Starting file read-write task with source: %(source)s "
+                  "and destination: %(dest)s.",
                   {'source': self._input_file,
                    'dest': self._output_file})
         greenthread.spawn(_inner)
@@ -289,7 +289,7 @@ class FileReadWriteTask(object):
 
     def stop(self):
         """Stop the read-write task."""
-        LOG.debug(_("Stopping the file read-write task."))
+        LOG.debug("Stopping the file read-write task.")
         self._running = False
 
     def wait(self):
@@ -366,8 +366,8 @@ def _start_transfer(context, timeout_secs, read_file_handle, max_data_size,
         raise ValueError(excep_msg)
 
     # Start the reader and writer
-    LOG.debug(_("Starting image transfer with reader: %(reader)s and writer: "
-                "%(writer)s"),
+    LOG.debug("Starting image transfer with reader: %(reader)s and writer: "
+              "%(writer)s",
               {'reader': reader,
                'writer': writer})
     reader.start()
@@ -408,7 +408,7 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
                    file write handle
     :raises: VimConnectionException, ImageTransferException, ValueError
     """
-    LOG.debug(_("Downloading image: %s from image service as a flat file."),
+    LOG.debug("Downloading image: %s from image service as a flat file.",
               image_id)
 
     # TODO(vbala) catch specific exceptions raised by download call
@@ -426,7 +426,7 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
                     read_handle,
                     file_size,
                     write_file_handle=write_handle)
-    LOG.debug(_("Downloaded image: %s from image service as a flat file."),
+    LOG.debug("Downloaded image: %s from image service as a flat file.",
               image_id)
 
 
@@ -476,8 +476,8 @@ def download_stream_optimized_image(context, timeout_secs, image_service,
              VimSessionOverLoadException, VimConnectionException,
              ImageTransferException, ValueError
     """
-    LOG.debug(_("Downloading image: %s from image service as a stream "
-                "optimized file."),
+    LOG.debug("Downloading image: %s from image service as a stream "
+              "optimized file.",
               image_id)
 
     # TODO(vbala) catch specific exceptions raised by download call
@@ -486,8 +486,8 @@ def download_stream_optimized_image(context, timeout_secs, image_service,
     imported_vm = download_stream_optimized_data(context, timeout_secs,
                                                  read_handle, **kwargs)
 
-    LOG.debug(_("Downloaded image: %s from image service as a stream "
-                "optimized file."),
+    LOG.debug("Downloaded image: %s from image service as a stream "
+              "optimized file.",
               image_id)
     return imported_vm
 
@@ -507,7 +507,7 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
              ImageTransferException, ValueError
     """
 
-    LOG.debug(_("Uploading to image: %s."), image_id)
+    LOG.debug("Uploading to image: %s.", image_id)
     file_size = kwargs.get('vmdk_size')
     read_handle = rw_handles.VmdkReadHandle(kwargs.get('session'),
                                             kwargs.get('host'),
@@ -539,4 +539,4 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
                     image_service=image_service,
                     image_id=image_id,
                     image_meta=image_metadata)
-    LOG.debug(_("Uploaded image: %s."), image_id)
+    LOG.debug("Uploaded image: %s.", image_id)
