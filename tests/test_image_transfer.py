@@ -307,6 +307,7 @@ class ImageTransferUtilityTest(base.TestCase):
         timeout_secs = 10
         image_size = 1000
         host = '127.0.0.1'
+        port = 443
         dc_path = 'dc1'
         ds_name = 'ds1'
         file_path = '/fake_path'
@@ -321,6 +322,7 @@ class ImageTransferUtilityTest(base.TestCase):
             image_id,
             image_size=image_size,
             host=host,
+            port=port,
             data_center_name=dc_path,
             datastore_name=ds_name,
             cookies=cookies,
@@ -332,6 +334,7 @@ class ImageTransferUtilityTest(base.TestCase):
 
         fake_rw_handles_FileWriteHandle.assert_called_once_with(
             host,
+            port,
             dc_path,
             ds_name,
             cookies,
@@ -356,6 +359,7 @@ class ImageTransferUtilityTest(base.TestCase):
         timeout_secs = 10
         image_size = 1000
         host = '127.0.0.1'
+        port = 443
         resource_pool = 'rp-1'
         vm_folder = 'folder-1'
         vm_import_spec = None
@@ -370,6 +374,7 @@ class ImageTransferUtilityTest(base.TestCase):
             read_handle,
             session=session,
             host=host,
+            port=port,
             resource_pool=resource_pool,
             vm_folder=vm_folder,
             vm_import_spec=vm_import_spec,
@@ -378,6 +383,7 @@ class ImageTransferUtilityTest(base.TestCase):
         fake_rw_handles_VmdkWriteHandle.assert_called_once_with(
             session,
             host,
+            port,
             resource_pool,
             vm_folder,
             vm_import_spec,
@@ -404,6 +410,7 @@ class ImageTransferUtilityTest(base.TestCase):
         timeout_secs = 10
         image_size = 1000
         host = '127.0.0.1'
+        port = 443
         resource_pool = 'rp-1'
         vm_folder = 'folder-1'
         vm_import_spec = None
@@ -423,6 +430,7 @@ class ImageTransferUtilityTest(base.TestCase):
             image_id,
             session=session,
             host=host,
+            port=port,
             resource_pool=resource_pool,
             vm_folder=vm_folder,
             vm_import_spec=vm_import_spec,
@@ -438,6 +446,7 @@ class ImageTransferUtilityTest(base.TestCase):
             fake_ImageReadHandle,
             session=session,
             host=host,
+            port=port,
             resource_pool=resource_pool,
             vm_folder=vm_folder,
             vm_import_spec=vm_import_spec,
@@ -457,6 +466,7 @@ class ImageTransferUtilityTest(base.TestCase):
         timeout_secs = 10
         image_size = 1000
         host = '127.0.0.1'
+        port = 443
         file_path = '/fake_path'
         is_public = False
         image_name = 'fake_image'
@@ -472,6 +482,7 @@ class ImageTransferUtilityTest(base.TestCase):
                                     owner_id,
                                     session=session,
                                     host=host,
+                                    port=port,
                                     vm=vm,
                                     vmdk_file_path=file_path,
                                     vmdk_size=image_size,
@@ -481,6 +492,7 @@ class ImageTransferUtilityTest(base.TestCase):
 
         fake_rw_handles_VmdkReadHandle.assert_called_once_with(session,
                                                                host,
+                                                               port,
                                                                vm,
                                                                file_path,
                                                                image_size)

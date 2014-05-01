@@ -37,14 +37,16 @@ LOG = logging.getLogger(__name__)
 class PBMClient(vim.Vim):
     """SOAP based PBM client."""
 
-    def __init__(self, pbm_wsdl_loc, protocol='https', host='localhost'):
+    def __init__(self, pbm_wsdl_loc, protocol='https', host='localhost',
+                 port=443):
         """Constructs a PBM client object.
 
         :param pbm_wsdl_loc: PBM WSDL file location
         :param protocol: http or https
-        :param host: server IP address[:port] or host name[:port]
+        :param host: server IP address or host name
+        :param port: port for connection
         """
-        self._url = vim_util.get_soap_url(protocol, host, 'pbm')
+        self._url = vim_util.get_soap_url(protocol, host, port, 'pbm')
         self._pbm_client = suds.client.Client(pbm_wsdl_loc, location=self._url)
         self._pbm_service_content = None
 

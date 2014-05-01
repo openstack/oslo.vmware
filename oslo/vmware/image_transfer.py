@@ -416,6 +416,7 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
     read_handle = rw_handles.ImageReadHandle(read_iter)
     file_size = int(kwargs.get('image_size'))
     write_handle = rw_handles.FileWriteHandle(kwargs.get('host'),
+                                              kwargs.get('port'),
                                               kwargs.get('data_center_name'),
                                               kwargs.get('datastore_name'),
                                               kwargs.get('cookies'),
@@ -448,6 +449,7 @@ def download_stream_optimized_data(context, timeout_secs, read_handle,
     file_size = int(kwargs.get('image_size'))
     write_handle = rw_handles.VmdkWriteHandle(kwargs.get('session'),
                                               kwargs.get('host'),
+                                              kwargs.get('port'),
                                               kwargs.get('resource_pool'),
                                               kwargs.get('vm_folder'),
                                               kwargs.get('vm_import_spec'),
@@ -511,6 +513,7 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
     file_size = kwargs.get('vmdk_size')
     read_handle = rw_handles.VmdkReadHandle(kwargs.get('session'),
                                             kwargs.get('host'),
+                                            kwargs.get('port'),
                                             kwargs.get('vm'),
                                             kwargs.get('vmdk_file_path'),
                                             file_size)

@@ -125,18 +125,20 @@ class VMwareAPISession(object):
     """Setup a session with the server and handles all calls made to it.
 
     Example:
-        api_session = VMwareAPISession('10.1.2.3', 'administrator', 'password',
-                                       10, 0.1, create_session=False)
+        api_session = VMwareAPISession('10.1.2.3', 443, 'administrator',
+                                       'password', 10, 0.1,
+                                       create_session=False)
         result = api_session.invoke_api(vim_util, 'get_objects',
                                         api_session.vim, 'HostSystem', 100)
     """
 
-    def __init__(self, host, server_username, server_password,
+    def __init__(self, host, port, server_username, server_password,
                  api_retry_count, task_poll_interval, scheme='https',
                  create_session=True, wsdl_loc=None, pbm_wsdl_loc=None):
         """Initializes the API session with given parameters.
 
-        :param host: ESX/VC server IP address[:port] or host name[:port]
+        :param host: ESX/VC server IP address or host name
+        :param port: port for connection
         :param server_username: username of ESX/VC server admin user
         :param server_password: password for param server_username
         :param api_retry_count: number of times an API must be retried upon
@@ -152,6 +154,7 @@ class VMwareAPISession(object):
                  VimSessionOverLoadException
         """
         self._host = host
+        self._port = port
         self._server_username = server_username
         self._server_password = server_password
         self._api_retry_count = api_retry_count
@@ -171,6 +174,7 @@ class VMwareAPISession(object):
         if not self._vim:
             self._vim = vim.Vim(protocol=self._scheme,
                                 host=self._host,
+                                port=self._port,
                                 wsdl_loc=self._vim_wsdl_loc)
         return self._vim
 
@@ -179,7 +183,8 @@ class VMwareAPISession(object):
         if not self._pbm and self._pbm_wsdl_loc:
             self._pbm = pbm.PBMClient(self._pbm_wsdl_loc,
                                       protocol=self._scheme,
-                                      host=self._host)
+                                      host=self._host,
+                                      port=self._port)
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
