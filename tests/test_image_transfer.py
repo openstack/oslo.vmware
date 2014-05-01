@@ -20,6 +20,7 @@ Unit tests for functions and classes for image transfer.
 import math
 
 from eventlet import greenthread
+from eventlet import timeout
 import mock
 
 from oslo.vmware import exceptions
@@ -183,6 +184,108 @@ class FileReadWriteTaskTest(base.TestCase):
 class ImageTransferUtilityTest(base.TestCase):
     """Tests for image_transfer utility methods."""
 
+    @mock.patch.object(timeout, 'Timeout')
+    @mock.patch.object(image_transfer, 'ImageWriter')
+    @mock.patch.object(image_transfer, 'FileReadWriteTask')
+    @mock.patch.object(image_transfer, 'BlockingQueue')
+    def test_start_transfer(self, fake_BlockingQueue, fake_FileReadWriteTask,
+                            fake_ImageWriter, fake_Timeout):
+
+        context = mock.Mock()
+        read_file_handle = mock.Mock()
+        read_file_handle.close = mock.Mock()
+        image_service = mock.Mock()
+        image_id = mock.Mock()
+        blocking_queue = mock.Mock()
+
+        write_file_handle1 = mock.Mock()
+        write_file_handle1.close = mock.Mock()
+        write_file_handle2 = None
+        write_file_handles = [write_file_handle1, write_file_handle2]
+
+        timeout_secs = 10
+        blocking_queue_size = 10
+        image_meta = {}
+        max_data_size = 30
+
+        fake_BlockingQueue.return_value = blocking_queue
+        fake_timer = mock.Mock()
+        fake_timer.cancel = mock.Mock()
+        fake_Timeout.return_value = fake_timer
+
+        for write_file_handle in write_file_handles:
+            image_transfer._start_transfer(context,
+                                           timeout_secs,
+                                           read_file_handle,
+                                           max_data_size,
+                                           write_file_handle=write_file_handle,
+                                           image_service=image_service,
+                                           image_id=image_id,
+                                           image_meta=image_meta)
+
+        exp_calls = [mock.call(blocking_queue_size,
+                               max_data_size)] * len(write_file_handles)
+        self.assertEqual(exp_calls,
+                         fake_BlockingQueue.call_args_list)
+
+        exp_calls2 = [mock.call(read_file_handle, blocking_queue),
+                      mock.call(blocking_queue, write_file_handle1),
+                      mock.call(read_file_handle, blocking_queue)]
+        self.assertEqual(exp_calls2,
+                         fake_FileReadWriteTask.call_args_list)
+
+        exp_calls3 = mock.call(context, blocking_queue, image_service,
+                               image_id, image_meta)
+        self.assertEqual(exp_calls3,
+                         fake_ImageWriter.call_args)
+
+        exp_calls4 = [mock.call(timeout_secs)] * len(write_file_handles)
+        self.assertEqual(exp_calls4,
+                         fake_Timeout.call_args_list)
+
+        self.assertEqual(len(write_file_handles),
+                         fake_timer.cancel.call_count)
+
+        self.assertEqual(len(write_file_handles),
+                         read_file_handle.close.call_count)
+
+        write_file_handle1.close.assert_called_once()
+
+    @mock.patch.object(image_transfer, 'FileReadWriteTask')
+    @mock.patch.object(image_transfer, 'BlockingQueue')
+    def test_start_transfer_with_no_image_destination(self, fake_BlockingQueue,
+                                                      fake_FileReadWriteTask):
+
+        context = mock.Mock()
+        read_file_handle = mock.Mock()
+        write_file_handle = None
+        image_service = None
+        image_id = None
+        timeout_secs = 10
+        image_meta = {}
+        blocking_queue_size = 10
+        max_data_size = 30
+        blocking_queue = mock.Mock()
+
+        fake_BlockingQueue.return_value = blocking_queue
+
+        self.assertRaises(ValueError,
+                          image_transfer._start_transfer,
+                          context,
+                          timeout_secs,
+                          read_file_handle,
+                          max_data_size,
+                          write_file_handle=write_file_handle,
+                          image_service=image_service,
+                          image_id=image_id,
+                          image_meta=image_meta)
+
+        fake_BlockingQueue.assert_called_once_with(blocking_queue_size,
+                                                   max_data_size)
+
+        fake_FileReadWriteTask.assert_called_once_with(read_file_handle,
+                                                       blocking_queue)
+
     @mock.patch('oslo.vmware.rw_handles.FileWriteHandle')
     @mock.patch('oslo.vmware.rw_handles.ImageReadHandle')
     @mock.patch.object(image_transfer, '_start_transfer')
@@ -241,3 +344,161 @@ class ImageTransferUtilityTest(base.TestCase):
             fake_ImageReadHandle,
             image_size,
             write_file_handle=fake_FileWriteHandle)
+
+    @mock.patch('oslo.vmware.rw_handles.VmdkWriteHandle')
+    @mock.patch.object(image_transfer, '_start_transfer')
+    def test_download_stream_optimized_data(self, fake_transfer,
+                                            fake_rw_handles_VmdkWriteHandle):
+
+        context = mock.Mock()
+        session = mock.Mock()
+        read_handle = mock.Mock()
+        timeout_secs = 10
+        image_size = 1000
+        host = '127.0.0.1'
+        resource_pool = 'rp-1'
+        vm_folder = 'folder-1'
+        vm_import_spec = None
+
+        fake_VmdkWriteHandle = mock.Mock()
+        fake_VmdkWriteHandle.get_imported_vm = mock.Mock()
+        fake_rw_handles_VmdkWriteHandle.return_value = fake_VmdkWriteHandle
+
+        image_transfer.download_stream_optimized_data(
+            context,
+            timeout_secs,
+            read_handle,
+            session=session,
+            host=host,
+            resource_pool=resource_pool,
+            vm_folder=vm_folder,
+            vm_import_spec=vm_import_spec,
+            image_size=image_size)
+
+        fake_rw_handles_VmdkWriteHandle.assert_called_once_with(
+            session,
+            host,
+            resource_pool,
+            vm_folder,
+            vm_import_spec,
+            image_size)
+
+        fake_transfer.assert_called_once_with(
+            context,
+            timeout_secs,
+            read_handle,
+            image_size,
+            write_file_handle=fake_VmdkWriteHandle)
+
+        fake_VmdkWriteHandle.get_imported_vm.assert_called_once()
+
+    @mock.patch('oslo.vmware.rw_handles.ImageReadHandle')
+    @mock.patch.object(image_transfer, 'download_stream_optimized_data')
+    def test_download_stream_optimized_image(
+            self, fake_download_stream_optimized_data,
+            fake_rw_handles_ImageReadHandle):
+
+        context = mock.Mock()
+        session = mock.Mock()
+        image_id = mock.Mock()
+        timeout_secs = 10
+        image_size = 1000
+        host = '127.0.0.1'
+        resource_pool = 'rp-1'
+        vm_folder = 'folder-1'
+        vm_import_spec = None
+
+        fake_iter = 'fake_iter'
+        image_service = mock.Mock()
+        image_service.download = mock.Mock()
+        image_service.download.return_value = fake_iter
+
+        fake_ImageReadHandle = 'fake_ImageReadHandle'
+        fake_rw_handles_ImageReadHandle.return_value = fake_ImageReadHandle
+
+        image_transfer.download_stream_optimized_image(
+            context,
+            timeout_secs,
+            image_service,
+            image_id,
+            session=session,
+            host=host,
+            resource_pool=resource_pool,
+            vm_folder=vm_folder,
+            vm_import_spec=vm_import_spec,
+            image_size=image_size)
+
+        image_service.download.assert_called_once_with(context, image_id)
+
+        fake_rw_handles_ImageReadHandle.assert_called_once_with(fake_iter)
+
+        fake_download_stream_optimized_data.assert_called_once_with(
+            context,
+            timeout_secs,
+            fake_ImageReadHandle,
+            session=session,
+            host=host,
+            resource_pool=resource_pool,
+            vm_folder=vm_folder,
+            vm_import_spec=vm_import_spec,
+            image_size=image_size)
+
+    @mock.patch('oslo.vmware.rw_handles.VmdkReadHandle')
+    @mock.patch.object(image_transfer, '_start_transfer')
+    def test_upload_image(self, fake_transfer, fake_rw_handles_VmdkReadHandle):
+
+        context = mock.Mock()
+        image_id = mock.Mock()
+        owner_id = mock.Mock()
+        session = mock.Mock()
+        vm = mock.Mock()
+        image_service = mock.Mock()
+
+        timeout_secs = 10
+        image_size = 1000
+        host = '127.0.0.1'
+        file_path = '/fake_path'
+        is_public = False
+        image_name = 'fake_image'
+        image_version = 1
+
+        fake_VmdkReadHandle = 'fake_VmdkReadHandle'
+        fake_rw_handles_VmdkReadHandle.return_value = fake_VmdkReadHandle
+
+        image_transfer.upload_image(context,
+                                    timeout_secs,
+                                    image_service,
+                                    image_id,
+                                    owner_id,
+                                    session=session,
+                                    host=host,
+                                    vm=vm,
+                                    vmdk_file_path=file_path,
+                                    vmdk_size=image_size,
+                                    is_public=is_public,
+                                    image_name=image_name,
+                                    image_version=image_version)
+
+        fake_rw_handles_VmdkReadHandle.assert_called_once_with(session,
+                                                               host,
+                                                               vm,
+                                                               file_path,
+                                                               image_size)
+
+        image_metadata = {'disk_format': 'vmdk',
+                          'is_public': is_public,
+                          'name': image_name,
+                          'status': 'active',
+                          'container_format': 'bare',
+                          'size': 0,
+                          'properties': {'vmware_image_version': image_version,
+                                         'vmware_disktype': 'streamOptimized',
+                                         'owner_id': owner_id}}
+
+        fake_transfer.assert_called_once_with(context,
+                                              timeout_secs,
+                                              fake_VmdkReadHandle,
+                                              0,
+                                              image_service=image_service,
+                                              image_id=image_id,
+                                              image_meta=image_metadata)
