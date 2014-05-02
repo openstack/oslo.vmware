@@ -24,7 +24,6 @@ import logging
 import suds
 import suds.sax.element as element
 
-from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import vim
 from oslo.vmware import vim_util
 
@@ -77,7 +76,7 @@ def get_all_profiles(session):
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    LOG.debug(_("Fetching all the profiles defined in VC server."))
+    LOG.debug("Fetching all the profiles defined in VC server.")
 
     pbm = session.pbm
     profile_manager = pbm.service_content.profileManager
@@ -88,7 +87,7 @@ def get_all_profiles(session):
                                      'PbmQueryProfile',
                                      profile_manager,
                                      resourceType=res_type)
-    LOG.debug(_("Fetched profile IDs: %s."), profile_ids)
+    LOG.debug("Fetched profile IDs: %s.", profile_ids)
     if profile_ids:
         profiles = session.invoke_api(pbm,
                                       'PbmRetrieveContent',
@@ -105,11 +104,11 @@ def get_profile_id_by_name(session, profile_name):
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    LOG.debug(_("Retrieving profile ID for profile: %s."), profile_name)
+    LOG.debug("Retrieving profile ID for profile: %s.", profile_name)
     for profile in get_all_profiles(session):
         if profile.name == profile_name:
             profile_id = profile.profileId
-            LOG.debug(_("Retrieved profile ID: %(id)s for profile: %(name)s."),
+            LOG.debug("Retrieved profile ID: %(id)s for profile: %(name)s.",
                       {'id': profile_id,
                        'name': profile_name})
             return profile_id
@@ -125,7 +124,7 @@ def filter_hubs_by_profile(session, hubs, profile_id):
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    LOG.debug(_("Filtering hubs: %(hubs)s that match profile: %(profile)s."),
+    LOG.debug("Filtering hubs: %(hubs)s that match profile: %(profile)s.",
               {'hubs': hubs,
                'profile': profile_id})
 
@@ -136,7 +135,7 @@ def filter_hubs_by_profile(session, hubs, profile_id):
                                        placement_solver,
                                        hubsToSearch=hubs,
                                        profile=profile_id)
-    LOG.debug(_("Filtered hubs: %s"), filtered_hubs)
+    LOG.debug("Filtered hubs: %s", filtered_hubs)
     return filtered_hubs
 
 
