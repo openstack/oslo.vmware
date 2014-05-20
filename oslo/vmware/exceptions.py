@@ -118,7 +118,8 @@ class VMwareDriverException(Exception):
                 # log the issue and the kwargs
                 LOG.exception(_('Exception in string format operation'))
                 for name, value in six.iteritems(kwargs):
-                    LOG.error("%s: %s" % (name, value))
+                    LOG.error("%(name)s: %(value)s",
+                              {'name': name, 'value': value})
                 # at least get the core message out if something happened
                 message = self.msg_fmt
 
