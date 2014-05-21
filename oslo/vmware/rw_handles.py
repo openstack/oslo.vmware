@@ -102,13 +102,13 @@ class FileHandle(object):
         except Exception:
             return False
 
-    def _get_soap_url(self, scheme, host):
+    def _get_soap_url(self, scheme, host, port):
         """Returns the IPv4/v6 compatible SOAP URL for the given host."""
         if self._is_valid_ipv6(host):
-            return '%s://[%s]' % (scheme, host)
-        return '%s://%s' % (scheme, host)
+            return '%s://[%s]:%d' % (scheme, host, port)
+        return '%s://%s:%d' % (scheme, host, port)
 
-    def _fix_esx_url(self, url, host):
+    def _fix_esx_url(self, url, host, port):
         """Fix netloc in the case of an ESX host.
 
         In the case of an ESX host, the netloc is set to '*' in the URL
@@ -118,21 +118,25 @@ class FileHandle(object):
         urlp = urlparse.urlparse(url)
         if urlp.netloc == '*':
             scheme, netloc, path, params, query, fragment = urlp
+            if netaddr.valid_ipv6(host):
+                netloc = '[%s]:%d' % (host, port)
+            else:
+                netloc = "%s:%d" % (host, port)
             url = urlparse.urlunparse((scheme,
-                                       host,
+                                       netloc,
                                        path,
                                        params,
                                        query,
                                        fragment))
         return url
 
-    def _find_vmdk_url(self, lease_info, host):
+    def _find_vmdk_url(self, lease_info, host, port):
         """Find the URL corresponding to a VMDK file in lease info."""
         LOG.debug("Finding VMDK URL from lease info.")
         url = None
         for deviceUrl in lease_info.deviceUrl:
             if deviceUrl.disk:
-                url = self._fix_esx_url(deviceUrl.url, host)
+                url = self._fix_esx_url(deviceUrl.url, host, port)
                 break
         if not url:
             excep_msg = _("Could not retrieve VMDK URL from lease info.")
@@ -145,11 +149,12 @@ class FileHandle(object):
 class FileWriteHandle(FileHandle):
     """Write handle for a file in VMware server."""
 
-    def __init__(self, host, data_center_name, datastore_name, cookies,
+    def __init__(self, host, port, data_center_name, datastore_name, cookies,
                  file_path, file_size, scheme='https'):
         """Initializes the write handle with given parameters.
 
-        :param host: ESX/VC server IP address[:port] or host name[:port]
+        :param host: ESX/VC server IP address or host name
+        :param port: port for connection
         :param data_center_name: name of the data center in the case of a VC
                                  server
         :param datastore_name: name of the datastore where the file is stored
@@ -159,7 +164,7 @@ class FileWriteHandle(FileHandle):
         :param scheme: protocol-- http or https
         :raises: VimConnectionException, ValueError
         """
-        soap_url = self._get_soap_url(scheme, host)
+        soap_url = self._get_soap_url(scheme, host, port)
         param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
         self._url = '%s/folder/%s' % (soap_url, file_path)
         self._url = self._url + '?' + urllib.urlencode(param_list)
@@ -248,12 +253,13 @@ class VmdkWriteHandle(FileHandle):
     virtual disk contents.
     """
 
-    def __init__(self, session, host, rp_ref, vm_folder_ref, import_spec,
+    def __init__(self, session, host, port, rp_ref, vm_folder_ref, import_spec,
                  vmdk_size):
         """Initializes the VMDK write handle with input parameters.
 
         :param session: valid API session to ESX/VC server
-        :param host: ESX/VC server IP address[:port] or host name[:port]
+        :param host: ESX/VC server IP address or host name
+        :param port: port for connection
         :param rp_ref: resource pool into which the backing VM is imported
         :param vm_folder_ref: VM folder in ESX/VC inventory to use as parent
                               of backing VM
@@ -281,7 +287,7 @@ class VmdkWriteHandle(FileHandle):
                                         'info')
 
         # Find VMDK URL where data is to be written
-        self._url = self._find_vmdk_url(lease_info, host)
+        self._url = self._find_vmdk_url(lease_info, host, port)
         self._vm_ref = lease_info.entity
 
         # Create HTTP connection to write to VMDK URL
@@ -449,7 +455,7 @@ class VmdkWriteHandle(FileHandle):
 class VmdkReadHandle(FileHandle):
     """VMDK read handle based on HttpNfcLease."""
 
-    def __init__(self, session, host, vm_ref, vmdk_path, vmdk_size):
+    def __init__(self, session, host, port, vm_ref, vmdk_path, vmdk_size):
         """Initializes the VMDK read handle with the given parameters.
 
         During the read (export) operation, the VMDK file is converted to a
@@ -457,7 +463,8 @@ class VmdkReadHandle(FileHandle):
         file read may be smaller than the actual VMDK size.
 
         :param session: valid api session to ESX/VC server
-        :param host: ESX/VC server IP address[:port] or host name[:port]
+        :param host: ESX/VC server IP address or host name
+        :param port: port for connection
         :param vm_ref: managed object reference of the backing VM whose VMDK
                        is to be exported
         :param vmdk_path: path of the VMDK file to be exported
@@ -480,7 +487,7 @@ class VmdkReadHandle(FileHandle):
                                         'info')
 
         # find URL of the VMDK file to be read and open connection
-        self._url = self._find_vmdk_url(lease_info, host)
+        self._url = self._find_vmdk_url(lease_info, host, port)
         self._conn = self._create_connection(session, self._url)
         FileHandle.__init__(self, self._conn)
 

@@ -96,6 +96,7 @@ class VMwareAPISessionTest(base.TestCase):
     """Tests for VMwareAPISession."""
 
     SERVER_IP = '10.1.2.3'
+    PORT = 443
     USERNAME = 'admin'
     PASSWORD = 'password'
 
@@ -109,6 +110,7 @@ class VMwareAPISessionTest(base.TestCase):
     def _create_api_session(self, _create_session, retry_count=10,
                             task_poll_interval=1):
         return api.VMwareAPISession(VMwareAPISessionTest.SERVER_IP,
+                                    VMwareAPISessionTest.PORT,
                                     VMwareAPISessionTest.USERNAME,
                                     VMwareAPISessionTest.PASSWORD,
                                     retry_count,
@@ -121,6 +123,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.vim
         self.VimMock.assert_called_with(protocol=api_session._scheme,
                                         host=VMwareAPISessionTest.SERVER_IP,
+                                        port=VMwareAPISessionTest.PORT,
                                         wsdl_loc=api_session._vim_wsdl_loc)
 
     @mock.patch.object(pbm, 'PBMClient')

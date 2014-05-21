@@ -43,10 +43,12 @@ class FileHandleTest(base.TestCase):
         lease_info = mock.Mock()
         lease_info.deviceUrl = [device_url_0, device_url_1]
         host = '10.1.2.3'
-        exp_url = 'https://%s/ds1/vm1.vmdk' % host
+        port = 443
+        exp_url = 'https://%s:%d/ds1/vm1.vmdk' % (host, port)
         vmw_http_file = rw_handles.FileHandle(None)
         self.assertEqual(exp_url, vmw_http_file._find_vmdk_url(lease_info,
-                                                               host))
+                                                               host,
+                                                               port))
 
 
 class FileWriteHandleTest(base.TestCase):
@@ -66,7 +68,8 @@ class FileWriteHandleTest(base.TestCase):
         HTTPConnectionMock.return_value = self._conn
 
         self.vmw_http_write_file = rw_handles.FileWriteHandle(
-            '10.1.2.3', 'dc-0', 'ds-0', [vim_cookie], '1.vmdk', 100, 'http')
+            '10.1.2.3', 443, 'dc-0', 'ds-0', [vim_cookie], '1.vmdk', 100,
+            'http')
 
     def test_write(self):
         self.vmw_http_write_file.write(None)
@@ -118,6 +121,7 @@ class VmdkWriteHandleTest(base.TestCase):
         self.assertRaises(exceptions.VimException,
                           lambda: rw_handles.VmdkWriteHandle(session,
                                                              '10.1.2.3',
+                                                             443,
                                                              'rp-1',
                                                              'folder-1',
                                                              None,
@@ -125,7 +129,7 @@ class VmdkWriteHandleTest(base.TestCase):
 
     def test_write(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
                                             'rp-1', 'folder-1', None,
                                             100)
         data = [1] * 10
@@ -137,7 +141,7 @@ class VmdkWriteHandleTest(base.TestCase):
         vmdk_size = 100
         data_size = 10
         session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
                                             'rp-1', 'folder-1', None,
                                             vmdk_size)
         handle.write([1] * data_size)
@@ -145,7 +149,7 @@ class VmdkWriteHandleTest(base.TestCase):
 
     def test_update_progress_with_error(self):
         session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
                                             'rp-1', 'folder-1', None,
                                             100)
         session.invoke_api.side_effect = exceptions.VimException(None)
@@ -153,7 +157,7 @@ class VmdkWriteHandleTest(base.TestCase):
 
     def test_close(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
                                             'rp-1', 'folder-1', None,
                                             100)
 
@@ -215,6 +219,7 @@ class VmdkReadHandleTest(base.TestCase):
         self.assertRaises(exceptions.VimException,
                           lambda: rw_handles.VmdkReadHandle(session,
                                                             '10.1.2.3',
+                                                            443,
                                                             'vm-1',
                                                             '[ds] disk1.vmdk',
                                                             100))
@@ -223,7 +228,7 @@ class VmdkReadHandleTest(base.TestCase):
         chunk_size = rw_handles.READ_CHUNKSIZE
         session = self._create_mock_session()
         self._conn.read.return_value = [1] * chunk_size
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            chunk_size * 10)
         handle.read(chunk_size)
@@ -235,7 +240,7 @@ class VmdkReadHandleTest(base.TestCase):
         vmdk_size = chunk_size * 10
         session = self._create_mock_session(True, 10)
         self._conn.read.return_value = [1] * chunk_size
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            vmdk_size)
         handle.read(chunk_size)
@@ -243,7 +248,7 @@ class VmdkReadHandleTest(base.TestCase):
 
     def test_update_progress_with_error(self):
         session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            100)
         session.invoke_api.side_effect = exceptions.VimException(None)
@@ -251,7 +256,7 @@ class VmdkReadHandleTest(base.TestCase):
 
     def test_close(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3',
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            100)
 

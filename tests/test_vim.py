@@ -312,3 +312,24 @@ class VimTest(base.TestCase):
                          "Faults: [ValueError('example',)]\n"
                          "Details: {'foo': 'bar'}",
                          string)
+
+    def test_configure_non_default_host_port(self):
+        vim_obj = vim.Vim('https', 'www.test.com', 12345)
+        self.assertEqual('https://www.test.com:12345/sdk/vimService.wsdl',
+                         vim_obj.wsdl_url)
+        self.assertEqual('https://www.test.com:12345/sdk',
+                         vim_obj.soap_url)
+
+    def test_configure_ipv6(self):
+        vim_obj = vim.Vim('https', '::1')
+        self.assertEqual('https://[::1]/sdk/vimService.wsdl',
+                         vim_obj.wsdl_url)
+        self.assertEqual('https://[::1]/sdk',
+                         vim_obj.soap_url)
+
+    def test_configure_ipv6_and_non_default_host_port(self):
+        vim_obj = vim.Vim('https', '::1', 12345)
+        self.assertEqual('https://[::1]:12345/sdk/vimService.wsdl',
+                         vim_obj.wsdl_url)
+        self.assertEqual('https://[::1]:12345/sdk',
+                         vim_obj.soap_url)
