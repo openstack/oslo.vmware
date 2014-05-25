@@ -125,16 +125,17 @@ class VMwareAPISession(object):
     """Setup a session with the server and handles all calls made to it.
 
     Example:
-        api_session = VMwareAPISession('10.1.2.3', 443, 'administrator',
+        api_session = VMwareAPISession('10.1.2.3', 'administrator',
                                        'password', 10, 0.1,
-                                       create_session=False)
+                                       create_session=False, port=443)
         result = api_session.invoke_api(vim_util, 'get_objects',
                                         api_session.vim, 'HostSystem', 100)
     """
 
-    def __init__(self, host, port, server_username, server_password,
+    def __init__(self, host, server_username, server_password,
                  api_retry_count, task_poll_interval, scheme='https',
-                 create_session=True, wsdl_loc=None, pbm_wsdl_loc=None):
+                 create_session=True, wsdl_loc=None, pbm_wsdl_loc=None,
+                 port=443):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address or host name

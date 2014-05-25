@@ -110,13 +110,13 @@ class VMwareAPISessionTest(base.TestCase):
     def _create_api_session(self, _create_session, retry_count=10,
                             task_poll_interval=1):
         return api.VMwareAPISession(VMwareAPISessionTest.SERVER_IP,
-                                    VMwareAPISessionTest.PORT,
                                     VMwareAPISessionTest.USERNAME,
                                     VMwareAPISessionTest.PASSWORD,
                                     retry_count,
                                     task_poll_interval,
                                     'https',
-                                    _create_session)
+                                    _create_session,
+                                    port=VMwareAPISessionTest.PORT)
 
     def test_vim(self):
         api_session = self._create_api_session(False)
