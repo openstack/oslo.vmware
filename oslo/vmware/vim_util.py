@@ -87,6 +87,12 @@ def build_recursive_traversal_spec(client_factory):
                                      'vmFolder',
                                      False,
                                      [visit_folders_select_spec])
+    dc_to_netf = build_traversal_spec(client_factory,
+                                      'dc_to_netf',
+                                      'Datacenter',
+                                      'networkFolder',
+                                      False,
+                                      [visit_folders_select_spec])
 
     # Next hop from HostSystem
     h_to_vm = build_traversal_spec(client_factory,
@@ -168,6 +174,7 @@ def build_recursive_traversal_spec(client_factory):
                                            h_to_vm,
                                            dc_to_hf,
                                            dc_to_vmf,
+                                           dc_to_netf,
                                            cr_to_ds,
                                            cr_to_h,
                                            cr_to_rp,
