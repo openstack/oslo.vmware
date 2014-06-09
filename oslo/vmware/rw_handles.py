@@ -633,7 +633,7 @@ class ImageReadHandle(object):
         uses its own chunk size.
         """
         try:
-            data = self._iter.next()
+            data = next(self._iter)
             LOG.debug("Read %d bytes from the image iterator.", len(data))
             return data
         except StopIteration:
