@@ -211,7 +211,7 @@ class VimUtilTest(base.TestCase):
     def test_get_object_properties_with_empty_moref(self):
         vim = mock.Mock()
         ret = vim_util.get_object_properties(vim, None, None)
-        self.assertEqual(None, ret)
+        self.assertIsNone(ret)
 
     @mock.patch('oslo.vmware.vim_util.cancel_retrieval')
     def test_get_object_properties(self, cancel_retrieval):
