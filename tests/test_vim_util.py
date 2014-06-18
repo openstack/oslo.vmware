@@ -292,3 +292,19 @@ class VimUtilTest(base.TestCase):
         self.assertEqual(prop.val, val)
         get_object_properties.assert_called_once_with(
             vim, moref, [property_name])
+
+    def test_find_extension(self):
+        vim = mock.Mock()
+        ret = vim_util.find_extension(vim, 'fake-key')
+        self.assertIsNotNone(ret)
+        service_content = vim.service_content
+        vim.client.service.FindExtension.assert_called_once_with(
+            service_content.extensionManager, 'fake-key')
+
+    def test_register_extension(self):
+        vim = mock.Mock()
+        ret = vim_util.register_extension(vim, 'fake-key', 'fake-type')
+        self.assertIsNone(ret)
+        service_content = vim.service_content
+        vim.client.service.RegisterExtension.assert_called_once_with(
+            service_content.extensionManager, mock.ANY)
