@@ -27,6 +27,7 @@ import six
 
 from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
+from oslo.vmware.openstack.common import excutils
 from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import pbm
 from oslo.vmware import vim
@@ -87,29 +88,32 @@ class RetryDecorator(object):
                           "after %(retry_count)d retries.",
                           {'func_name': func_name,
                            'retry_count': self._retry_count})
-            except self._exceptions as excep:
-                LOG.warn(_("Exception which is in the suggested list of "
-                           "exceptions occurred while invoking function:"
-                           " %s."),
-                         func_name,
-                         exc_info=True)
-                if (self._max_retry_count != -1 and
-                        self._retry_count >= self._max_retry_count):
-                    LOG.error(_("Cannot retry upon suggested exception since "
-                                "retry count (%(retry_count)d) reached "
-                                "max retry count (%(max_retry_count)d)."),
-                              {'retry_count': self._retry_count,
-                               'max_retry_count': self._max_retry_count})
-                    raise excep
-                else:
-                    self._retry_count += 1
-                    self._sleep_time += self._inc_sleep_time
-                    return self._sleep_time
-            except Exception as excep:
-                LOG.exception(_("Exception which is not in the suggested list "
-                                "of exceptions occurred while invoking %s."),
-                              func_name)
-                raise excep
+            except self._exceptions:
+                with excutils.save_and_reraise_exception() as ctxt:
+                    LOG.warn(_("Exception which is in the suggested list of "
+                               "exceptions occurred while invoking function:"
+                               " %s."),
+                             func_name,
+                             exc_info=True)
+                    if (self._max_retry_count != -1 and
+                            self._retry_count >= self._max_retry_count):
+                        LOG.error(_("Cannot retry upon suggested exception "
+                                    "since retry count (%(retry_count)d) "
+                                    "reached max retry count "
+                                    "(%(max_retry_count)d)."),
+                                  {'retry_count': self._retry_count,
+                                   'max_retry_count': self._max_retry_count})
+                    else:
+                        ctxt.reraise = False
+                        self._retry_count += 1
+                        self._sleep_time += self._inc_sleep_time
+                        return self._sleep_time
+            except Exception:
+                with excutils.save_and_reraise_exception():
+                    LOG.exception(_("Exception which is not in the "
+                                    "suggested list of exceptions occurred "
+                                    "while invoking %s."),
+                                  func_name)
             raise loopingcall.LoopingCallDone(result)
 
         def func(*args, **kwargs):
@@ -318,14 +322,15 @@ class VMwareAPISession(object):
                     raise
 
             except exceptions.VimConnectionException:
-                # Re-create the session during connection exception.
-                LOG.warn(_("Re-creating session due to connection problems "
-                           "while invoking method %(module)s.%(method)s."),
-                         {'module': module,
-                          'method': method},
-                         exc_info=True)
-                self._create_session()
-                raise
+                with excutils.save_and_reraise_exception():
+                    # Re-create the session during connection exception.
+                    LOG.warn(_("Re-creating session due to connection "
+                               "problems while invoking method "
+                               "%(module)s.%(method)s."),
+                             {'module': module,
+                              'method': method},
+                             exc_info=True)
+                    self._create_session()
 
         return _invoke_api(module, method, *args, **kwargs)
 
@@ -384,10 +389,11 @@ class VMwareAPISession(object):
                                         self.vim,
                                         task,
                                         'info')
-        except exceptions.VimException as excep:
-            LOG.exception(_("Error occurred while reading info of task: %s."),
-                          task)
-            raise excep
+        except exceptions.VimException:
+            with excutils.save_and_reraise_exception():
+                LOG.exception(_("Error occurred while reading info of "
+                                "task: %s."),
+                              task)
         else:
             if task_info.state in ['queued', 'running']:
                 if hasattr(task_info, 'progress'):
@@ -438,11 +444,11 @@ class VMwareAPISession(object):
                                     self.vim,
                                     lease,
                                     'state')
-        except exceptions.VimException as excep:
-            LOG.exception(_("Error occurred while checking state of lease: "
-                            "%s."),
-                          lease)
-            raise excep
+        except exceptions.VimException:
+            with excutils.save_and_reraise_exception():
+                LOG.exception(_("Error occurred while checking "
+                                "state of lease: %s."),
+                              lease)
         else:
             if state == 'ready':
                 LOG.debug("Lease: %s is ready.", lease)

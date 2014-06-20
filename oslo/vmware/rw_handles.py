@@ -31,6 +31,7 @@ import urlparse
 import netaddr
 
 from oslo.vmware import exceptions
+from oslo.vmware.openstack.common import excutils
 from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import vim_util
 
@@ -408,11 +409,11 @@ class VmdkWriteHandle(FileHandle):
                       "URL = %(url)s to %(percent)d%%.",
                       {'url': self._url,
                        'percent': percent})
-        except exceptions.VimException as excep:
-            LOG.exception(_("Error occurred while updating the write progress "
-                            "of VMDK file with URL = %s."),
-                          self._url)
-            raise excep
+        except exceptions.VimException:
+            with excutils.save_and_reraise_exception():
+                LOG.exception(_("Error occurred while updating the "
+                                "write progress of VMDK file with URL = %s."),
+                              self._url)
 
     def close(self):
         """Releases the lease and close the connection.
@@ -570,11 +571,11 @@ class VmdkReadHandle(FileHandle):
                       "URL = %(url)s to %(percent)d%%.",
                       {'url': self._url,
                        'percent': percent})
-        except exceptions.VimException as excep:
-            LOG.exception(_("Error occurred while updating the read progress "
-                            "of VMDK file with URL = %s."),
-                          self._url)
-            raise excep
+        except exceptions.VimException:
+            with excutils.save_and_reraise_exception():
+                LOG.exception(_("Error occurred while updating the "
+                                "read progress of VMDK file with URL = %s."),
+                              self._url)
 
     def close(self):
         """Releases the lease and close the connection.
