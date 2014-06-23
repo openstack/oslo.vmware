@@ -17,7 +17,6 @@
 The VMware API utility module.
 """
 
-import netaddr
 import suds
 
 
@@ -373,34 +372,3 @@ def get_object_property(vim, moref, property_name):
         if prop:
             prop_val = prop[0].val
     return prop_val
-
-
-def get_wsdl_url(protocol, host, port=None):
-    """Get the default WSDL file location hosted at the server.
-
-    :param protocol: http or https
-    :param host: server IP address or host name
-    :param port: port for connection
-    :returns: default WSDL file location hosted at the server
-    """
-    return get_soap_url(protocol, host, port) + "/vimService.wsdl"
-
-
-def get_soap_url(protocol, host, port=None, path='sdk'):
-    """Return ESX/VC server's SOAP service URL.
-
-    :param protocol: https or http
-    :param host: server IP address or host name
-    :param port: port for connection
-    :param path: path part of the SOAP URL
-    :returns: SOAP service URL
-    """
-    if netaddr.valid_ipv6(host):
-        if port is None:
-            return '%s://[%s]/%s' % (protocol, host, path)
-        else:
-            return '%s://[%s]:%d/%s' % (protocol, host, port, path)
-    if port is None:
-        return '%s://%s/%s' % (protocol, host, path)
-    else:
-        return '%s://%s:%d/%s' % (protocol, host, port, path)

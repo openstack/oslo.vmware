@@ -180,21 +180,21 @@ class VMwareAPISession(object):
             self._vim = vim.Vim(protocol=self._scheme,
                                 host=self._host,
                                 port=self._port,
-                                wsdl_loc=self._vim_wsdl_loc)
+                                wsdl_url=self._vim_wsdl_loc)
         return self._vim
 
     @property
     def pbm(self):
         if not self._pbm and self._pbm_wsdl_loc:
-            self._pbm = pbm.PBMClient(self._pbm_wsdl_loc,
-                                      protocol=self._scheme,
-                                      host=self._host,
-                                      port=self._port)
+            self._pbm = pbm.Pbm(protocol=self._scheme,
+                                host=self._host,
+                                port=self._port,
+                                wsdl_url=self._pbm_wsdl_loc)
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
                 # creation, we set the cookie in _create_session.
-                self._pbm.set_cookie(self._get_session_cookie())
+                self._pbm.set_soap_cookie(self._vim.get_http_cookie())
         return self._pbm
 
     @RetryDecorator(exceptions=(exceptions.VimConnectionException,))
@@ -238,7 +238,7 @@ class VMwareAPISession(object):
 
         # Set PBM client cookie.
         if self._pbm is not None:
-            self._pbm.set_cookie(self._get_session_cookie())
+            self._pbm.set_soap_cookie(self._vim.get_http_cookie())
 
     def logout(self):
         """Log out and terminate the current session."""
@@ -487,14 +487,3 @@ class VMwareAPISession(object):
                      lease,
                      exc_info=True)
             return "Unknown"
-
-    def _get_session_cookie(self):
-        """Get the cookie corresponding to the current session.
-
-        :returns: cookie corresponding to the current session
-        """
-        cookies = self.vim.client.options.transport.cookiejar
-        for c in cookies:
-            if c.name.lower() == 'vmware_soap_session':
-                return c.value
-        return None

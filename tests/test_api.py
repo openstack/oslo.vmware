@@ -124,54 +124,34 @@ class VMwareAPISessionTest(base.TestCase):
         self.VimMock.assert_called_with(protocol=api_session._scheme,
                                         host=VMwareAPISessionTest.SERVER_IP,
                                         port=VMwareAPISessionTest.PORT,
-                                        wsdl_loc=api_session._vim_wsdl_loc)
+                                        wsdl_url=api_session._vim_wsdl_loc)
 
-    @mock.patch.object(pbm, 'PBMClient')
-    def test_pbm(self, pbm_client_mock):
+    @mock.patch.object(pbm, 'Pbm')
+    def test_pbm(self, pbm_mock):
         api_session = self._create_api_session(True)
-        api_session._pbm_wsdl_loc = mock.Mock()
-        pbm = mock.Mock()
-        pbm_client_mock.return_value = pbm
+        vim_obj = api_session.vim
         cookie = mock.Mock()
+        vim_obj.get_http_cookie.return_value = cookie
+        api_session._pbm_wsdl_loc = mock.Mock()
+
+        pbm = mock.Mock()
+        pbm_mock.return_value = pbm
         api_session._get_session_cookie = mock.Mock(return_value=cookie)
 
         self.assertEqual(pbm, api_session.pbm)
-        pbm.set_cookie.assert_called_once_with(cookie)
-
-    def test_get_session_cookie(self):
-        api_session = self._create_api_session(False)
-        vim_obj = api_session.vim
-
-        cookie_value = 'xyz'
-        cookie = mock.Mock()
-        cookie.name = 'vmware_soap_session'
-        cookie.value = cookie_value
-        vim_obj.client.options.transport.cookiejar = [cookie]
-
-        self.assertEqual(cookie_value, api_session._get_session_cookie())
-
-    def test_get_session_cookie_with_no_cookie(self):
-        api_session = self._create_api_session(False)
-        vim_obj = api_session.vim
-
-        cookie = mock.Mock()
-        cookie.name = 'cookie'
-        cookie.value = 'xyz'
-        vim_obj.client.options.transport.cookiejar = [cookie]
-
-        self.assertIsNone(api_session._get_session_cookie())
+        pbm.set_soap_cookie.assert_called_once_with(cookie)
 
     def test_create_session(self):
         session = mock.Mock()
         session.key = "12345"
         api_session = self._create_api_session(False)
+        cookie = mock.Mock()
         vim_obj = api_session.vim
         vim_obj.Login.return_value = session
+        vim_obj.get_http_cookie.return_value = cookie
 
         pbm = mock.Mock()
         api_session._pbm = pbm
-        cookie = mock.Mock()
-        api_session._get_session_cookie = mock.Mock(return_value=cookie)
 
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
@@ -180,7 +160,7 @@ class VMwareAPISessionTest(base.TestCase):
             password=VMwareAPISessionTest.PASSWORD)
         self.assertFalse(vim_obj.TerminateSession.called)
         self.assertEqual(session.key, api_session._session_id)
-        pbm.set_cookie.assert_called_once_with(cookie)
+        pbm.set_soap_cookie.assert_called_once_with(cookie)
 
     def test_create_session_with_existing_session(self):
         old_session_key = '12345'

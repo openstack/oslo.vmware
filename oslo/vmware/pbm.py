@@ -14,61 +14,57 @@
 #    under the License.
 
 """
-VMware PBM client and PBM related utility methods
+VMware PBM service client and PBM related utility methods
 
 PBM is used for policy based placement in VMware datastores.
 Refer http://goo.gl/GR2o6U for more details.
 """
 
 import logging
-import suds
 import suds.sax.element as element
 
-from oslo.vmware import vim
+from oslo.vmware import service
 from oslo.vmware import vim_util
 
 
-SERVICE_INSTANCE = 'ServiceInstance'
 SERVICE_TYPE = 'PbmServiceInstance'
 
 LOG = logging.getLogger(__name__)
 
 
-class PBMClient(vim.Vim):
-    """SOAP based PBM client."""
+class Pbm(service.Service):
+    """Service class that provides access to the Storage Policy API."""
 
-    def __init__(self, pbm_wsdl_loc, protocol='https', host='localhost',
-                 port=443):
-        """Constructs a PBM client object.
+    def __init__(self, protocol='https', host='localhost', port=443,
+                 wsdl_url=None):
+        """Constructs a PBM service client object.
 
-        :param pbm_wsdl_loc: PBM WSDL file location
         :param protocol: http or https
         :param host: server IP address or host name
         :param port: port for connection
+        :param wsdl_url: PBM WSDL url
         """
-        self._url = vim_util.get_soap_url(protocol, host, port, 'pbm')
-        self._pbm_client = suds.client.Client(pbm_wsdl_loc, location=self._url)
-        self._pbm_service_content = None
+        base_url = service.Service.build_base_url(protocol, host, port)
+        soap_url = base_url + '/pbm'
+        super(Pbm, self).__init__(wsdl_url, soap_url)
 
-    def set_cookie(self, cookie):
-        """Set the authenticated VIM session's cookie in the SOAP client.
+    def set_soap_cookie(self, cookie):
+        """Set the specified vCenter session cookie in the SOAP header
 
         :param cookie: cookie to set
         """
         elem = element.Element('vcSessionCookie').setText(cookie)
-        self._pbm_client.set_options(soapheaders=elem)
+        self.client.set_options(soapheaders=elem)
 
-    @property
-    def client(self):
-        return self._pbm_client
+    def retrieve_service_content(self):
+        ref = vim_util.get_moref(service.SERVICE_INSTANCE, SERVICE_TYPE)
+        return self.PbmRetrieveServiceContent(ref)
 
-    @property
-    def service_content(self):
-        if not self._pbm_service_content:
-            si_moref = vim_util.get_moref(SERVICE_INSTANCE, SERVICE_TYPE)
-            self._pbm_service_content = (
-                self._pbm_client.service.PbmRetrieveServiceContent(si_moref))
-        return self._pbm_service_content
+    def __repr__(self):
+        return "PBM Object"
+
+    def __str__(self):
+        return "PBM Object"
 
 
 def get_all_profiles(session):
