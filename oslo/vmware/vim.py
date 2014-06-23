@@ -25,7 +25,7 @@ import six
 import suds
 
 from oslo.vmware import exceptions
-from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware.openstack.common.gettextutils import _, _LE
 from oslo.vmware import vim_util
 
 
@@ -147,8 +147,8 @@ class Vim(object):
                         fault_type = missing_elem.fault.fault.__class__
                         fault_list.append(fault_type.__name__)
         if fault_list:
-            LOG.error(_("Faults %s found in RetrievePropertiesEx API "
-                        "response."),
+            LOG.error(_LE("Faults %s found in RetrievePropertiesEx API "
+                          "response."),
                       fault_list)
             raise exceptions.VimFaultException(fault_list,
                                                _("Error occurred while calling"

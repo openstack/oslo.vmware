@@ -181,9 +181,10 @@ class ImageWriter(object):
                         greenthread.sleep(IMAGE_SERVICE_POLL_INTERVAL)
                     else:
                         self.stop()
-                        excep_msg = _("Image: %(image)s is in unknown state: "
-                                      "%(state)s.") % {'image': self._image_id,
-                                                       'state': image_status}
+                        excep_msg = (_("Image: %(image)s is in unknown "
+                                       "state: %(state)s.") %
+                                     {'image': self._image_id,
+                                      'state': image_status})
                         LOG.error(excep_msg)
                         excep = exceptions.ImageTransferException(excep_msg)
                         self._done.send_exception(excep)

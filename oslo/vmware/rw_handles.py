@@ -32,7 +32,7 @@ import netaddr
 
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common import excutils
-from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware.openstack.common.gettextutils import _, _LE, _LW
 from oslo.vmware import vim_util
 
 
@@ -62,7 +62,7 @@ class FileHandle(object):
         try:
             self._file_handle.close()
         except Exception:
-            LOG.warn(_("Error occurred while closing the file handle"),
+            LOG.warn(_LW("Error occurred while closing the file handle"),
                      exc_info=True)
 
     def _build_vim_cookie_header(self, vim_cookies):
@@ -238,7 +238,7 @@ class FileWriteHandle(FileHandle):
         try:
             self.conn.getresponse()
         except Exception:
-            LOG.warn(_("Error occurred while reading the HTTP response."),
+            LOG.warn(_LW("Error occurred while reading the HTTP response."),
                      exc_info=True)
         super(FileWriteHandle, self).close()
         LOG.debug("Closed write handle for %s.", self._url)
@@ -411,8 +411,9 @@ class VmdkWriteHandle(FileHandle):
                        'percent': percent})
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_("Error occurred while updating the "
-                                "write progress of VMDK file with URL = %s."),
+                LOG.exception(_LE("Error occurred while updating the "
+                                  "write progress of VMDK file with "
+                                  "URL = %s."),
                               self._url)
 
     def close(self):
@@ -443,7 +444,7 @@ class VmdkWriteHandle(FileHandle):
                           {'url': self._url,
                            'state': state})
         except exceptions.VimException:
-            LOG.warn(_("Error occurred while releasing the lease for %s."),
+            LOG.warn(_LW("Error occurred while releasing the lease for %s."),
                      self._url,
                      exc_info=True)
         super(VmdkWriteHandle, self).close()
@@ -573,8 +574,8 @@ class VmdkReadHandle(FileHandle):
                        'percent': percent})
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_("Error occurred while updating the "
-                                "read progress of VMDK file with URL = %s."),
+                LOG.exception(_LE("Error occurred while updating the "
+                                  "read progress of VMDK file with URL = %s."),
                               self._url)
 
     def close(self):
@@ -605,7 +606,7 @@ class VmdkReadHandle(FileHandle):
                           {'url': self._url,
                            'state': state})
         except exceptions.VimException:
-            LOG.warn(_("Error occurred while releasing the lease for %s."),
+            LOG.warn(_LW("Error occurred while releasing the lease for %s."),
                      self._url,
                      exc_info=True)
             raise

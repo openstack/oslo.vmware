@@ -28,7 +28,7 @@ import six
 from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common import excutils
-from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware.openstack.common.gettextutils import _, _LE, _LI, _LW
 from oslo.vmware import pbm
 from oslo.vmware import vim
 from oslo.vmware import vim_util
@@ -90,17 +90,17 @@ class RetryDecorator(object):
                            'retry_count': self._retry_count})
             except self._exceptions:
                 with excutils.save_and_reraise_exception() as ctxt:
-                    LOG.warn(_("Exception which is in the suggested list of "
-                               "exceptions occurred while invoking function:"
-                               " %s."),
+                    LOG.warn(_LW("Exception which is in the suggested list of "
+                                 "exceptions occurred while invoking function:"
+                                 " %s."),
                              func_name,
                              exc_info=True)
                     if (self._max_retry_count != -1 and
                             self._retry_count >= self._max_retry_count):
-                        LOG.error(_("Cannot retry upon suggested exception "
-                                    "since retry count (%(retry_count)d) "
-                                    "reached max retry count "
-                                    "(%(max_retry_count)d)."),
+                        LOG.error(_LE("Cannot retry upon suggested exception "
+                                      "since retry count (%(retry_count)d) "
+                                      "reached max retry count "
+                                      "(%(max_retry_count)d)."),
                                   {'retry_count': self._retry_count,
                                    'max_retry_count': self._max_retry_count})
                     else:
@@ -110,9 +110,9 @@ class RetryDecorator(object):
                         return self._sleep_time
             except Exception:
                 with excutils.save_and_reraise_exception():
-                    LOG.exception(_("Exception which is not in the "
-                                    "suggested list of exceptions occurred "
-                                    "while invoking %s."),
+                    LOG.exception(_LE("Exception which is not in the "
+                                      "suggested list of exceptions occurred "
+                                      "while invoking %s."),
                                   func_name)
             raise loopingcall.LoopingCallDone(result)
 
@@ -213,14 +213,15 @@ class VMwareAPISession(object):
         # object. We can't use the username used for login since the Login
         # method ignores the case.
         self._session_username = session.userName
-        LOG.info(_("Successfully established new session; session ID is %s."),
+        LOG.info(_LI("Successfully established new session; session ID is "
+                     "%s."),
                  self._session_id)
 
         # Terminate the previous session (if exists) for preserving sessions
         # as there is a limit on the number of sessions we can have.
         if prev_session_id:
             try:
-                LOG.info(_("Terminating the previous session with ID = %s"),
+                LOG.info(_LI("Terminating the previous session with ID = %s"),
                          prev_session_id)
                 self.vim.TerminateSession(session_manager,
                                           sessionId=[prev_session_id])
@@ -230,8 +231,8 @@ class VMwareAPISession(object):
                 # have been cleared already. We could have made a call to
                 # SessionIsActive, but that is an overhead because we
                 # anyway would have to call TerminateSession.
-                LOG.warn(_("Error occurred while terminating the previous "
-                           "session with ID = %s."),
+                LOG.warn(_LW("Error occurred while terminating the previous "
+                             "session with ID = %s."),
                          prev_session_id,
                          exc_info=True)
 
@@ -242,16 +243,16 @@ class VMwareAPISession(object):
     def logout(self):
         """Log out and terminate the current session."""
         if self._session_id:
-            LOG.info(_("Logging out and terminating the current session with "
-                       "ID = %s."),
+            LOG.info(_LI("Logging out and terminating the current session "
+                         "with ID = %s."),
                      self._session_id)
             try:
                 self.vim.Logout(self.vim.service_content.sessionManager)
                 self._session_id = None
             except Exception:
-                LOG.exception(_("Error occurred while logging out and "
-                                "terminating the current session with "
-                                "ID = %s."),
+                LOG.exception(_LE("Error occurred while logging out and "
+                                  "terminating the current session with "
+                                  "ID = %s."),
                               self._session_id)
         else:
             LOG.debug("No session exists to log out.")
@@ -324,9 +325,9 @@ class VMwareAPISession(object):
             except exceptions.VimConnectionException:
                 with excutils.save_and_reraise_exception():
                     # Re-create the session during connection exception.
-                    LOG.warn(_("Re-creating session due to connection "
-                               "problems while invoking method "
-                               "%(module)s.%(method)s."),
+                    LOG.warn(_LW("Re-creating session due to connection "
+                                 "problems while invoking method "
+                                 "%(module)s.%(method)s."),
                              {'module': module,
                               'method': method},
                              exc_info=True)
@@ -349,8 +350,8 @@ class VMwareAPISession(object):
                 sessionID=self._session_id,
                 userName=self._session_username)
         except exceptions.VimException:
-            LOG.warn(_("Error occurred while checking whether the "
-                       "current session: %s is active."),
+            LOG.warn(_LW("Error occurred while checking whether the "
+                         "current session: %s is active."),
                      self._session_id,
                      exc_info=True)
 
@@ -391,8 +392,8 @@ class VMwareAPISession(object):
                                         'info')
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_("Error occurred while reading info of "
-                                "task: %s."),
+                LOG.exception(_LE("Error occurred while reading info of "
+                                  "task: %s."),
                               task)
         else:
             if task_info.state in ['queued', 'running']:
@@ -446,8 +447,8 @@ class VMwareAPISession(object):
                                     'state')
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_("Error occurred while checking "
-                                "state of lease: %s."),
+                LOG.exception(_LE("Error occurred while checking "
+                                  "state of lease: %s."),
                               lease)
         else:
             if state == 'ready':
@@ -467,7 +468,8 @@ class VMwareAPISession(object):
             else:
                 # unknown state
                 excep_msg = _("Unknown state: %(state)s for lease: "
-                              "%(lease)s.") % {'state': state, 'lease': lease}
+                              "%(lease)s.") % {'state': state,
+                                               'lease': lease}
                 LOG.error(excep_msg)
                 raise exceptions.VimException(excep_msg)
 
@@ -480,8 +482,8 @@ class VMwareAPISession(object):
                                    lease,
                                    'error')
         except exceptions.VimException:
-            LOG.warn(_("Error occurred while reading error message for lease: "
-                       "%s."),
+            LOG.warn(_LW("Error occurred while reading error message for "
+                         "lease: %s."),
                      lease,
                      exc_info=True)
             return "Unknown"

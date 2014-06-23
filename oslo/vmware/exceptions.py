@@ -21,7 +21,7 @@ import logging
 
 import six
 
-from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware.openstack.common.gettextutils import _, _LE
 
 LOG = logging.getLogger(__name__)
 
@@ -116,9 +116,9 @@ class VMwareDriverException(Exception):
             except Exception:
                 # kwargs doesn't match a variable in the message
                 # log the issue and the kwargs
-                LOG.exception(_('Exception in string format operation'))
+                LOG.exception(_LE('Exception in string format operation'))
                 for name, value in six.iteritems(kwargs):
-                    LOG.error("%(name)s: %(value)s",
+                    LOG.error(_LE("%(name)s: %(value)s"),
                               {'name': name, 'value': value})
                 # at least get the core message out if something happened
                 message = self.msg_fmt
