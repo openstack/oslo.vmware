@@ -1,3 +1,4 @@
+# coding=utf-8
 # Copyright (c) 2014 VMware, Inc.
 # All Rights Reserved.
 #
@@ -19,6 +20,7 @@ Unit tests for session management and API invocation classes.
 
 from eventlet import greenthread
 import mock
+import suds
 
 from oslo.vmware import api
 from oslo.vmware import exceptions
@@ -256,6 +258,26 @@ class VMwareAPISessionTest(base.TestCase):
                           api_session.invoke_api,
                           module,
                           'api')
+
+    def test_invoke_api_with_vim_fault_exception_details(self):
+        api_session = self._create_api_session(True)
+        fault_string = 'Invalid property.'
+        fault_list = [exceptions.INVALID_PROPERTY]
+        details = {u'name': suds.sax.text.Text(u'фира')}
+
+        module = mock.Mock()
+        module.api.side_effect = exceptions.VimFaultException(fault_list,
+                                                              fault_string,
+                                                              details=details)
+        e = self.assertRaises(exceptions.InvalidPropertyException,
+                              api_session.invoke_api,
+                              module,
+                              'api')
+        details_str = u"{'name': 'фира'}"
+        expected_str = "%s\nFaults: %s\nDetails: %s" % (fault_string,
+                                                        fault_list,
+                                                        details_str)
+        self.assertEqual(expected_str, unicode(e))
 
     def test_invoke_api_with_empty_response(self):
         api_session = self._create_api_session(True)

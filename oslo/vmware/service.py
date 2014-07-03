@@ -27,7 +27,6 @@ import suds
 
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common.gettextutils import _
-from oslo.vmware.openstack.common.gettextutils import _LE
 from oslo.vmware import vim_util
 
 
@@ -102,13 +101,9 @@ class Service(object):
         :param response: response from RetrievePropertiesEx API call
         :raises: VimFaultException
         """
-        # TODO(rgerganov) this method doesn't belong here because this fault
-        # checking is specific to the Vim service. We should come up with
-        # a new design that allows extensible fault checking and have the
-        # service specific parts in the corresponding child classes
-
         LOG.debug("Checking RetrievePropertiesEx API response for faults.")
         fault_list = []
+        details = {}
         if not response:
             # This is the case when the session has timed out. ESX SOAP
             # server sends an empty RetrievePropertiesExResponse. Normally
@@ -125,15 +120,19 @@ class Service(object):
             for obj_cont in response.objects:
                 if hasattr(obj_cont, 'missingSet'):
                     for missing_elem in obj_cont.missingSet:
-                        fault_type = missing_elem.fault.fault.__class__
-                        fault_list.append(fault_type.__name__)
+                        f_type = missing_elem.fault.fault
+                        f_name = f_type.__class__.__name__
+                        fault_list.append(f_name)
+                        if f_name == exceptions.NO_PERMISSION:
+                            details['object'] = f_type.object.value
+                            details['privilegeId'] = f_type.privilegeId
+
         if fault_list:
-            LOG.error(_LE("Faults %s found in RetrievePropertiesEx API "
-                          "response."),
-                      fault_list)
+            fault_string = _("Error occurred while calling "
+                             "RetrievePropertiesEx.")
             raise exceptions.VimFaultException(fault_list,
-                                               _("Error occurred while calling"
-                                                 " RetrievePropertiesEx."))
+                                               fault_string,
+                                               details=details)
         LOG.debug("No faults found in RetrievePropertiesEx API response.")
 
     @property
