@@ -119,13 +119,14 @@ class VmdkWriteHandleTest(base.TestCase):
     def test_init_failure(self):
         session = self._create_mock_session(False)
         self.assertRaises(exceptions.VimException,
-                          lambda: rw_handles.VmdkWriteHandle(session,
-                                                             '10.1.2.3',
-                                                             443,
-                                                             'rp-1',
-                                                             'folder-1',
-                                                             None,
-                                                             100))
+                          rw_handles.VmdkWriteHandle,
+                          session,
+                          '10.1.2.3',
+                          443,
+                          'rp-1',
+                          'folder-1',
+                          None,
+                          100)
 
     def test_write(self):
         session = self._create_mock_session()
@@ -217,12 +218,13 @@ class VmdkReadHandleTest(base.TestCase):
     def test_init_failure(self):
         session = self._create_mock_session(False)
         self.assertRaises(exceptions.VimException,
-                          lambda: rw_handles.VmdkReadHandle(session,
-                                                            '10.1.2.3',
-                                                            443,
-                                                            'vm-1',
-                                                            '[ds] disk1.vmdk',
-                                                            100))
+                          rw_handles.VmdkReadHandle,
+                          session,
+                          '10.1.2.3',
+                          443,
+                          'vm-1',
+                          '[ds] disk1.vmdk',
+                          100)
 
     def test_read(self):
         chunk_size = rw_handles.READ_CHUNKSIZE

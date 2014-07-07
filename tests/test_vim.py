@@ -122,7 +122,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimFaultException,
-                          lambda: vim_obj.retrievePropertiesEx(managed_object))
+                          vim_obj.retrievePropertiesEx,
+                          managed_object)
 
     def test_vim_request_handler_with_web_fault(self):
         managed_object = 'VirtualMachine'
@@ -165,7 +166,8 @@ class VimTest(base.TestCase):
         service_mock = mock.Mock(spec=vim.Vim)
         vim_obj._client.service = service_mock
         self.assertRaises(exceptions.VimAttributeException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     def test_vim_request_handler_with_http_cannot_send_error(self):
         managed_object = 'VirtualMachine'
@@ -180,7 +182,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimSessionOverLoadException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     def test_vim_request_handler_with_http_response_not_ready_error(self):
         managed_object = 'VirtualMachine'
@@ -195,7 +198,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimSessionOverLoadException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     def test_vim_request_handler_with_http_cannot_send_header_error(self):
         managed_object = 'VirtualMachine'
@@ -210,7 +214,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimSessionOverLoadException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     def test_vim_request_handler_with_url_error(self):
         managed_object = 'VirtualMachine'
@@ -225,7 +230,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimConnectionException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     def test_vim_request_handler_with_http_error(self):
         managed_object = 'VirtualMachine'
@@ -240,7 +246,8 @@ class VimTest(base.TestCase):
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
         self.assertRaises(exceptions.VimConnectionException,
-                          lambda: vim_obj.powerOn(managed_object))
+                          vim_obj.powerOn,
+                          managed_object)
 
     @mock.patch.object(vim_util, 'get_moref', return_value=None)
     def test_vim_request_handler_no_value(self, mock_moref):
@@ -261,7 +268,7 @@ class VimTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = vim_obj._client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exception, lambda: vim_obj.powerOn(managed_object))
+        self.assertRaises(exception, vim_obj.powerOn, managed_object)
 
     def test_vim_request_handler_with_address_in_use_error(self):
         self._test_vim_request_handler_with_exception(
