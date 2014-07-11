@@ -78,6 +78,7 @@ class RetryDecorator(object):
 
         def _func(*args, **kwargs):
             func_name = f.__name__
+            result = None
             try:
                 LOG.debug("Invoking %(func_name)s; retry count is "
                           "%(retry_count)d.",
