@@ -45,7 +45,7 @@ class BlockingQueue(queue.LightQueue):
 
         :param max_size: maximum queue size; if max_size is less than zero or
                          None, the queue size is infinite.
-        :param _max_transfer_size: maximum amount of data that can be
+        :param max_transfer_size: maximum amount of data that can be
                                   _transferred using this queue
         """
         queue.LightQueue.__init__(self, max_size)

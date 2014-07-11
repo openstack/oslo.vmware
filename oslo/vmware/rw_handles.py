@@ -52,7 +52,7 @@ class FileHandle(object):
     def __init__(self, file_handle):
         """Initializes the file handle.
 
-        :param _file_handle: backing file handle
+        :param file_handle: backing file handle
         """
         self._eof = False
         self._file_handle = file_handle
