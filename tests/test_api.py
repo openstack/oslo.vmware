@@ -105,7 +105,7 @@ class VMwareAPISessionTest(base.TestCase):
         patcher = mock.patch('oslo.vmware.vim.Vim')
         self.addCleanup(patcher.stop)
         self.VimMock = patcher.start()
-        self.VimMock.side_effect = lambda *args, **kw: mock.Mock()
+        self.VimMock.side_effect = lambda *args, **kw: mock.MagicMock()
 
     def _create_api_session(self, _create_session, retry_count=10,
                             task_poll_interval=1):

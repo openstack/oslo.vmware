@@ -37,6 +37,11 @@ from oslo.vmware import vim_util
 LOG = logging.getLogger(__name__)
 
 
+def _trunc_id(session_id):
+    """Returns truncated session id which is suitable for logging."""
+    return session_id[-5:]
+
+
 # TODO(vbala) Move this class to excutils.py.
 class RetryDecorator(object):
     """Decorator for retrying a function upon suggested exceptions.
@@ -216,14 +221,14 @@ class VMwareAPISession(object):
         self._session_username = session.userName
         LOG.info(_LI("Successfully established new session; session ID is "
                      "%s."),
-                 self._session_id)
+                 _trunc_id(self._session_id))
 
         # Terminate the previous session (if exists) for preserving sessions
         # as there is a limit on the number of sessions we can have.
         if prev_session_id:
             try:
                 LOG.info(_LI("Terminating the previous session with ID = %s"),
-                         prev_session_id)
+                         _trunc_id(prev_session_id))
                 self.vim.TerminateSession(session_manager,
                                           sessionId=[prev_session_id])
             except Exception:
@@ -234,7 +239,7 @@ class VMwareAPISession(object):
                 # anyway would have to call TerminateSession.
                 LOG.warn(_LW("Error occurred while terminating the previous "
                              "session with ID = %s."),
-                         prev_session_id,
+                         _trunc_id(prev_session_id),
                          exc_info=True)
 
         # Set PBM client cookie.
@@ -246,7 +251,7 @@ class VMwareAPISession(object):
         if self._session_id:
             LOG.info(_LI("Logging out and terminating the current session "
                          "with ID = %s."),
-                     self._session_id)
+                     _trunc_id(self._session_id))
             try:
                 self.vim.Logout(self.vim.service_content.sessionManager)
                 self._session_id = None
@@ -254,7 +259,7 @@ class VMwareAPISession(object):
                 LOG.exception(_LE("Error occurred while logging out and "
                                   "terminating the current session with "
                                   "ID = %s."),
-                              self._session_id)
+                              _trunc_id(self._session_id))
         else:
             LOG.debug("No session exists to log out.")
 
@@ -307,7 +312,7 @@ class VMwareAPISession(object):
                             _("Current session: %(session)s is inactive; "
                               "re-creating the session while invoking "
                               "method %(module)s.%(method)s.") %
-                            {'session': self._session_id,
+                            {'session': _trunc_id(self._session_id),
                              'module': module,
                              'method': method})
                         LOG.warn(excep_msg, exc_info=True)
@@ -342,7 +347,7 @@ class VMwareAPISession(object):
         :returns: True if the session is active; False otherwise
         """
         LOG.debug("Checking if the current session: %s is active.",
-                  self._session_id)
+                  _trunc_id(self._session_id))
 
         is_active = False
         try:
@@ -353,7 +358,7 @@ class VMwareAPISession(object):
         except exceptions.VimException:
             LOG.warn(_LW("Error occurred while checking whether the "
                          "current session: %s is active."),
-                     self._session_id,
+                     _trunc_id(self._session_id),
                      exc_info=True)
 
         return is_active
