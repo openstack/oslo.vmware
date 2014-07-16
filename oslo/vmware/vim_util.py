@@ -19,6 +19,8 @@ The VMware API utility module.
 
 import suds
 
+from oslo.vmware.openstack.common import timeutils
+
 
 def get_moref(value, type_):
     """Get managed object reference.
@@ -372,3 +374,43 @@ def get_object_property(vim, moref, property_name):
         if prop:
             prop_val = prop[0].val
     return prop_val
+
+
+def find_extension(vim, key):
+    """Looks for an existing extension.
+
+    :param vim: Vim object
+    :param key: the key to search for
+    :returns: the data object Extension or None
+    """
+    extension_manager = vim.service_content.extensionManager
+    return vim.client.service.FindExtension(extension_manager, key)
+
+
+def register_extension(vim, key, type, label='OpenStack',
+                       summary='OpenStack services', version='1.0'):
+    """Create a new extention.
+
+    :param vim: Vim object
+    :param key: the key for the extension
+    :param type: Managed entity type, as defined by the extension. This
+                 matches the type field in the configuration about a
+                 virtual machine or vApp
+    :param label: Display label
+    :param summary: Summary description
+    :param version: Extension version number as a dot-separated string
+    """
+    extension_manager = vim.service_content.extensionManager
+    client_factory = vim.client.factory
+    os_ext = client_factory.create('ns0:Extension')
+    os_ext.key = key
+    entity_info = client_factory.create('ns0:ExtManagedEntityInfo')
+    entity_info.type = type
+    os_ext.managedEntityInfo = [entity_info]
+    os_ext.version = version
+    desc = client_factory.create('ns0:Description')
+    desc.label = label
+    desc.summary = summary
+    os_ext.description = desc
+    os_ext.lastHeartbeatTime = timeutils.strtime()
+    vim.client.service.RegisterExtension(extension_manager, os_ext)
