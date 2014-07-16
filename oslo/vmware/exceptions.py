@@ -35,6 +35,7 @@ INVALID_POWER_STATE = 'InvalidPowerState'
 INVALID_PROPERTY = 'InvalidProperty'
 NO_PERMISSION = 'NoPermission'
 NOT_AUTHENTICATED = 'NotAuthenticated'
+TASK_IN_PROGRESS = 'TaskInProgress'
 
 
 class VimException(Exception):
@@ -199,6 +200,10 @@ class NotAuthenticatedException(VMwareDriverException):
     code = 403
 
 
+class TaskInProgress(VMwareDriverException):
+    msg_fmt = _("Entity has another operation in process.")
+
+
 # Populate the fault registry with the exceptions that have
 # special treatment.
 _fault_classes_registry = {
@@ -212,6 +217,7 @@ _fault_classes_registry = {
     INVALID_PROPERTY: InvalidPropertyException,
     NO_PERMISSION: NoPermissionException,
     NOT_AUTHENTICATED: NotAuthenticatedException,
+    TASK_IN_PROGRESS: TaskInProgress,
 }
 
 
