@@ -22,9 +22,10 @@ Refer http://goo.gl/GR2o6U for more details.
 
 import logging
 import os
-import suds.sax.element as element
 import urllib
 import urlparse
+
+import suds.sax.element as element
 
 from oslo.vmware.openstack.common.gettextutils import _LW
 from oslo.vmware import service

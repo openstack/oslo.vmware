@@ -19,9 +19,9 @@ Common classes that provide access to vSphere services.
 
 import httplib
 import logging
-import netaddr
 import urllib2
 
+import netaddr
 import six
 import suds
 
