@@ -414,3 +414,12 @@ def register_extension(vim, key, type, label='OpenStack',
     os_ext.description = desc
     os_ext.lastHeartbeatTime = timeutils.strtime()
     vim.client.service.RegisterExtension(extension_manager, os_ext)
+
+
+def get_vc_version(session):
+    """Return the dot-separated vCenter version string. For example, "1.2".
+
+    :param session: vCenter soap session
+    :return: vCenter version
+    """
+    return session.vim.service_content.about.version

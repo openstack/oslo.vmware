@@ -21,8 +21,12 @@ Refer http://goo.gl/GR2o6U for more details.
 """
 
 import logging
+import os
 import suds.sax.element as element
+import urllib
+import urlparse
 
+from oslo.vmware.openstack.common.gettextutils import _LW
 from oslo.vmware import service
 from oslo.vmware import vim_util
 
@@ -166,3 +170,26 @@ def filter_datastores_by_hubs(hubs, datastores):
         if ds.value in hub_ids:
             filtered_dss.append(ds)
     return filtered_dss
+
+
+def get_pbm_wsdl_location(vc_version):
+    """Return PBM WSDL file location corresponding to VC version.
+
+    :param vc_version: a dot-separated version string. For example, "1.2".
+    :return: the pbm wsdl file location.
+    """
+    if not vc_version:
+        return
+    ver = vc_version.split('.')
+    major_minor = ver[0]
+    if len(ver) >= 2:
+        major_minor = '%s.%s' % (major_minor, ver[1])
+    curr_dir = os.path.abspath(os.path.dirname(__file__))
+    pbm_service_wsdl = os.path.join(curr_dir, 'wsdl', major_minor,
+                                    'pbmService.wsdl')
+    if not os.path.exists(pbm_service_wsdl):
+        LOG.warn(_LW("PBM WSDL file %s not found."), pbm_service_wsdl)
+        return
+    pbm_wsdl = urlparse.urljoin('file:', urllib.pathname2url(pbm_service_wsdl))
+    LOG.debug("Using PBM WSDL location: %s.", pbm_wsdl)
+    return pbm_wsdl

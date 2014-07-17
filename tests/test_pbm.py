@@ -17,6 +17,10 @@
 Unit tests for PBM utility methods.
 """
 
+import os
+import urllib
+import urlparse
+
 import mock
 
 from oslo.vmware import pbm
@@ -145,3 +149,27 @@ class PBMUtilityTest(base.TestCase):
         self.assertEqual(len(hubs), len(filtered_ds))
         filtered_ds_values = [ds.value for ds in filtered_ds]
         self.assertEqual(set(hub_ids), set(filtered_ds_values))
+
+    def test_get_pbm_wsdl_location(self):
+        wsdl = pbm.get_pbm_wsdl_location(None)
+        self.assertIsNone(wsdl)
+
+        def expected_wsdl(version):
+            driver_dir = os.path.join(os.path.dirname(__file__), '..',
+                                      'oslo', 'vmware')
+            driver_abs_dir = os.path.abspath(driver_dir)
+            path = os.path.join(driver_abs_dir, 'wsdl', version,
+                                'pbmService.wsdl')
+            return urlparse.urljoin('file:', urllib.pathname2url(path))
+
+        with mock.patch('os.path.exists') as path_exists:
+            path_exists.return_value = True
+            wsdl = pbm.get_pbm_wsdl_location('5')
+            self.assertEqual(expected_wsdl('5'), wsdl)
+            wsdl = pbm.get_pbm_wsdl_location('5.5')
+            self.assertEqual(expected_wsdl('5.5'), wsdl)
+            wsdl = pbm.get_pbm_wsdl_location('5.5.1')
+            self.assertEqual(expected_wsdl('5.5'), wsdl)
+            path_exists.return_value = False
+            wsdl = pbm.get_pbm_wsdl_location('5.5')
+            self.assertIsNone(wsdl)

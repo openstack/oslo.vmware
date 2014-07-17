@@ -308,3 +308,14 @@ class VimUtilTest(base.TestCase):
         service_content = vim.service_content
         vim.client.service.RegisterExtension.assert_called_once_with(
             service_content.extensionManager, mock.ANY)
+
+    def test_get_vc_version(self):
+        session = mock.Mock()
+        expected_version = '6.0.1'
+        session.vim.service_content.about.version = expected_version
+        version = vim_util.get_vc_version(session)
+        self.assertEqual(expected_version, version)
+        expected_version = '5.5'
+        session.vim.service_content.about.version = expected_version
+        version = vim_util.get_vc_version(session)
+        self.assertEqual(expected_version, version)
