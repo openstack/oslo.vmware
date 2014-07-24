@@ -15,6 +15,7 @@
 import posixpath
 
 from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware import vim_util
 
 
 class Datastore(object):
@@ -69,6 +70,51 @@ class Datastore(object):
 
     def __str__(self):
         return '[%s]' % self._name
+
+    def get_summary(self, session):
+        """Get datastore summary.
+
+        :param datastore: Reference to the datastore
+        :return: 'summary' property of the datastore
+        """
+        return session.invoke_api(vim_util, 'get_object_property',
+                                  session.vim, self.ref, 'summary')
+
+    def get_connected_hosts(self, session):
+        """Get a list of usable (accessible, mounted, read-writable) hosts where
+        the datastore is mounted.
+
+        :param: session: session
+        :return: list of HostSystem managed object references
+        """
+        hosts = []
+        summary = self.get_summary()
+        if not summary.accessible:
+            return hosts
+        host_mounts = session.invoke_api(vim_util, 'get_object_property',
+                                         session.vim, self.ref, 'host')
+        if not hasattr(host_mounts, 'DatastoreHostMount'):
+            return hosts
+        for host_mount in host_mounts.DatastoreHostMount:
+            if self.is_datastore_mount_usable(host_mount.mountInfo):
+                hosts.append(host_mount.key)
+        return hosts
+
+    @staticmethod
+    def is_datastore_mount_usable(mount_info):
+        """Check if a datastore is usable as per the given mount info.
+
+        The datastore is considered to be usable for a host only if it is
+        writable, mounted and accessible.
+
+        :param mount_info: HostMountInfo data object
+        :return: True if datastore is usable
+        """
+        writable = mount_info.accessMode == 'readWrite'
+        mounted = getattr(mount_info, 'mounted', True)
+        accessible = getattr(mount_info, 'accessible', False)
+
+        return writable and mounted and accessible
 
 
 class DatastorePath(object):
