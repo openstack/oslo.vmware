@@ -39,7 +39,8 @@ LOG = logging.getLogger(__name__)
 
 def _trunc_id(session_id):
     """Returns truncated session id which is suitable for logging."""
-    return session_id[-5:]
+    if session_id is not None:
+        return session_id[-5:]
 
 
 # TODO(vbala) Move this class to excutils.py.
