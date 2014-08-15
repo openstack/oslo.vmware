@@ -14,6 +14,8 @@
 
 import posixpath
 
+import six.moves.urllib.parse as urlparse
+
 from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import vim_util
 
@@ -209,3 +211,55 @@ class DatastorePath(object):
         else:
             datastore_name, path = spl
         return cls(datastore_name, path.strip())
+
+
+class DatastoreURL(object):
+
+    """Class for representing a URL to HTTP access a file in a datastore.
+
+    This provides various helper methods to access components and useful
+    variants of the datastore URL.
+    """
+
+    def __init__(self, scheme, server, path, datacenter_path, datastore_name):
+        self._scheme = scheme
+        self._server = server
+        self._path = path
+        self._datacenter_path = datacenter_path
+        self._datastore_name = datastore_name
+
+    @classmethod
+    def urlparse(cls, url):
+        scheme, server, path, params, query, fragment = urlparse.urlparse(url)
+        if not query:
+            path = path.split('?')
+            query = path[1]
+            path = path[0]
+        params = urlparse.parse_qs(query)
+        dc_path = params.get('dcPath')
+        if dc_path is not None and len(dc_path) > 0:
+            datacenter_path = dc_path[0]
+        ds_name = params.get('dsName')
+        if ds_name is not None and len(ds_name) > 0:
+            datastore_name = ds_name[0]
+        path = path[len('/folder'):]
+        return cls(scheme, server, path, datacenter_path, datastore_name)
+
+    @property
+    def path(self):
+        return self._path.strip('/')
+
+    @property
+    def datacenter_path(self):
+        return self._datacenter_path
+
+    @property
+    def datastore_name(self):
+        return self._datastore_name
+
+    def __str__(self):
+        params = {'dcPath': self._datacenter_path,
+                  'dsName': self._datastore_name}
+        query = urlparse.urlencode(params)
+        return '%s://%s/folder/%s?%s' % (self._scheme, self._server,
+                                         self.path, query)
