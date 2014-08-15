@@ -79,15 +79,24 @@ class VimFaultException(VimException):
         super(VimFaultException, self).__init__(message, cause)
         if not isinstance(fault_list, list):
             raise ValueError(_("fault_list must be a list"))
+        if details is not None and not isinstance(details, dict):
+            raise ValueError(_("details must be a dict"))
         self.fault_list = fault_list
         self.details = details
 
     def __str__(self):
-        descr = VimException.__str__(self)
+        return unicode(self).encode('utf8')
+
+    def __unicode__(self):
+        descr = unicode(VimException.__str__(self))
         if self.fault_list:
+            # fault_list doesn't contain non-ASCII chars, we can use str()
             descr += '\nFaults: ' + str(self.fault_list)
         if self.details:
-            descr += '\nDetails: ' + str(self.details)
+            # details may contain non-ASCII values
+            details = '{%s}' % ', '.join(["'%s': '%s'" % (k, v)
+                                         for k, v in self.details.iteritems()])
+            descr += '\nDetails: ' + details
         return descr
 
 
