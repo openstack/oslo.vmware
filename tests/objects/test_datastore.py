@@ -12,9 +12,27 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
+
 from oslo.vmware.objects import datastore
 from oslo.vmware.openstack.common import units
+from oslo.vmware import vim_util
 from tests import base
+
+
+class HostMount(object):
+
+    def __init__(self, key, mountInfo):
+        self.key = key
+        self.mountInfo = mountInfo
+
+
+class MountInfo(object):
+
+    def __init__(self, accessMode, mounted, accessible):
+        self.accessMode = accessMode
+        self.mounted = mounted
+        self.accessible = accessible
 
 
 class DatastoreTestCase(base.TestCase):
@@ -48,6 +66,57 @@ class DatastoreTestCase(base.TestCase):
         ds = datastore.Datastore("fake_ref", "ds_name")
         ds_path = ds.build_path("some_dir", "foo.vmdk")
         self.assertEqual('[ds_name] some_dir/foo.vmdk', str(ds_path))
+
+    def test_get_summary(self):
+        ds_ref = vim_util.get_moref('ds-0', 'Datastore')
+        ds = datastore.Datastore(ds_ref, 'ds-name')
+        summary = mock.sentinel.summary
+        session = mock.Mock()
+        session.invoke_api = mock.Mock()
+        session.invoke_api.return_value = summary
+        ret = ds.get_summary(session)
+        self.assertEqual(summary, ret)
+        session.invoke_api.assert_called_once_with(vim_util,
+                                                   'get_object_property',
+                                                   session.vim,
+                                                   ds.ref, 'summary')
+
+    def test_get_connected_hosts(self):
+        session = mock.Mock()
+        ds_ref = vim_util.get_moref('ds-0', 'Datastore')
+        ds = datastore.Datastore(ds_ref, 'ds-name')
+        ds.get_summary = mock.Mock()
+        ds.get_summary.return_value.accessible = False
+        self.assertEqual([], ds.get_connected_hosts(session))
+        ds.get_summary.return_value.accessible = True
+        m1 = HostMount("m1", MountInfo('readWrite', True, True))
+        m2 = HostMount("m2", MountInfo('read', True, True))
+        m3 = HostMount("m3", MountInfo('readWrite', False, True))
+        m4 = HostMount("m4", MountInfo('readWrite', True, False))
+
+        class Prop(object):
+            DatastoreHostMount = [m1, m2, m3, m4]
+        session.invoke_api = mock.Mock()
+        session.invoke_api.return_value = Prop()
+        hosts = ds.get_connected_hosts(session)
+        self.assertEqual(1, len(hosts))
+        self.assertEqual("m1", hosts.pop())
+
+    def test_is_datastore_mount_usable(self):
+        m = MountInfo('readWrite', True, True)
+        self.assertTrue(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('read', True, True)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('readWrite', False, True)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('readWrite', True, False)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('readWrite', False, False)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('readWrite', None, None)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
+        m = MountInfo('readWrite', None, True)
+        self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
 
 
 class DatastorePathTestCase(base.TestCase):
