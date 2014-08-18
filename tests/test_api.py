@@ -514,3 +514,11 @@ class VMwareAPISessionTest(base.TestCase):
         self.assertRaises(TypeError,
                           exceptions.register_fault_class,
                           'ValueError', ValueError)
+
+    def test_update_pbm_wsdl_loc(self):
+        session = mock.Mock()
+        session.key = "12345"
+        api_session = self._create_api_session(False)
+        self.assertIsNone(api_session._pbm_wsdl_loc)
+        api_session.pbm_wsdl_loc_set('fake_wsdl')
+        self.assertEqual('fake_wsdl', api_session._pbm_wsdl_loc)
