@@ -80,7 +80,8 @@ class Service(object):
                   self.soap_url, self.wsdl_url)
         self.client = suds.client.Client(self.wsdl_url,
                                          location=self.soap_url,
-                                         plugins=[ServiceMessagePlugin()])
+                                         plugins=[ServiceMessagePlugin()],
+                                         cache=suds.cache.NoCache())
         self._service_content = None
 
     @staticmethod
