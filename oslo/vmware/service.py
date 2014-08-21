@@ -102,7 +102,6 @@ class Service(object):
         :param response: response from RetrievePropertiesEx API call
         :raises: VimFaultException
         """
-        LOG.debug("Checking RetrievePropertiesEx API response for faults.")
         fault_list = []
         details = {}
         if not response:
@@ -134,7 +133,6 @@ class Service(object):
             raise exceptions.VimFaultException(fault_list,
                                                fault_string,
                                                details=details)
-        LOG.debug("No faults found in RetrievePropertiesEx API response.")
 
     @property
     def service_content(self):
@@ -174,16 +172,9 @@ class Service(object):
                 if managed_object is None:
                     return
                 request = getattr(self.client.service, attr_name)
-                LOG.debug("Invoking %(attr_name)s on %(moref)s.",
-                          {'attr_name': attr_name,
-                           'moref': managed_object})
                 response = request(managed_object, **kwargs)
                 if (attr_name.lower() == 'retrievepropertiesex'):
                     Service._retrieve_properties_ex_fault_checker(response)
-                LOG.debug("Invocation of %(attr_name)s on %(moref)s "
-                          "completed successfully.",
-                          {'attr_name': attr_name,
-                           'moref': managed_object})
                 return response
             except exceptions.VimFaultException:
                 # Catch the VimFaultException that is raised by the fault

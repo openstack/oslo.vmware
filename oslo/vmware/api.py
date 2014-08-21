@@ -86,15 +86,12 @@ class RetryDecorator(object):
             func_name = f.__name__
             result = None
             try:
-                LOG.debug("Invoking %(func_name)s; retry count is "
-                          "%(retry_count)d.",
-                          {'func_name': func_name,
-                           'retry_count': self._retry_count})
+                if self._retry_count:
+                    LOG.debug("Invoking %(func_name)s; retry count is "
+                              "%(retry_count)d.",
+                              {'func_name': func_name,
+                               'retry_count': self._retry_count})
                 result = f(*args, **kwargs)
-                LOG.debug("Function %(func_name)s returned successfully "
-                          "after %(retry_count)d retries.",
-                          {'func_name': func_name,
-                           'retry_count': self._retry_count})
             except self._exceptions:
                 with excutils.save_and_reraise_exception() as ctxt:
                     LOG.warn(_LW("Exception which is in the suggested list of "
@@ -284,9 +281,6 @@ class VMwareAPISession(object):
                         exceptions=(exceptions.VimSessionOverLoadException,
                                     exceptions.VimConnectionException))
         def _invoke_api(module, method, *args, **kwargs):
-            LOG.debug("Invoking method %(module)s.%(method)s.",
-                      {'module': module,
-                       'method': method})
             try:
                 api_method = getattr(module, method)
                 return api_method(*args, **kwargs)
