@@ -28,9 +28,10 @@ from suds import transport
 
 from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
+from oslo.vmware.openstack.common import timeutils
 from oslo.vmware import vim_util
 
-
+CACHE_TIMEOUT = 60 * 60  # One hour cache timeout
 ADDRESS_IN_USE_ERROR = 'Address already in use'
 CONN_ABORT_ERROR = 'Software caused connection abort'
 RESP_NOT_XML_ERROR = 'Response is "text/html", not "text/xml"'
@@ -90,6 +91,32 @@ class RequestsTransport(transport.Transport):
         return transport.Reply(resp.status_code, resp.headers, resp.content)
 
 
+class MemoryCache(suds.cache.ObjectCache):
+    def __init__(self):
+        self._cache = {}
+
+    def get(self, key):
+        """Retrieves the value for a key or None."""
+        now = timeutils.utcnow_ts()
+        for k in list(self._cache):
+            (timeout, _value) = self._cache[k]
+            if timeout and now >= timeout:
+                del self._cache[k]
+
+        return self._cache.get(key, (0, None))[1]
+
+    def put(self, key, value, time=CACHE_TIMEOUT):
+        """Sets the value for a key."""
+        timeout = 0
+        if time != 0:
+            timeout = timeutils.utcnow_ts() + time
+        self._cache[key] = (timeout, value)
+        return True
+
+
+_CACHE = MemoryCache()
+
+
 class Service(object):
     """Base class containing common functionality for invoking vSphere
     services
@@ -106,7 +133,7 @@ class Service(object):
                                          transport=transport,
                                          location=self.soap_url,
                                          plugins=[ServiceMessagePlugin()],
-                                         cache=suds.cache.NoCache())
+                                         cache=_CACHE)
         self._service_content = None
 
     @staticmethod

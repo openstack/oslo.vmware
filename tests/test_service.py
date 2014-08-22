@@ -288,3 +288,21 @@ class ServiceTest(base.TestCase):
         cookie.value = 'xyz'
         svc_obj.client.options.transport.cookiejar = [cookie]
         self.assertIsNone(svc_obj.get_http_cookie())
+
+
+class MemoryCacheTest(base.TestCase):
+    """Test class for MemoryCache."""
+
+    def test_get_set(self):
+        cache = service.MemoryCache()
+        cache.put('key1', 'value1')
+        cache.put('key2', 'value2')
+        self.assertEqual('value1', cache.get('key1'))
+        self.assertEqual('value2', cache.get('key2'))
+        self.assertEqual(None, cache.get('key3'))
+
+    @mock.patch('suds.reader.DocumentReader.download')
+    def test_shared_cache(self, mock_reader):
+        cache1 = service.Service().client.options.cache
+        cache2 = service.Service().client.options.cache
+        self.assertIs(cache1, cache2)
