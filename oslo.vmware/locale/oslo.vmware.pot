@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.5.0.2.g81beebb\n"
+"Project-Id-Version: oslo.vmware 0.5.0.11.gd9ada2a\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:08+0000\n"
+"POT-Creation-Date: 2014-08-25 06:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,17 +25,17 @@ msgid ""
 "invoking method %(module)s.%(method)s."
 msgstr ""
 
-#: oslo/vmware/api.py:416
+#: oslo/vmware/api.py:417
 #, python-format
 msgid "Task: %(task)s failed with error: %(error)s."
 msgstr ""
 
-#: oslo/vmware/api.py:470
+#: oslo/vmware/api.py:471
 #, python-format
 msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
 msgstr ""
 
-#: oslo/vmware/api.py:477
+#: oslo/vmware/api.py:478
 #, python-format
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr ""
@@ -48,60 +48,64 @@ msgstr ""
 msgid "fault_list must be a list"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:107
+#: oslo/vmware/exceptions.py:83
+msgid "details must be a dict"
+msgstr ""
+
+#: oslo/vmware/exceptions.py:116
 msgid "An unknown exception occurred."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:132
+#: oslo/vmware/exceptions.py:141
 msgid "VMware Driver configuration fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:136
+#: oslo/vmware/exceptions.py:145
 msgid "No default value for use_linked_clone found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:140
+#: oslo/vmware/exceptions.py:149
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:144
+#: oslo/vmware/exceptions.py:153
 msgid "Resource already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:149
+#: oslo/vmware/exceptions.py:158
 msgid "Cannot delete file."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:154
+#: oslo/vmware/exceptions.py:163
 msgid "File already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:159
+#: oslo/vmware/exceptions.py:168
 msgid "File fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:164
+#: oslo/vmware/exceptions.py:173
 msgid "File locked."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:169
+#: oslo/vmware/exceptions.py:178
 msgid "File not found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:174
+#: oslo/vmware/exceptions.py:183
 msgid "Invalid power state."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:179
+#: oslo/vmware/exceptions.py:188
 msgid "Invalid property."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:184
+#: oslo/vmware/exceptions.py:193
 msgid "No Permission."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:189
+#: oslo/vmware/exceptions.py:198
 msgid "Not Authenticated."
 msgstr ""
 
@@ -178,7 +182,7 @@ msgstr ""
 msgid "Error occurred while reading data from %s."
 msgstr ""
 
-#: oslo/vmware/service.py:135
+#: oslo/vmware/service.py:132
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr ""
 
@@ -212,31 +216,31 @@ msgstr ""
 msgid "Exception in %s."
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:31
+#: oslo/vmware/objects/datastore.py:34
 msgid "Datastore name cannot be None"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:33
+#: oslo/vmware/objects/datastore.py:36
 msgid "Datastore reference cannot be None"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:35
+#: oslo/vmware/objects/datastore.py:38
 msgid "Invalid capacity"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:38
+#: oslo/vmware/objects/datastore.py:41
 msgid "Capacity is smaller than free space"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:98
+#: oslo/vmware/objects/datastore.py:146
 msgid "Datastore name cannot be empty"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:103 oslo/vmware/objects/datastore.py:144
+#: oslo/vmware/objects/datastore.py:151 oslo/vmware/objects/datastore.py:192
 msgid "Path component cannot be None"
 msgstr ""
 
-#: oslo/vmware/objects/datastore.py:157
+#: oslo/vmware/objects/datastore.py:205
 msgid "Datastore path cannot be empty"
 msgstr ""
 
