@@ -94,6 +94,7 @@ class DatastoreTestCase(base.TestCase):
         m2 = HostMount("m2", MountInfo('read', True, True))
         m3 = HostMount("m3", MountInfo('readWrite', False, True))
         m4 = HostMount("m4", MountInfo('readWrite', True, False))
+        ds.get_summary.assert_called_once_with(session)
 
         class Prop(object):
             DatastoreHostMount = [m1, m2, m3, m4]

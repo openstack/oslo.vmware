@@ -90,7 +90,7 @@ class Datastore(object):
         :return: list of HostSystem managed object references
         """
         hosts = []
-        summary = self.get_summary()
+        summary = self.get_summary(session)
         if not summary.accessible:
             return hosts
         host_mounts = session.invoke_api(vim_util, 'get_object_property',
