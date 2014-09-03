@@ -74,7 +74,6 @@ class BlockingQueue(queue.LightQueue):
 
         :param data: data to be written
         """
-        LOG.debug("Writing %d data items into the queue.", len(data))
         self.put(data)
 
     # Below methods are provided in order to enable treating the queue
