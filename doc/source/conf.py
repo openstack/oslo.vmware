@@ -13,6 +13,8 @@
 
 import os
 import sys
+import fileinput
+import fnmatch
 
 sys.path.insert(0, os.path.abspath('../..'))
 # -- General configuration ----------------------------------------------------
@@ -28,6 +30,23 @@ extensions = [
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
+
+# A list of glob-style patterns that should be excluded when looking for source
+# files.
+exclude_patterns = [
+    'api/tests.*',  # avoid of docs generation from tests
+    'api/oslo.vmware.openstack.common.*',  # skip common modules
+    'api/oslo.vmware._*',  # skip private modules
+]
+
+# Prune the excluded patterns from the autoindex
+for line in fileinput.input('api/autoindex.rst', inplace=True):
+    found = False
+    for pattern in exclude_patterns:
+        if fnmatch.fnmatch(line, '*' + pattern[4:]):
+            found = True
+    if not found:
+        print line,
 
 # The suffix of source filenames.
 source_suffix = '.rst'
