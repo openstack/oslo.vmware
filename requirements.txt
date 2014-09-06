@@ -3,7 +3,7 @@
 # process, which may cause wedges in the gate later.
 
 stevedore>=0.14
-netaddr>=0.7.6
+netaddr>=0.7.12
 
 # for timeutils
 iso8601>=0.1.9
