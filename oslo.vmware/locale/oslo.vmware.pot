@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.5.0.11.gd9ada2a\n"
+"Project-Id-Version: oslo.vmware 0.5.0.29.g73d5761\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-25 06:07+0000\n"
+"POT-Creation-Date: 2014-09-07 06:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,200 +18,204 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: oslo/vmware/api.py:313
+#: oslo/vmware/api.py:307
 #, python-format
 msgid ""
 "Current session: %(session)s is inactive; re-creating the session while "
 "invoking method %(module)s.%(method)s."
 msgstr ""
 
-#: oslo/vmware/api.py:417
+#: oslo/vmware/api.py:411
 #, python-format
 msgid "Task: %(task)s failed with error: %(error)s."
 msgstr ""
 
-#: oslo/vmware/api.py:471
+#: oslo/vmware/api.py:465
 #, python-format
 msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
 msgstr ""
 
-#: oslo/vmware/api.py:478
+#: oslo/vmware/api.py:472
 #, python-format
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:48
+#: oslo/vmware/exceptions.py:49
 msgid "exception_summary must not be a list"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:81
+#: oslo/vmware/exceptions.py:82
 msgid "fault_list must be a list"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:83
+#: oslo/vmware/exceptions.py:84
 msgid "details must be a dict"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:116
+#: oslo/vmware/exceptions.py:117
 msgid "An unknown exception occurred."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:141
+#: oslo/vmware/exceptions.py:142
 msgid "VMware Driver configuration fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:145
+#: oslo/vmware/exceptions.py:146
 msgid "No default value for use_linked_clone found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:149
+#: oslo/vmware/exceptions.py:150
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:153
+#: oslo/vmware/exceptions.py:154
 msgid "Resource already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:158
+#: oslo/vmware/exceptions.py:159
 msgid "Cannot delete file."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:163
+#: oslo/vmware/exceptions.py:164
 msgid "File already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:168
+#: oslo/vmware/exceptions.py:169
 msgid "File fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:173
+#: oslo/vmware/exceptions.py:174
 msgid "File locked."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:178
+#: oslo/vmware/exceptions.py:179
 msgid "File not found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:183
+#: oslo/vmware/exceptions.py:184
 msgid "Invalid power state."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:188
+#: oslo/vmware/exceptions.py:189
 msgid "Invalid property."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:193
+#: oslo/vmware/exceptions.py:194
 msgid "No Permission."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:198
+#: oslo/vmware/exceptions.py:199
 msgid "Not Authenticated."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:170
+#: oslo/vmware/exceptions.py:204
+msgid "Entity has another operation in process."
+msgstr ""
+
+#: oslo/vmware/image_transfer.py:169
 #, python-format
 msgid "Image: %s is in killed state."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:184
+#: oslo/vmware/image_transfer.py:183
 #, python-format
 msgid "Image: %(image)s is in unknown state: %(state)s."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:193
+#: oslo/vmware/image_transfer.py:192
 #, python-format
 msgid "Error occurred while writing image: %s"
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:278
+#: oslo/vmware/image_transfer.py:277
 msgid "Error occurred during file read-write task."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:365
+#: oslo/vmware/image_transfer.py:364
 msgid "No image destination given."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:382
+#: oslo/vmware/image_transfer.py:381
 #, python-format
 msgid ""
 "Error occurred during image transfer with reader: %(reader)s and writer: "
 "%(writer)s"
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:143
+#: oslo/vmware/rw_handles.py:144
 msgid "Could not retrieve VMDK URL from lease info."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:193 oslo/vmware/rw_handles.py:336
+#: oslo/vmware/rw_handles.py:201 oslo/vmware/rw_handles.py:340
 #, python-format
 msgid "Invalid scheme: %s."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:207
+#: oslo/vmware/rw_handles.py:213
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to file with URL ="
 " %s."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:222 oslo/vmware/rw_handles.py:376
+#: oslo/vmware/rw_handles.py:227 oslo/vmware/rw_handles.py:371
 #, python-format
 msgid "Connection error occurred while writing data to %s."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:230 oslo/vmware/rw_handles.py:384
+#: oslo/vmware/rw_handles.py:235 oslo/vmware/rw_handles.py:379
 #, python-format
 msgid "Error occurred while writing data to %s."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:355
+#: oslo/vmware/rw_handles.py:356
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to VMDK file with "
 "URL = %s."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:521
+#: oslo/vmware/rw_handles.py:509
 #, python-format
 msgid "Error occurred while opening URL: %s for reading."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:547
+#: oslo/vmware/rw_handles.py:529
 #, python-format
 msgid "Error occurred while reading data from %s."
 msgstr ""
 
-#: oslo/vmware/service.py:132
+#: oslo/vmware/service.py:131
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr ""
 
-#: oslo/vmware/service.py:210
+#: oslo/vmware/service.py:201
 #, python-format
 msgid "No such SOAP method %s."
 msgstr ""
 
-#: oslo/vmware/service.py:216
+#: oslo/vmware/service.py:207
 #, python-format
 msgid "httplib error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:220
+#: oslo/vmware/service.py:211
 #, python-format
 msgid "urllib2 error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:231
+#: oslo/vmware/service.py:222
 #, python-format
 msgid "Socket error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:236
+#: oslo/vmware/service.py:227
 #, python-format
 msgid "Type error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:239
+#: oslo/vmware/service.py:230
 #, python-format
 msgid "Exception in %s."
 msgstr ""
