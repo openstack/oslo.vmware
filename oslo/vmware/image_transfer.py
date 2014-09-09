@@ -494,6 +494,35 @@ def download_stream_optimized_image(context, timeout_secs, image_service,
     return imported_vm
 
 
+def copy_stream_optimized_disk(
+        context, timeout_secs, write_handle, **kwargs):
+    """Copy virtual disk from VMware server to the given write handle.
+
+    :param context: context
+    :param timeout_secs: time in seconds to wait for the copy to complete
+    :param write_handle: copy destination
+    :param kwargs: keyword arguments to configure the source
+                   VMDK read handle
+    :raises: VimException, VimFaultException, VimAttributeException,
+             VimSessionOverLoadException, VimConnectionException,
+             ImageTransferException, ValueError
+    """
+    vmdk_file_path = kwargs.get('vmdk_file_path')
+    LOG.debug("Copying virtual disk: %(vmdk_path)s to %(dest)s.",
+              {'vmdk_path': vmdk_file_path,
+               'dest': write_handle.name})
+    file_size = kwargs.get('vmdk_size')
+    read_handle = rw_handles.VmdkReadHandle(kwargs.get('session'),
+                                            kwargs.get('host'),
+                                            kwargs.get('port'),
+                                            kwargs.get('vm'),
+                                            kwargs.get('vmdk_file_path'),
+                                            file_size)
+    _start_transfer(context, timeout_secs, read_handle, file_size,
+                    write_file_handle=write_handle)
+    LOG.debug("Downloaded virtual disk: %s.", vmdk_file_path)
+
+
 def upload_image(context, timeout_secs, image_service, image_id, owner_id,
                  **kwargs):
     """Upload the VM's disk file to image service.
