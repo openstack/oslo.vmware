@@ -19,11 +19,12 @@ Common classes that provide access to vSphere services.
 
 import httplib
 import logging
-import urllib2
 
 import netaddr
+import requests
 import six
 import suds
+from suds import transport
 
 from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
@@ -68,17 +69,41 @@ class ServiceMessagePlugin(suds.plugin.MessagePlugin):
         context.envelope.walk(self.add_attribute_for_value)
 
 
+class RequestsTransport(transport.Transport):
+    def __init__(self, cacert=None, insecure=True):
+        transport.Transport.__init__(self)
+        # insecure flag is used only if cacert is not
+        # specified.
+        self.verify = cacert if cacert else not insecure
+        self.session = requests.Session()
+        self.cookiejar = self.session.cookies
+
+    def open(self, request):
+        resp = self.session.get(request.url, verify=self.verify)
+        return six.StringIO(resp.content)
+
+    def send(self, request):
+        resp = self.session.post(request.url,
+                                 data=request.message,
+                                 headers=request.headers,
+                                 verify=self.verify)
+        return transport.Reply(resp.status_code, resp.headers, resp.content)
+
+
 class Service(object):
     """Base class containing common functionality for invoking vSphere
     services
     """
 
-    def __init__(self, wsdl_url=None, soap_url=None):
+    def __init__(self, wsdl_url=None, soap_url=None,
+                 cacert=None, insecure=True):
         self.wsdl_url = wsdl_url
         self.soap_url = soap_url
         LOG.debug("Creating suds client with soap_url='%s' and wsdl_url='%s'",
                   self.soap_url, self.wsdl_url)
+        transport = RequestsTransport(cacert, insecure)
         self.client = suds.client.Client(self.wsdl_url,
+                                         transport=transport,
                                          location=self.soap_url,
                                          plugins=[ServiceMessagePlugin()],
                                          cache=suds.cache.NoCache())
@@ -206,9 +231,9 @@ class Service(object):
                 raise exceptions.VimSessionOverLoadException(
                     _("httplib error in %s.") % attr_name, excep)
 
-            except (urllib2.URLError, urllib2.HTTPError) as excep:
+            except requests.RequestException as excep:
                 raise exceptions.VimConnectionException(
-                    _("urllib2 error in %s.") % attr_name, excep)
+                    _("requests error in %s.") % attr_name, excep)
 
             except Exception as excep:
                 # TODO(vbala) should catch specific exceptions and raise

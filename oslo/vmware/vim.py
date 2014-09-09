@@ -20,13 +20,17 @@ class Vim(service.Service):
     """Service class that provides access to the VIM API."""
 
     def __init__(self, protocol='https', host='localhost', port=None,
-                 wsdl_url=None):
+                 wsdl_url=None, cacert=None, insecure=True):
         """Constructs a VIM service client object.
 
         :param protocol: http or https
         :param host: server IP address or host name
         :param port: port for connection
         :param wsdl_url: VIM WSDL url
+        :param cacert: Specify a CA bundle file to use in verifying a
+                       TLS (https) server certificate.
+        :param insecure: Verify HTTPS connections using system certificates,
+                         used only if cacert is not specified
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
@@ -34,7 +38,7 @@ class Vim(service.Service):
         soap_url = base_url + '/sdk'
         if wsdl_url is None:
             wsdl_url = soap_url + '/vimService.wsdl'
-        super(Vim, self).__init__(wsdl_url, soap_url)
+        super(Vim, self).__init__(wsdl_url, soap_url, cacert, insecure)
 
     def retrieve_service_content(self):
         return self.RetrieveServiceContent(service.SERVICE_INSTANCE)

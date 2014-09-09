@@ -143,7 +143,7 @@ class VMwareAPISession(object):
     def __init__(self, host, server_username, server_password,
                  api_retry_count, task_poll_interval, scheme='https',
                  create_session=True, wsdl_loc=None, pbm_wsdl_loc=None,
-                 port=443):
+                 port=443, cacert=None, insecure=True):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -159,6 +159,10 @@ class VMwareAPISession(object):
                                instance creation
         :param wsdl_loc: VIM API WSDL file location
         :param pbm_wsdl_loc: PBM service WSDL file location
+        :param cacert: Specify a CA bundle file to use in verifying a
+                       TLS (https) server certificate.
+        :param insecure: Verify HTTPS connections using system certificates,
+                         used only if cacert is not specified
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException
         """
@@ -175,6 +179,8 @@ class VMwareAPISession(object):
         self._session_username = None
         self._vim = None
         self._pbm = None
+        self._cacert = cacert
+        self._insecure = insecure
         if create_session:
             self._create_session()
 
@@ -184,7 +190,9 @@ class VMwareAPISession(object):
             self._vim = vim.Vim(protocol=self._scheme,
                                 host=self._host,
                                 port=self._port,
-                                wsdl_url=self._vim_wsdl_loc)
+                                wsdl_url=self._vim_wsdl_loc,
+                                cacert=self._cacert,
+                                insecure=self._insecure)
         return self._vim
 
     @property
@@ -193,7 +201,9 @@ class VMwareAPISession(object):
             self._pbm = pbm.Pbm(protocol=self._scheme,
                                 host=self._host,
                                 port=self._port,
-                                wsdl_url=self._pbm_wsdl_loc)
+                                wsdl_url=self._pbm_wsdl_loc,
+                                cacert=self._cacert,
+                                insecure=self._insecure)
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
