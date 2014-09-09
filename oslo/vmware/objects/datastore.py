@@ -16,7 +16,7 @@ import posixpath
 
 import six.moves.urllib.parse as urlparse
 
-from oslo.vmware.openstack.common.gettextutils import _
+from oslo.vmware._i18n import _
 from oslo.vmware import vim_util
 
 

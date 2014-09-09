@@ -27,7 +27,7 @@ import urlparse
 
 import suds.sax.element as element
 
-from oslo.vmware.openstack.common.gettextutils import _LW
+from oslo.vmware._i18n import _LW
 from oslo.vmware import service
 from oslo.vmware import vim_util
 

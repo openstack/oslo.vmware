@@ -155,9 +155,7 @@ class PBMUtilityTest(base.TestCase):
         self.assertIsNone(wsdl)
 
         def expected_wsdl(version):
-            driver_dir = os.path.join(os.path.dirname(__file__), '..',
-                                      'oslo', 'vmware')
-            driver_abs_dir = os.path.abspath(driver_dir)
+            driver_abs_dir = os.path.abspath(os.path.dirname(pbm.__file__))
             path = os.path.join(driver_abs_dir, 'wsdl', version,
                                 'pbmService.wsdl')
             return urlparse.urljoin('file:', urllib.pathname2url(path))

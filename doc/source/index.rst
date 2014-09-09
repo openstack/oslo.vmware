@@ -10,6 +10,7 @@ Contents:
    installation
    usage
    contributing
+   history
 
 Code Documentation
 ==================

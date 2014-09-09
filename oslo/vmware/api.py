@@ -25,10 +25,10 @@ import logging
 
 import six
 
+from oslo.vmware._i18n import _, _LE, _LI, _LW
 from oslo.vmware.common import loopingcall
 from oslo.vmware import exceptions
 from oslo.vmware.openstack.common import excutils
-from oslo.vmware.openstack.common.gettextutils import _, _LE, _LI, _LW
 from oslo.vmware import pbm
 from oslo.vmware import vim
 from oslo.vmware import vim_util

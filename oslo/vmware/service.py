@@ -25,8 +25,8 @@ import netaddr
 import six
 import suds
 
+from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
-from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import vim_util
 
 

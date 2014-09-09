@@ -25,8 +25,8 @@ from eventlet import greenthread
 from eventlet import queue
 from eventlet import timeout
 
+from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
-from oslo.vmware.openstack.common.gettextutils import _
 from oslo.vmware import rw_handles
 
 

@@ -21,7 +21,7 @@ import logging
 
 import six
 
-from oslo.vmware.openstack.common.gettextutils import _, _LE
+from oslo.vmware._i18n import _, _LE
 
 LOG = logging.getLogger(__name__)
 
