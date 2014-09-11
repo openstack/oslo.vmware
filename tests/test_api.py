@@ -278,6 +278,7 @@ class VMwareAPISessionTest(base.TestCase):
                                                         fault_list,
                                                         details_str)
         self.assertEqual(expected_str, unicode(e))
+        self.assertEqual(details, e.details)
 
     def test_invoke_api_with_empty_response(self):
         api_session = self._create_api_session(True)

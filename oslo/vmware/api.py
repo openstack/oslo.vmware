@@ -321,7 +321,8 @@ class VMwareAPISession(object):
                     if excep.fault_list:
                         LOG.debug("Fault list: %s", excep.fault_list)
                         fault = excep.fault_list[0]
-                        raise exceptions.get_fault_class(fault)(unicode(excep))
+                        clazz = exceptions.get_fault_class(fault)
+                        raise clazz(unicode(excep), excep.details)
                     raise
 
             except exceptions.VimConnectionException:

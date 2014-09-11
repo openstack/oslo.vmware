@@ -116,8 +116,9 @@ class VMwareDriverException(Exception):
     """
     msg_fmt = _("An unknown exception occurred.")
 
-    def __init__(self, message=None, **kwargs):
+    def __init__(self, message=None, details=None, **kwargs):
         self.kwargs = kwargs
+        self.details = details
 
         if not message:
             try:
