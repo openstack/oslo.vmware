@@ -36,6 +36,7 @@ INVALID_PROPERTY = 'InvalidProperty'
 NO_PERMISSION = 'NoPermission'
 NOT_AUTHENTICATED = 'NotAuthenticated'
 TASK_IN_PROGRESS = 'TaskInProgress'
+DUPLICATE_NAME = 'DuplicateName'
 
 
 class VimException(Exception):
@@ -205,6 +206,10 @@ class TaskInProgress(VMwareDriverException):
     msg_fmt = _("Entity has another operation in process.")
 
 
+class DuplicateName(VMwareDriverException):
+    msg_fmt = _("Duplicate name.")
+
+
 # Populate the fault registry with the exceptions that have
 # special treatment.
 _fault_classes_registry = {
@@ -219,6 +224,7 @@ _fault_classes_registry = {
     NO_PERMISSION: NoPermissionException,
     NOT_AUTHENTICATED: NotAuthenticatedException,
     TASK_IN_PROGRESS: TaskInProgress,
+    DUPLICATE_NAME: DuplicateName,
 }
 
 
