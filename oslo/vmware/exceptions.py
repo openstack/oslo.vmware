@@ -222,10 +222,20 @@ _fault_classes_registry = {
 
 
 def get_fault_class(name):
-    """Get a named subclass of NovaException."""
+    """Get a named subclass of VMwareDriverException."""
     name = str(name)
     fault_class = _fault_classes_registry.get(name)
     if not fault_class:
         LOG.debug('Fault %s not matched.', name)
         fault_class = VMwareDriverException
     return fault_class
+
+
+def register_fault_class(name, exception):
+    fault_class = _fault_classes_registry.get(name)
+    if not issubclass(exception, VMwareDriverException):
+        raise TypeError(_("exception should be a subclass of "
+                          "VMwareDriverException"))
+    if fault_class:
+        LOG.debug('Overriding exception for %s', name)
+    _fault_classes_registry[name] = exception
