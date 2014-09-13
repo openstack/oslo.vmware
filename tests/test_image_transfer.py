@@ -61,10 +61,16 @@ class BlockingQueueTest(base.TestCase):
         exp_calls = [mock.call([1])] * write_count
         self.assertEqual(exp_calls, queue.put.call_args_list)
 
-    def test_tell(self):
-        max_transfer_size = 30
+    def test_seek(self):
         queue = image_transfer.BlockingQueue(10, 30)
-        self.assertEqual(max_transfer_size, queue.tell())
+        self.assertRaises(IOError, queue.seek, 5)
+
+    def test_tell(self):
+        queue = image_transfer.BlockingQueue(10, 30)
+        self.assertEqual(0, queue.tell())
+        queue.get = mock.Mock(return_value=[1] * 10)
+        queue.read(10)
+        self.assertEqual(10, queue.tell())
 
 
 class ImageWriterTest(base.TestCase):

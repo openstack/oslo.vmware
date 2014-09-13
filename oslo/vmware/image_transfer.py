@@ -78,22 +78,17 @@ class BlockingQueue(queue.LightQueue):
 
     # Below methods are provided in order to enable treating the queue
     # as a file handle.
-    # Note(vui): When file transfer size is not specified, we raise IOError to
-    # prevent incorrect predetermination of file length by readers.
 
     def seek(self, offset, whence=0):
-        if self._max_transfer_size is 0:
-            raise IOError(errno.ESPIPE, "Illegal seek")
+        """Set the file's current position at the offset.
+
+        This method throws IOError since seek cannot be supported for a pipe.
+        """
+        raise IOError(errno.ESPIPE, "Illegal seek")
 
     def tell(self):
-        """Get size of the file to be read.
-
-        We interpret _max_transfer_size=0 as stream mode and raise IOError
-        to prevent incorrect predetermination of file length by readers.
-        """
-        if self._max_transfer_size is 0:
-            raise IOError(errno.ESPIPE, "Illegal seek")
-        return self._max_transfer_size
+        """Get the current file position."""
+        return self._transferred
 
     def close(self):
         pass
