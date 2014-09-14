@@ -14,9 +14,9 @@
 #    under the License.
 
 import httplib
-import urllib2
 
 import mock
+import requests
 import suds
 
 from oslo.vmware import exceptions
@@ -202,13 +202,13 @@ class ServiceTest(base.TestCase):
                           svc_obj.powerOn,
                           managed_object)
 
-    def test_request_handler_with_url_error(self):
+    def test_request_handler_with_connection_error(self):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
             self.assertEqual(managed_object, mo._type)
             self.assertEqual(managed_object, mo.value)
-            raise urllib2.URLError(None)
+            raise requests.ConnectionError()
 
         svc_obj = service.Service()
         attr_name = 'powerOn'
@@ -224,7 +224,7 @@ class ServiceTest(base.TestCase):
         def side_effect(mo, **kwargs):
             self.assertEqual(managed_object, mo._type)
             self.assertEqual(managed_object, mo.value)
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise requests.HTTPError()
 
         svc_obj = service.Service()
         attr_name = 'powerOn'

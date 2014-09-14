@@ -108,6 +108,7 @@ class VMwareAPISessionTest(base.TestCase):
         self.addCleanup(patcher.stop)
         self.VimMock = patcher.start()
         self.VimMock.side_effect = lambda *args, **kw: mock.MagicMock()
+        self.cert_mock = mock.Mock()
 
     def _create_api_session(self, _create_session, retry_count=10,
                             task_poll_interval=1):
@@ -118,7 +119,9 @@ class VMwareAPISessionTest(base.TestCase):
                                     task_poll_interval,
                                     'https',
                                     _create_session,
-                                    port=VMwareAPISessionTest.PORT)
+                                    port=VMwareAPISessionTest.PORT,
+                                    cacert=self.cert_mock,
+                                    insecure=False)
 
     def test_vim(self):
         api_session = self._create_api_session(False)
@@ -126,7 +129,9 @@ class VMwareAPISessionTest(base.TestCase):
         self.VimMock.assert_called_with(protocol=api_session._scheme,
                                         host=VMwareAPISessionTest.SERVER_IP,
                                         port=VMwareAPISessionTest.PORT,
-                                        wsdl_url=api_session._vim_wsdl_loc)
+                                        wsdl_url=api_session._vim_wsdl_loc,
+                                        cacert=self.cert_mock,
+                                        insecure=False)
 
     @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
