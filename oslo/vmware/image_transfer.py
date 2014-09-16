@@ -454,7 +454,8 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
                                               kwargs.get('datastore_name'),
                                               kwargs.get('cookies'),
                                               kwargs.get('file_path'),
-                                              file_size)
+                                              file_size,
+                                              cacerts=kwargs.get('cacerts'))
     _start_transfer(context,
                     timeout_secs,
                     read_handle,

@@ -22,12 +22,13 @@ glance server.
 """
 
 import logging
-import socket
+import ssl
 
 import netaddr
-import six.moves.http_client as httplib
+import requests
+import six
 import six.moves.urllib.parse as urlparse
-import six.moves.urllib.request as urllib2
+from urllib3 import connection as httplib
 
 from oslo.utils import excutils
 from oslo.vmware._i18n import _, _LE, _LW
@@ -57,6 +58,87 @@ class FileHandle(object):
         self._eof = False
         self._file_handle = file_handle
         self._last_logged_progress = 0
+
+    def _create_read_connection(self, url, cookies=None, cacerts=False):
+        LOG.debug("Opening URL: %s for reading.", url)
+        try:
+            headers = {'User-Agent': USER_AGENT}
+            if cookies:
+                headers.update({'Cookie':
+                                self._build_vim_cookie_header(cookies)})
+            response = requests.get(url, headers=headers, stream=True,
+                                    verify=cacerts)
+            return response.raw
+        except Exception as excep:
+            # TODO(vbala) We need to catch and raise specific exceptions
+            # related to connection problems, invalid request and invalid
+            # arguments.
+            excep_msg = _("Error occurred while opening URL: %s for "
+                          "reading.") % url
+            LOG.exception(excep_msg)
+            raise exceptions.VimException(excep_msg, excep)
+
+    def _create_write_connection(self, url,
+                                 file_size=None,
+                                 cookies=None,
+                                 overwrite=None,
+                                 content_type=None,
+                                 cacerts=False):
+        """Create HTTP connection to write to VMDK file."""
+        LOG.debug("Creating HTTP connection to write to file with "
+                  "size = %(file_size)d and URL = %(url)s.",
+                  {'file_size': file_size,
+                   'url': url})
+        _urlparse = urlparse.urlparse(url)
+        scheme, netloc, path, params, query, fragment = _urlparse
+
+        try:
+            if scheme == 'http':
+                conn = httplib.HTTPConnection(netloc)
+            elif scheme == 'https':
+                conn = httplib.HTTPSConnection(netloc)
+                cert_reqs = None
+
+                # cacerts can be either True or False or contain
+                # actual certificates. If it is a boolean, then
+                # we need to set cert_reqs and clear the cacerts
+                if isinstance(cacerts, bool):
+                    if cacerts:
+                        cert_reqs = ssl.CERT_REQUIRED
+                    else:
+                        cert_reqs = ssl.CERT_NONE
+                    cacerts = None
+
+                conn.set_cert(ca_certs=cacerts, cert_reqs=cert_reqs)
+            else:
+                excep_msg = _("Invalid scheme: %s.") % scheme
+                LOG.error(excep_msg)
+                raise ValueError(excep_msg)
+
+            if query:
+                path = path + '?' + query
+
+            headers = {'User-Agent': USER_AGENT}
+            if file_size:
+                headers.update({'Content-Length': str(file_size)})
+            if overwrite:
+                headers.update({'Overwrite': overwrite})
+            if cookies:
+                headers.update({'Cookie':
+                               self._build_vim_cookie_header(cookies)})
+            if content_type:
+                headers.update({'Content-Type': content_type})
+
+            conn.putrequest('PUT', path)
+            for key, value in six.iteritems(headers):
+                conn.putheader(key, value)
+            conn.endheaders()
+            return conn
+        except requests.RequestException as excep:
+            excep_msg = _("Error occurred while creating HTTP connection "
+                          "to write to VMDK file with URL = %s.") % url
+            LOG.exception(excep_msg)
+            raise exceptions.VimConnectionException(excep_msg, excep)
 
     def close(self):
         """Close the file handle."""
@@ -158,7 +240,7 @@ class FileWriteHandle(FileHandle):
     """Write handle for a file in VMware server."""
 
     def __init__(self, host, port, data_center_name, datastore_name, cookies,
-                 file_path, file_size, scheme='https'):
+                 file_path, file_size, scheme='https', cacerts=False):
         """Initializes the write handle with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -177,42 +259,11 @@ class FileWriteHandle(FileHandle):
         self._url = '%s/folder/%s' % (soap_url, file_path)
         self._url = self._url + '?' + urlparse.urlencode(param_list)
 
-        self.conn = self._create_connection(self._url,
-                                            file_size,
-                                            cookies)
-        FileHandle.__init__(self, self.conn)
-
-    def _create_connection(self, url, file_size, cookies):
-        """Create HTTP connection to write to the file with given URL."""
-        LOG.debug("Creating HTTP connection to write to file with "
-                  "size = %(file_size)d and URL = %(url)s.",
-                  {'file_size': file_size,
-                   'url': url})
-        _urlparse = urlparse.urlparse(url)
-        scheme, netloc, path, params, query, fragment = _urlparse
-
-        try:
-            if scheme == 'http':
-                conn = httplib.HTTPConnection(netloc)
-            elif scheme == 'https':
-                conn = httplib.HTTPSConnection(netloc)
-            else:
-                excep_msg = _("Invalid scheme: %s.") % scheme
-                LOG.error(excep_msg)
-                raise ValueError(excep_msg)
-
-            conn.putrequest('PUT', path + '?' + query)
-            conn.putheader('User-Agent', USER_AGENT)
-            conn.putheader('Content-Length', file_size)
-            conn.putheader('Cookie', self._build_vim_cookie_header(cookies))
-            conn.endheaders()
-            return conn
-        except (httplib.InvalidURL, httplib.CannotSendRequest,
-                httplib.CannotSendHeader) as excep:
-            excep_msg = _("Error occurred while creating HTTP connection "
-                          "to write to file with URL = %s.") % url
-            LOG.exception(excep_msg)
-            raise exceptions.VimConnectionException(excep_msg, excep)
+        self._conn = self._create_write_connection(self._url,
+                                                   file_size,
+                                                   cookies=cookies,
+                                                   cacerts=cacerts)
+        FileHandle.__init__(self, self._conn)
 
     def write(self, data):
         """Write data to the file.
@@ -222,7 +273,7 @@ class FileWriteHandle(FileHandle):
         """
         try:
             self._file_handle.send(data)
-        except (socket.error, httplib.NotConnected) as excep:
+        except requests.RequestException as excep:
             excep_msg = _("Connection error occurred while writing data to"
                           " %s.") % self._url
             LOG.exception(excep_msg)
@@ -240,7 +291,7 @@ class FileWriteHandle(FileHandle):
         """Get the response and close the connection."""
         LOG.debug("Closing write handle for %s.", self._url)
         try:
-            self.conn.getresponse()
+            self._conn.getresponse()
         except Exception:
             LOG.warn(_LW("Error occurred while reading the HTTP response."),
                      exc_info=True)
@@ -294,8 +345,15 @@ class VmdkWriteHandle(FileHandle):
         self._url = self._find_vmdk_url(lease_info, host, port)
         self._vm_ref = lease_info.entity
 
+        cookies = session.vim.client.options.transport.cookiejar
         # Create HTTP connection to write to VMDK URL
-        self._conn = self._create_connection(session, self._url, vmdk_size)
+        octet_stream = 'binary/octet-stream'
+        self._conn = self._create_write_connection(self._url,
+                                                   vmdk_size,
+                                                   cookies=cookies,
+                                                   overwrite='t',
+                                                   content_type=octet_stream,
+                                                   cacerts=session._cacert)
         FileHandle.__init__(self, self._conn)
 
     def get_imported_vm(self):
@@ -320,43 +378,6 @@ class VmdkWriteHandle(FileHandle):
         session.wait_for_lease_ready(lease)
         return lease
 
-    def _create_connection(self, session, url, vmdk_size):
-        """Create HTTP connection to write to VMDK file."""
-        LOG.debug("Creating HTTP connection to write to VMDK file with "
-                  "size = %(vmdk_size)d and URL = %(url)s.",
-                  {'vmdk_size': vmdk_size,
-                   'url': url})
-        cookies = session.vim.client.options.transport.cookiejar
-        _urlparse = urlparse.urlparse(url)
-        scheme, netloc, path, params, query, fragment = _urlparse
-
-        try:
-            if scheme == 'http':
-                conn = httplib.HTTPConnection(netloc)
-            elif scheme == 'https':
-                conn = httplib.HTTPSConnection(netloc)
-            else:
-                excep_msg = _("Invalid scheme: %s.") % scheme
-                LOG.error(excep_msg)
-                raise ValueError(excep_msg)
-
-            if query:
-                path = path + '?' + query
-            conn.putrequest('PUT', path)
-            conn.putheader('User-Agent', USER_AGENT)
-            conn.putheader('Content-Length', str(vmdk_size))
-            conn.putheader('Overwrite', 't')
-            conn.putheader('Cookie', self._build_vim_cookie_header(cookies))
-            conn.putheader('Content-Type', 'binary/octet-stream')
-            conn.endheaders()
-            return conn
-        except (httplib.InvalidURL, httplib.CannotSendRequest,
-                httplib.CannotSendHeader) as excep:
-            excep_msg = _("Error occurred while creating HTTP connection "
-                          "to write to VMDK file with URL = %s.") % url
-            LOG.exception(excep_msg)
-            raise exceptions.VimConnectionException(excep_msg, excep)
-
     def write(self, data):
         """Write data to the file.
 
@@ -366,7 +387,7 @@ class VmdkWriteHandle(FileHandle):
         try:
             self._file_handle.send(data)
             self._bytes_written += len(data)
-        except (socket.error, httplib.NotConnected) as excep:
+        except requests.RequestException as excep:
             excep_msg = _("Connection error occurred while writing data to"
                           " %s.") % self._url
             LOG.exception(excep_msg)
@@ -445,7 +466,8 @@ class VmdkWriteHandle(FileHandle):
 class VmdkReadHandle(FileHandle):
     """VMDK read handle based on HttpNfcLease."""
 
-    def __init__(self, session, host, port, vm_ref, vmdk_path, vmdk_size):
+    def __init__(self, session, host, port, vm_ref, vmdk_path,
+                 vmdk_size):
         """Initializes the VMDK read handle with the given parameters.
 
         During the read (export) operation, the VMDK file is converted to a
@@ -478,7 +500,11 @@ class VmdkReadHandle(FileHandle):
 
         # find URL of the VMDK file to be read and open connection
         self._url = self._find_vmdk_url(lease_info, host, port)
-        self._conn = self._create_connection(session, self._url)
+        cookies = session.vim.client.options.transport.cookiejar
+        cacerts = session.vim.client.options.transport.verify
+        self._conn = self._create_read_connection(self._url,
+                                                  cookies=cookies,
+                                                  cacerts=cacerts)
         FileHandle.__init__(self, self._conn)
 
     def _create_and_wait_for_lease(self, session, vm_ref):
@@ -491,24 +517,6 @@ class VmdkReadHandle(FileHandle):
                    'vm_ref': vm_ref})
         session.wait_for_lease_ready(lease)
         return lease
-
-    def _create_connection(self, session, url):
-        LOG.debug("Opening URL: %s for reading.", url)
-        try:
-            cookies = session.vim.client.options.transport.cookiejar
-            headers = {'User-Agent': USER_AGENT,
-                       'Cookie': self._build_vim_cookie_header(cookies)}
-            request = urllib2.Request(url, None, headers)
-            conn = urllib2.urlopen(request)
-            return conn
-        except Exception as excep:
-            # TODO(vbala) We need to catch and raise specific exceptions
-            # related to connection problems, invalid request and invalid
-            # arguments.
-            excep_msg = _("Error occurred while opening URL: %s for "
-                          "reading.") % url
-            LOG.exception(excep_msg)
-            raise exceptions.VimException(excep_msg, excep)
 
     def read(self, chunk_size):
         """Read a chunk of data from the VMDK file.

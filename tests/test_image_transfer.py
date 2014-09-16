@@ -345,7 +345,8 @@ class ImageTransferUtilityTest(base.TestCase):
             ds_name,
             cookies,
             file_path,
-            image_size)
+            image_size,
+            cacerts=None)
 
         fake_transfer.assert_called_once_with(
             context,
