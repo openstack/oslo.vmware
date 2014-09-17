@@ -306,3 +306,17 @@ class MemoryCacheTest(base.TestCase):
         cache1 = service.Service().client.options.cache
         cache2 = service.Service().client.options.cache
         self.assertIs(cache1, cache2)
+
+    @mock.patch('oslo.vmware.openstack.common.timeutils.utcnow_ts')
+    def test_cache_timeout(self, mock_utcnow_ts):
+        mock_utcnow_ts.side_effect = [100, 125, 150, 175, 195, 200, 225]
+
+        cache = service.MemoryCache()
+        cache.put('key1', 'value1', 10)
+        cache.put('key2', 'value2', 75)
+        cache.put('key3', 'value3', 100)
+
+        self.assertIsNone(cache.get('key1'))
+        self.assertEqual('value2', cache.get('key2'))
+        self.assertIsNone(cache.get('key2'))
+        self.assertEqual('value3', cache.get('key3'))
