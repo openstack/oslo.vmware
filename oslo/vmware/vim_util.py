@@ -470,3 +470,17 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
     if entity_name is None:
         entity_name = ""
     return '%s%s' % (path, entity_name)
+
+
+def get_http_service_request_spec(client_factory, method, uri):
+    """Build a HTTP service request spec.
+
+    :param client_factory: factory to get API input specs
+    :param method: HTTP method (GET, POST, PUT)
+    :param uri: target URL
+    """
+    http_service_request_spec = client_factory.create(
+        'ns0:SessionManagerHttpServiceRequestSpec')
+    http_service_request_spec.method = method
+    http_service_request_spec.url = uri
+    return http_service_request_spec

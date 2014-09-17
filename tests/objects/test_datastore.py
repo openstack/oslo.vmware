@@ -16,6 +16,7 @@ import mock
 import six.moves.urllib.parse as urlparse
 
 from oslo.utils import units
+from oslo.vmware import constants
 from oslo.vmware.objects import datastore
 from oslo.vmware import vim_util
 from tests import base
@@ -67,6 +68,17 @@ class DatastoreTestCase(base.TestCase):
         ds = datastore.Datastore("fake_ref", "ds_name")
         ds_path = ds.build_path("some_dir", "foo.vmdk")
         self.assertEqual('[ds_name] some_dir/foo.vmdk', str(ds_path))
+
+    def test_build_url(self):
+        ds = datastore.Datastore("fake_ref", "ds_name")
+        path = 'images/ubuntu.vmdk'
+        self.assertRaises(ValueError, ds.build_url, 'https', '10.0.0.2', path)
+        ds.datacenter = mock.Mock()
+        ds.datacenter.name = "dc_path"
+        ds_url = ds.build_url('https', '10.0.0.2', path)
+        self.assertEqual(ds_url.datastore_name, "ds_name")
+        self.assertEqual(ds_url.datacenter_path, "dc_path")
+        self.assertEqual(ds_url.path, path)
 
     def test_get_summary(self):
         ds_ref = vim_util.get_moref('ds-0', 'Datastore')
@@ -341,3 +353,32 @@ class DatastoreURLTestCase(base.TestCase):
         url = 'https://13.37.73.31/folder/%s?%s' % (path, query)
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(path, ds_url.path)
+
+    @mock.patch('httplib.HTTPSConnection')
+    def test_connect(self, mock_conn):
+        dc_path = 'datacenter-1'
+        ds_name = 'datastore-1'
+        params = {'dcPath': dc_path, 'dsName': ds_name}
+        query = urlparse.urlencode(params)
+        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        ds_url = datastore.DatastoreURL.urlparse(url)
+        cookie = mock.Mock()
+        ds_url.connect('PUT', 128, cookie)
+        mock_conn.assert_called_once_with('13.37.73.31')
+
+    def test_get_transfer_ticket(self):
+        dc_path = 'datacenter-1'
+        ds_name = 'datastore-1'
+        params = {'dcPath': dc_path, 'dsName': ds_name}
+        query = urlparse.urlencode(params)
+        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        session = mock.Mock()
+        session.invoke_api = mock.Mock()
+
+        class Ticket(object):
+            id = 'fake_id'
+        session.invoke_api.return_value = Ticket()
+        ds_url = datastore.DatastoreURL.urlparse(url)
+        ticket = ds_url.get_transfer_ticket(session, 'PUT')
+        self.assertEqual('%s="%s"' % (constants.CGI_COOKIE_KEY, 'fake_id'),
+                         ticket)
