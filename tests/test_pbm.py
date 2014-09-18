@@ -18,10 +18,10 @@ Unit tests for PBM utility methods.
 """
 
 import os
-import urllib
-import urlparse
 
 import mock
+import six.moves.urllib.parse as urlparse
+import six.moves.urllib.request as urllib
 
 from oslo.vmware import pbm
 from tests import base
@@ -91,7 +91,7 @@ class PBMUtilityTest(base.TestCase):
 
         session = mock.Mock()
         profile_id = pbm.get_profile_id_by_name(session,
-                                                'profile-%s' % (i + 1))
+                                                ('profile-%s' % 11))
         self.assertFalse(profile_id)
         get_all_profiles.assert_called_once_with(session)
 
@@ -139,7 +139,7 @@ class PBMUtilityTest(base.TestCase):
             datastores.append(self._create_datastore(value))
 
         hubs = []
-        hub_ids = ds_values[0:len(ds_values) / 2]
+        hub_ids = ds_values[0:int(len(ds_values) / 2)]
         for hub_id in hub_ids:
             hub = mock.Mock()
             hub.hubId = hub_id

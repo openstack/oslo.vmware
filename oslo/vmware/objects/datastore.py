@@ -12,11 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httplib
 import logging
 import posixpath
 import random
 
+import six.moves.http_client as httplib
 import six.moves.urllib.parse as urlparse
 
 from oslo.vmware._i18n import _

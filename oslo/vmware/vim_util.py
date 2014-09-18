@@ -17,7 +17,7 @@
 The VMware API utility module.
 """
 
-import suds
+from suds import sudsobject
 
 from oslo.utils import timeutils
 
@@ -29,7 +29,7 @@ def get_moref(value, type_):
     :param type_: type of the managed object
     :returns: managed object reference with given value and type
     """
-    moref = suds.sudsobject.Property(value)
+    moref = sudsobject.Property(value)
     moref._type = type_
     return moref
 

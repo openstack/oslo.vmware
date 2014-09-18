@@ -20,6 +20,7 @@ Unit tests for session management and API invocation classes.
 
 from eventlet import greenthread
 import mock
+import six
 import suds
 
 from oslo.vmware import api
@@ -282,7 +283,7 @@ class VMwareAPISessionTest(base.TestCase):
         expected_str = "%s\nFaults: %s\nDetails: %s" % (fault_string,
                                                         fault_list,
                                                         details_str)
-        self.assertEqual(expected_str, unicode(e))
+        self.assertEqual(expected_str, six.text_type(e))
         self.assertEqual(details, e.details)
 
     def test_invoke_api_with_empty_response(self):
@@ -482,7 +483,7 @@ class VMwareAPISessionTest(base.TestCase):
                               'fake-task')
 
     def test_poll_task_well_known_exceptions(self):
-        for k, v in exceptions._fault_classes_registry.iteritems():
+        for k, v in six.iteritems(exceptions._fault_classes_registry):
             self._poll_task_well_known_exceptions(k, v)
 
     def test_poll_task_unknown_exception(self):
@@ -491,7 +492,7 @@ class VMwareAPISessionTest(base.TestCase):
             'RuntimeFault': exceptions.VMwareDriverException
         }
 
-        for k, v in _unknown_exceptions.iteritems():
+        for k, v in six.iteritems(_unknown_exceptions):
             self._poll_task_well_known_exceptions(k, v)
 
     def _create_subclass_exception(self):

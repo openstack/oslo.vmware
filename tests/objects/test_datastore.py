@@ -354,7 +354,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(path, ds_url.path)
 
-    @mock.patch('httplib.HTTPSConnection')
+    @mock.patch('six.moves.http_client.HTTPSConnection')
     def test_connect(self, mock_conn):
         dc_path = 'datacenter-1'
         ds_name = 'datastore-1'
