@@ -19,6 +19,7 @@ Common classes that provide access to vSphere services.
 
 import httplib
 import logging
+import os
 
 import netaddr
 import requests
@@ -70,6 +71,62 @@ class ServiceMessagePlugin(suds.plugin.MessagePlugin):
         context.envelope.walk(self.add_attribute_for_value)
 
 
+class Response(six.BytesIO):
+    """Response with an input stream as source."""
+
+    def __init__(self, stream, status=200, headers=None):
+        self.status = status
+        self.headers = headers or {}
+        self.reason = requests.status_codes._codes.get(
+            status, [''])[0].upper().replace('_', ' ')
+        six.BytesIO.__init__(self, stream)
+
+    @property
+    def _original_response(self):
+        return self
+
+    @property
+    def msg(self):
+        return self
+
+    def read(self, chunk_size, **kwargs):
+        return six.BytesIO.read(self, chunk_size)
+
+    def info(self):
+        return self
+
+    def get_all(self, name, default):
+        result = self.headers.get(name)
+        if not result:
+            return default
+        return [result]
+
+    def getheaders(self, name):
+        return self.get_all(name, [])
+
+    def release_conn(self):
+        self.close()
+
+
+class LocalFileAdapter(requests.adapters.HTTPAdapter):
+    """Transport adapter for local files.
+
+    See http://stackoverflow.com/a/22989322
+    """
+
+    def _build_response_from_file(self, request):
+        file_path = request.url[7:]
+        with open(file_path, 'r') as f:
+            buff = bytearray(os.path.getsize(file_path))
+            f.readinto(buff)
+            resp = Response(buff)
+            return self.build_response(request, resp)
+
+    def send(self, request, stream=False, timeout=None,
+             verify=True, cert=None, proxies=None):
+        return self._build_response_from_file(request)
+
+
 class RequestsTransport(transport.Transport):
     def __init__(self, cacert=None, insecure=True):
         transport.Transport.__init__(self)
@@ -77,6 +134,7 @@ class RequestsTransport(transport.Transport):
         # specified.
         self.verify = cacert if cacert else not insecure
         self.session = requests.Session()
+        self.session.mount('file:///', LocalFileAdapter())
         self.cookiejar = self.session.cookies
 
     def open(self, request):
