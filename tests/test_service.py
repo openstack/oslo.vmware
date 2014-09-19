@@ -117,8 +117,7 @@ class ServiceTest(base.TestCase):
         def side_effect(mo, **kwargs):
             self.assertEqual(managed_object, mo._type)
             self.assertEqual(managed_object, mo.value)
-            fault_string = mock.Mock()
-            fault_string.getText.return_value = "MyFault"
+            fault = mock.Mock(faultstring="MyFault")
 
             fault_children = mock.Mock()
             fault_children.name = "name"
@@ -129,8 +128,8 @@ class ServiceTest(base.TestCase):
             detail = mock.Mock()
             detail.getChildren.return_value = [child]
             doc = mock.Mock()
-            doc.childAtPath = mock.Mock(side_effect=[fault_string, detail])
-            raise suds.WebFault(None, doc)
+            doc.childAtPath.return_value = detail
+            raise suds.WebFault(fault, doc)
 
         svc_obj = service.Service()
         attr_name = 'powerOn'
