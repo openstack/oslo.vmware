@@ -15,8 +15,8 @@
 import mock
 import six.moves.urllib.parse as urlparse
 
+from oslo.utils import units
 from oslo.vmware.objects import datastore
-from oslo.vmware.openstack.common import units
 from oslo.vmware import vim_util
 from tests import base
 

@@ -26,9 +26,9 @@ import six
 import suds
 from suds import transport
 
+from oslo.utils import timeutils
 from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
-from oslo.vmware.openstack.common import timeutils
 from oslo.vmware import vim_util
 
 CACHE_TIMEOUT = 60 * 60  # One hour cache timeout
