@@ -49,13 +49,19 @@ class VimException(Exception):
             # this method like VimFaultException
             raise ValueError(_("exception_summary must not be a list"))
 
-        self.msg = str(message)
+        self.msg = message
         self.cause = cause
 
     def __str__(self):
-        descr = self.msg
+        return unicode(self).encode('utf8')
+
+    def __unicode__(self):
+        # NOTE(jecarey): self.msg and self.cause may be i18n objects
+        # that do not support str or concatenation, but can be used
+        # as replacement text.
+        descr = unicode(self.msg)
         if self.cause:
-            descr += '\nCause: ' + str(self.cause)
+            descr += '\nCause: ' + unicode(self.cause)
         return descr
 
 
@@ -86,11 +92,8 @@ class VimFaultException(VimException):
         self.fault_list = fault_list
         self.details = details
 
-    def __str__(self):
-        return unicode(self).encode('utf8')
-
     def __unicode__(self):
-        descr = unicode(VimException.__str__(self))
+        descr = VimException.__unicode__(self)
         if self.fault_list:
             # fault_list doesn't contain non-ASCII chars, we can use str()
             descr += '\nFaults: ' + str(self.fault_list)
