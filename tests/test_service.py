@@ -320,3 +320,59 @@ class MemoryCacheTest(base.TestCase):
         self.assertEqual('value2', cache.get('key2'))
         self.assertIsNone(cache.get('key2'))
         self.assertEqual('value3', cache.get('key3'))
+
+
+class RequestsTransportTest(base.TestCase):
+    """Tests for RequestsTransport."""
+
+    def test_open(self):
+        transport = service.RequestsTransport()
+
+        data = "Hello World"
+        resp = mock.Mock(content=data)
+        transport.session.get = mock.Mock(return_value=resp)
+
+        request = mock.Mock(url=mock.sentinel.url)
+        self.assertEqual(data,
+                         transport.open(request).getvalue())
+        transport.session.get.assert_called_once_with(mock.sentinel.url,
+                                                      verify=transport.verify)
+
+    def test_send(self):
+        transport = service.RequestsTransport()
+
+        resp = mock.Mock(status_code=mock.sentinel.status_code,
+                         headers=mock.sentinel.headers,
+                         content=mock.sentinel.content)
+        transport.session.post = mock.Mock(return_value=resp)
+
+        request = mock.Mock(url=mock.sentinel.url,
+                            message=mock.sentinel.message,
+                            headers=mock.sentinel.req_headers)
+        reply = transport.send(request)
+
+        self.assertEqual(mock.sentinel.status_code, reply.code)
+        self.assertEqual(mock.sentinel.headers, reply.headers)
+        self.assertEqual(mock.sentinel.content, reply.message)
+
+    @mock.patch('__builtin__.open')
+    @mock.patch('os.path.getsize')
+    def test_send_with_local_file_url(self, get_size_mock, open_mock):
+        transport = service.RequestsTransport()
+
+        url = 'file:///foo'
+        request = requests.PreparedRequest()
+        request.url = url
+
+        data = "Hello World"
+        get_size_mock.return_value = len(data)
+
+        def readinto_mock(buf):
+            buf[0:] = data
+
+        open_mock.return_value = mock.MagicMock(name='file_handle', spec=file)
+        file_handle = open_mock.return_value.__enter__.return_value
+        file_handle.readinto.side_effect = readinto_mock
+
+        resp = transport.session.send(request)
+        self.assertEqual(data, resp.content)
