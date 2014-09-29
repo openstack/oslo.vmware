@@ -151,7 +151,7 @@ class FileHandle(object):
         """Log data transfer progress."""
         if (progress == 100 or (progress - self._last_logged_progress >=
                                 MIN_PROGRESS_DIFF_TO_LOG)):
-            LOG.debug("Data transfer progress is %(progress)d%%.", progress)
+            LOG.debug("Data transfer progress is %d%%.", progress)
             self._last_logged_progress = progress
 
 
