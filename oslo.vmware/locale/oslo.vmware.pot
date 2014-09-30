@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.5.0.29.g73d5761\n"
+"Project-Id-Version: oslo.vmware 0.6.0.16.ge032566\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-07 06:08+0000\n"
+"POT-Creation-Date: 2014-09-30 06:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,125 +18,133 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: oslo/vmware/api.py:307
+#: oslo/vmware/api.py:317
 #, python-format
 msgid ""
 "Current session: %(session)s is inactive; re-creating the session while "
 "invoking method %(module)s.%(method)s."
 msgstr ""
 
-#: oslo/vmware/api.py:411
+#: oslo/vmware/api.py:422
 #, python-format
 msgid "Task: %(task)s failed with error: %(error)s."
 msgstr ""
 
-#: oslo/vmware/api.py:465
+#: oslo/vmware/api.py:476
 #, python-format
 msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
 msgstr ""
 
-#: oslo/vmware/api.py:472
+#: oslo/vmware/api.py:483
 #, python-format
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:49
+#: oslo/vmware/exceptions.py:50
 msgid "exception_summary must not be a list"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:82
+#: oslo/vmware/exceptions.py:89
 msgid "fault_list must be a list"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:84
+#: oslo/vmware/exceptions.py:91
 msgid "details must be a dict"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:117
+#: oslo/vmware/exceptions.py:121
 msgid "An unknown exception occurred."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:142
+#: oslo/vmware/exceptions.py:147
 msgid "VMware Driver configuration fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:146
+#: oslo/vmware/exceptions.py:151
 msgid "No default value for use_linked_clone found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:150
+#: oslo/vmware/exceptions.py:155
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr ""
 
-#: oslo/vmware/exceptions.py:154
+#: oslo/vmware/exceptions.py:159
 msgid "Resource already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:159
+#: oslo/vmware/exceptions.py:164
 msgid "Cannot delete file."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:164
+#: oslo/vmware/exceptions.py:169
 msgid "File already exists."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:169
+#: oslo/vmware/exceptions.py:174
 msgid "File fault."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:174
+#: oslo/vmware/exceptions.py:179
 msgid "File locked."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:179
+#: oslo/vmware/exceptions.py:184
 msgid "File not found."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:184
+#: oslo/vmware/exceptions.py:189
 msgid "Invalid power state."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:189
+#: oslo/vmware/exceptions.py:194
 msgid "Invalid property."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:194
+#: oslo/vmware/exceptions.py:199
 msgid "No Permission."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:199
+#: oslo/vmware/exceptions.py:204
 msgid "Not Authenticated."
 msgstr ""
 
-#: oslo/vmware/exceptions.py:204
+#: oslo/vmware/exceptions.py:209
 msgid "Entity has another operation in process."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:169
+#: oslo/vmware/exceptions.py:213
+msgid "Duplicate name."
+msgstr ""
+
+#: oslo/vmware/exceptions.py:247
+msgid "exception should be a subclass of VMwareDriverException"
+msgstr ""
+
+#: oslo/vmware/image_transfer.py:164
 #, python-format
 msgid "Image: %s is in killed state."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:183
+#: oslo/vmware/image_transfer.py:178
 #, python-format
 msgid "Image: %(image)s is in unknown state: %(state)s."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:192
+#: oslo/vmware/image_transfer.py:187
 #, python-format
 msgid "Error occurred while writing image: %s"
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:277
+#: oslo/vmware/image_transfer.py:272
 msgid "Error occurred during file read-write task."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:364
+#: oslo/vmware/image_transfer.py:359
 msgid "No image destination given."
 msgstr ""
 
-#: oslo/vmware/image_transfer.py:381
+#: oslo/vmware/image_transfer.py:376
 #, python-format
 msgid ""
 "Error occurred during image transfer with reader: %(reader)s and writer: "
@@ -186,36 +194,36 @@ msgstr ""
 msgid "Error occurred while reading data from %s."
 msgstr ""
 
-#: oslo/vmware/service.py:131
+#: oslo/vmware/service.py:241
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr ""
 
-#: oslo/vmware/service.py:201
+#: oslo/vmware/service.py:312
 #, python-format
 msgid "No such SOAP method %s."
 msgstr ""
 
-#: oslo/vmware/service.py:207
+#: oslo/vmware/service.py:318
 #, python-format
 msgid "httplib error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:211
+#: oslo/vmware/service.py:322
 #, python-format
-msgid "urllib2 error in %s."
+msgid "requests error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:222
+#: oslo/vmware/service.py:333
 #, python-format
 msgid "Socket error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:227
+#: oslo/vmware/service.py:338
 #, python-format
 msgid "Type error in %s."
 msgstr ""
 
-#: oslo/vmware/service.py:230
+#: oslo/vmware/service.py:341
 #, python-format
 msgid "Exception in %s."
 msgstr ""
