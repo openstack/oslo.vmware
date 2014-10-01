@@ -292,10 +292,12 @@ class Service(object):
                 raise
 
             except suds.WebFault as excep:
-                doc = excep.document
                 fault_string = None
                 if excep.fault:
                     fault_string = excep.fault.faultstring
+
+                doc = excep.document
+                detail = None
                 if doc is not None:
                     detail = doc.childAtPath('/Envelope/Body/Fault/detail')
                 fault_list = []

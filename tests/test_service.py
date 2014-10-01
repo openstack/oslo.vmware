@@ -143,6 +143,25 @@ class ServiceTest(base.TestCase):
             self.assertEqual({'name': 'value'}, ex.details)
             self.assertEqual("MyFault", ex.msg)
 
+    def test_request_handler_with_empty_web_fault_doc(self):
+        managed_object = 'VirtualMachine'
+
+        def side_effect(mo, **kwargs):
+            fault = mock.Mock(faultstring="MyFault")
+            raise suds.WebFault(fault, None)
+
+        svc_obj = service.Service()
+        attr_name = 'powerOn'
+        service_mock = svc_obj.client.service
+        setattr(service_mock, attr_name, side_effect)
+
+        ex = self.assertRaises(exceptions.VimFaultException,
+                               svc_obj.powerOn,
+                               managed_object)
+        self.assertEqual([], ex.fault_list)
+        self.assertEqual({}, ex.details)
+        self.assertEqual("MyFault", ex.msg)
+
     def test_request_handler_with_attribute_error(self):
         managed_object = 'VirtualMachine'
         svc_obj = service.Service()
