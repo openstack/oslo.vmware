@@ -299,7 +299,7 @@ class Service(object):
                 doc = excep.document
                 detail = None
                 if doc is not None:
-                    detail = doc.childAtPath('/Envelope/Body/Fault/detail')
+                    detail = doc.childAtPath('/detail')
                 fault_list = []
                 details = {}
                 if detail:
