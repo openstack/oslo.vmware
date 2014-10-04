@@ -30,9 +30,9 @@ import urlparse
 
 import netaddr
 
+from oslo.utils import excutils
 from oslo.vmware._i18n import _, _LE, _LW
 from oslo.vmware import exceptions
-from oslo.vmware.openstack.common import excutils
 from oslo.vmware import vim_util
 
 

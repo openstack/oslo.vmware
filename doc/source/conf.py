@@ -35,7 +35,6 @@ extensions = [
 # files.
 exclude_patterns = [
     'api/tests.*',  # avoid of docs generation from tests
-    'api/oslo.vmware.openstack.common.*',  # skip common modules
     'api/oslo.vmware._*',  # skip private modules
 ]
 

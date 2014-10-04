@@ -19,7 +19,7 @@ The VMware API utility module.
 
 import suds
 
-from oslo.vmware.openstack.common import timeutils
+from oslo.utils import timeutils
 
 
 def get_moref(value, type_):
