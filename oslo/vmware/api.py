@@ -112,12 +112,6 @@ class RetryDecorator(object):
                         self._retry_count += 1
                         self._sleep_time += self._inc_sleep_time
                         return self._sleep_time
-            except Exception:
-                with excutils.save_and_reraise_exception():
-                    LOG.exception(_LE("Exception which is not in the "
-                                      "suggested list of exceptions occurred "
-                                      "while invoking %s."),
-                                  func_name)
             raise loopingcall.LoopingCallDone(result)
 
         def func(*args, **kwargs):

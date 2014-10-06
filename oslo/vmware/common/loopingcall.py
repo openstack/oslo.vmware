@@ -133,7 +133,6 @@ class DynamicLoopingCall(LoopingCallBase):
                 self.stop()
                 done.send(e.retvalue)
             except Exception:
-                LOG.exception(_LE('in dynamic looping call'))
                 done.send_exception(*sys.exc_info())
                 return
             else:
