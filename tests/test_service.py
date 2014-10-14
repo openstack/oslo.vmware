@@ -114,6 +114,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
         fault_list = ['Fault']
 
+        doc = mock.Mock()
+
         def side_effect(mo, **kwargs):
             self.assertEqual(managed_object, mo._type)
             self.assertEqual(managed_object, mo.value)
@@ -127,40 +129,73 @@ class ServiceTest(base.TestCase):
             child.getChildren.return_value = [fault_children]
             detail = mock.Mock()
             detail.getChildren.return_value = [child]
-            doc = mock.Mock()
             doc.childAtPath.return_value = detail
             raise suds.WebFault(fault, doc)
 
         svc_obj = service.Service()
-        attr_name = 'powerOn'
         service_mock = svc_obj.client.service
-        setattr(service_mock, attr_name, side_effect)
+        setattr(service_mock, 'powerOn', side_effect)
 
-        try:
-            svc_obj.powerOn(managed_object)
-        except exceptions.VimFaultException as ex:
-            self.assertEqual(fault_list, ex.fault_list)
-            self.assertEqual({'name': 'value'}, ex.details)
-            self.assertEqual("MyFault", ex.msg)
+        ex = self.assertRaises(exceptions.VimFaultException, svc_obj.powerOn,
+                               managed_object)
+
+        self.assertEqual(fault_list, ex.fault_list)
+        self.assertEqual({'name': 'value'}, ex.details)
+        self.assertEqual("MyFault", ex.msg)
+        doc.childAtPath.assertCalledOnceWith('/detail')
 
     def test_request_handler_with_empty_web_fault_doc(self):
-        managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
             fault = mock.Mock(faultstring="MyFault")
             raise suds.WebFault(fault, None)
 
         svc_obj = service.Service()
-        attr_name = 'powerOn'
         service_mock = svc_obj.client.service
-        setattr(service_mock, attr_name, side_effect)
+        setattr(service_mock, 'powerOn', side_effect)
 
         ex = self.assertRaises(exceptions.VimFaultException,
                                svc_obj.powerOn,
-                               managed_object)
+                               'VirtualMachine')
         self.assertEqual([], ex.fault_list)
         self.assertEqual({}, ex.details)
         self.assertEqual("MyFault", ex.msg)
+
+    def test_request_handler_with_vc51_web_fault(self):
+        managed_object = 'VirtualMachine'
+        fault_list = ['Fault']
+
+        doc = mock.Mock()
+
+        def side_effect(mo, **kwargs):
+            self.assertEqual(managed_object, mo._type)
+            self.assertEqual(managed_object, mo.value)
+            fault = mock.Mock(faultstring="MyFault")
+
+            fault_children = mock.Mock()
+            fault_children.name = "name"
+            fault_children.getText.return_value = "value"
+            child = mock.Mock()
+            child.get.return_value = fault_list[0]
+            child.getChildren.return_value = [fault_children]
+            detail = mock.Mock()
+            detail.getChildren.return_value = [child]
+            doc.childAtPath.side_effect = [None, detail]
+            raise suds.WebFault(fault, doc)
+
+        svc_obj = service.Service()
+        service_mock = svc_obj.client.service
+        setattr(service_mock, 'powerOn', side_effect)
+
+        ex = self.assertRaises(exceptions.VimFaultException, svc_obj.powerOn,
+                               managed_object)
+
+        self.assertEqual(fault_list, ex.fault_list)
+        self.assertEqual({'name': 'value'}, ex.details)
+        self.assertEqual("MyFault", ex.msg)
+        exp_calls = [mock.call('/detail'),
+                     mock.call('/Envelope/Body/Fault/detail')]
+        self.assertEqual(exp_calls, doc.childAtPath.call_args_list)
 
     def test_request_handler_with_attribute_error(self):
         managed_object = 'VirtualMachine'
