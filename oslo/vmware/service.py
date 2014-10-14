@@ -300,6 +300,9 @@ class Service(object):
                 detail = None
                 if doc is not None:
                     detail = doc.childAtPath('/detail')
+                    if not detail:
+                        # NOTE(arnaud): this is needed with VC 5.1
+                        detail = doc.childAtPath('/Envelope/Body/Fault/detail')
                 fault_list = []
                 details = {}
                 if detail:
