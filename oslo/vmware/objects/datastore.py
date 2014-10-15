@@ -12,23 +12,33 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import httplib
+import logging
 import posixpath
+import random
 
 import six.moves.urllib.parse as urlparse
 
 from oslo.vmware._i18n import _
+from oslo.vmware import constants
+from oslo.vmware import exceptions
 from oslo.vmware import vim_util
+
+LOG = logging.getLogger(__name__)
 
 
 class Datastore(object):
 
-    def __init__(self, ref, name, capacity=None, freespace=None):
+    def __init__(self, ref, name, capacity=None, freespace=None,
+                 type=None, datacenter=None):
         """Datastore object holds ref and name together for convenience.
 
         :param ref: a vSphere reference to a datastore
         :param name: vSphere unique name for this datastore
         :param capacity: (optional) capacity in bytes of this datastore
         :param freespace: (optional) free space in bytes of datastore
+        :param type: (optional) datastore type
+        :param datacenter: (optional) oslo.vmware Datacenter object
         """
         if name is None:
             raise ValueError(_("Datastore name cannot be None"))
@@ -40,26 +50,12 @@ class Datastore(object):
             if capacity < freespace:
                 raise ValueError(_("Capacity is smaller than free space"))
 
-        self._ref = ref
-        self._name = name
-        self._capacity = capacity
-        self._freespace = freespace
-
-    @property
-    def ref(self):
-        return self._ref
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def capacity(self):
-        return self._capacity
-
-    @property
-    def freespace(self):
-        return self._freespace
+        self.ref = ref
+        self.name = name
+        self.capacity = capacity
+        self.freespace = freespace
+        self.type = type
+        self.datacenter = datacenter
 
     def build_path(self, *paths):
         """Constructs and returns a DatastorePath.
@@ -68,7 +64,23 @@ class Datastore(object):
                       to the root directory of the datastore
         :return: a DatastorePath object
         """
-        return DatastorePath(self._name, *paths)
+        return DatastorePath(self.name, *paths)
+
+    def build_url(self, scheme, server, rel_path, datacenter_name=None):
+        """Constructs and returns a DatastoreURL.
+
+        :param scheme: scheme of the URL (http, https).
+        :param server: hostname or ip
+        :param rel_path: relative path of the file on the datastore
+        :param datacenter_name: (optional) datacenter name
+        :return: a DatastoreURL object
+        """
+        if self.datacenter is None and datacenter_name is None:
+            raise ValueError(_("datacenter must be set to build url"))
+        if datacenter_name is None:
+            datacenter_name = self.datacenter.name
+        return DatastoreURL(scheme, server, rel_path, datacenter_name,
+                            self.name)
 
     def __str__(self):
         return '[%s]' % self._name
@@ -117,6 +129,11 @@ class Datastore(object):
         accessible = getattr(mount_info, 'accessible', False)
 
         return writable and mounted and accessible
+
+    @staticmethod
+    def choose_host(hosts):
+        i = random.randrange(0, len(hosts))
+        return hosts[i]
 
 
 class DatastorePath(object):
@@ -227,6 +244,9 @@ class DatastoreURL(object):
         self._path = path
         self._datacenter_path = datacenter_path
         self._datastore_name = datastore_name
+        params = {'dcPath': self._datacenter_path,
+                  'dsName': self._datastore_name}
+        self._query = urlparse.urlencode(params)
 
     @classmethod
     def urlparse(cls, url):
@@ -258,8 +278,41 @@ class DatastoreURL(object):
         return self._datastore_name
 
     def __str__(self):
-        params = {'dcPath': self._datacenter_path,
-                  'dsName': self._datastore_name}
-        query = urlparse.urlencode(params)
         return '%s://%s/folder/%s?%s' % (self._scheme, self._server,
-                                         self.path, query)
+                                         self.path, self._query)
+
+    def connect(self, method, content_length, cookie):
+        try:
+            if self._scheme == 'http':
+                conn = httplib.HTTPConnection(self._server)
+            elif self._scheme == 'https':
+                conn = httplib.HTTPSConnection(self._server)
+            else:
+                excep_msg = _("Invalid scheme: %s.") % self._scheme
+                LOG.error(excep_msg)
+                raise ValueError(excep_msg)
+            conn.putrequest(method, '/folder/%s?%s' % (self.path, self._query))
+            conn.putheader('User-Agent', constants.USER_AGENT)
+            conn.putheader('Content-Length', content_length)
+            conn.putheader('Cookie', cookie)
+            conn.endheaders()
+            LOG.debug("Created HTTP connection to transfer the file with "
+                      "URL = %s.", str(self))
+            return conn
+        except (httplib.InvalidURL, httplib.CannotSendRequest,
+                httplib.CannotSendHeader) as excep:
+            excep_msg = _("Error occurred while creating HTTP connection "
+                          "to write to file with URL = %s.") % str(self)
+        LOG.exception(excep_msg)
+        raise exceptions.VimConnectionException(excep_msg, excep)
+
+    def get_transfer_ticket(self, session, method):
+        client_factory = session.vim.client.factory
+        spec = vim_util.get_http_service_request_spec(client_factory, method,
+                                                      str(self))
+        ticket = session.invoke_api(
+            session.vim,
+            'AcquireGenericServiceTicket',
+            session.vim.service_content.sessionManager,
+            spec=spec)
+        return '%s="%s"' % (constants.CGI_COOKIE_KEY, ticket.id)

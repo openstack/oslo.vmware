@@ -26,8 +26,11 @@ from eventlet import queue
 from eventlet import timeout
 
 from oslo.vmware._i18n import _
+from oslo.vmware import constants
 from oslo.vmware import exceptions
+from oslo.vmware.objects import datastore as ds_obj
 from oslo.vmware import rw_handles
+from oslo.vmware import vim_util
 
 
 LOG = logging.getLogger(__name__)
@@ -389,6 +392,41 @@ def _start_transfer(context, timeout_secs, read_file_handle, max_data_size,
         read_file_handle.close()
         if write_file_handle:
             write_file_handle.close()
+
+
+def download_image(image, image_meta, session, datastore, rel_path,
+                   bypass=True, timeout_secs=7200):
+    """Transfer an image to a datastore.
+
+    :param image: file-like iterator
+    :param image_meta: image metadata
+    :param session: VMwareAPISession object
+    :param datastore: Datastore object
+    :param rel_path: path where the file will be stored in the datastore
+    :param bypass: if set to True, bypass vCenter to download the image
+    :param timeout_secs: time in seconds to wait for the xfer to complete
+    """
+    image_size = int(image_meta['size'])
+    method = 'PUT'
+    if bypass:
+        hosts = datastore.get_connected_hosts(session)
+        host = ds_obj.Datastore.choose_host(hosts)
+        host_name = session.invoke_api(vim_util, 'get_object_property',
+                                       session.vim, host, 'name')
+        ds_url = datastore.build_url(session._scheme, host_name, rel_path,
+                                     constants.ESX_DATACENTER_PATH)
+        cookie = ds_url.get_transfer_ticket(session, method)
+        conn = ds_url.connect(method, image_size, cookie)
+    else:
+        ds_url = datastore.build_url(session._scheme, session._host, rel_path)
+        cookie = '%s=%s' % (constants.SOAP_COOKIE_KEY,
+                            session.vim.get_http_cookie().strip("\""))
+        conn = ds_url.connect(method, image_size, cookie)
+        conn.write = conn.send
+
+    read_handle = rw_handles.ImageReadHandle(image)
+    _start_transfer(None, timeout_secs, read_handle, image_size,
+                    write_file_handle=conn)
 
 
 def download_flat_image(context, timeout_secs, image_service, image_id,
