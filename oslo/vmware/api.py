@@ -413,10 +413,6 @@ class VMwareAPISession(object):
                 raise loopingcall.LoopingCallDone(task_info)
             else:
                 error_msg = six.text_type(task_info.error.localizedMessage)
-                excep_msg = _("Task: %(task)s failed with error: "
-                              "%(error)s.") % {'task': task,
-                                               'error': error_msg}
-                LOG.error(excep_msg)
                 error = task_info.error
                 name = error.fault.__class__.__name__
                 task_ex = exceptions.get_fault_class(name)(error_msg)
