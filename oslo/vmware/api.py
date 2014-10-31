@@ -178,6 +178,11 @@ class VMwareAPISession(object):
         if create_session:
             self._create_session()
 
+    def pbm_wsdl_loc_set(self, pbm_wsdl_loc):
+        self._pbm_wsdl_loc = pbm_wsdl_loc
+        self._pbm = None
+        LOG.info(_LI('PBM WSDL updated to %s'), pbm_wsdl_loc)
+
     @property
     def vim(self):
         if not self._vim:
