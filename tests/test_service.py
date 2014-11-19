@@ -13,10 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httplib
-
 import mock
 import requests
+import six
+import six.moves.http_client as httplib
 import suds
 
 from oslo.vmware import exceptions
@@ -408,24 +408,39 @@ class RequestsTransportTest(base.TestCase):
         self.assertEqual(mock.sentinel.headers, reply.headers)
         self.assertEqual(mock.sentinel.content, reply.message)
 
-    @mock.patch('__builtin__.open')
     @mock.patch('os.path.getsize')
-    def test_send_with_local_file_url(self, get_size_mock, open_mock):
+    def test_send_with_local_file_url(self, get_size_mock):
         transport = service.RequestsTransport()
 
         url = 'file:///foo'
         request = requests.PreparedRequest()
         request.url = url
 
-        data = "Hello World"
+        data = b"Hello World"
         get_size_mock.return_value = len(data)
 
         def readinto_mock(buf):
             buf[0:] = data
 
-        open_mock.return_value = mock.MagicMock(name='file_handle', spec=file)
-        file_handle = open_mock.return_value.__enter__.return_value
-        file_handle.readinto.side_effect = readinto_mock
+        if six.PY3:
+            builtin_open = 'builtins.open'
+            open_mock = mock.MagicMock(name='file_handle',
+                                       spec=open)
+            import _io
+            file_spec = list(set(dir(_io.TextIOWrapper)).union(
+                set(dir(_io.BytesIO))))
+        else:
+            builtin_open = '__builtin__.open'
+            open_mock = mock.MagicMock(name='file_handle',
+                                       spec=file)
+            file_spec = file
 
-        resp = transport.session.send(request)
-        self.assertEqual(data, resp.content)
+        file_handle = mock.MagicMock(spec=file_spec)
+        file_handle.write.return_value = None
+        file_handle.__enter__.return_value = file_handle
+        file_handle.readinto.side_effect = readinto_mock
+        open_mock.return_value = file_handle
+
+        with mock.patch(builtin_open, open_mock, create=True):
+            resp = transport.session.send(request)
+            self.assertEqual(data, resp.content)

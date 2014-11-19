@@ -18,6 +18,7 @@ Unit tests for read and write handles for image transfer.
 """
 
 import mock
+import six
 
 from oslo.vmware import exceptions
 from oslo.vmware import rw_handles
@@ -62,7 +63,7 @@ class FileWriteHandleTest(base.TestCase):
         vim_cookie.value = 'value'
 
         self._conn = mock.Mock()
-        patcher = mock.patch('httplib.HTTPConnection')
+        patcher = mock.patch('six.moves.http_client.HTTPConnection')
         self.addCleanup(patcher.stop)
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
@@ -87,7 +88,7 @@ class VmdkWriteHandleTest(base.TestCase):
     def setUp(self):
         super(VmdkWriteHandleTest, self).setUp()
         self._conn = mock.Mock()
-        patcher = mock.patch('httplib.HTTPConnection')
+        patcher = mock.patch('six.moves.http_client.HTTPConnection')
         self.addCleanup(patcher.stop)
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
@@ -180,12 +181,14 @@ class VmdkReadHandleTest(base.TestCase):
     def setUp(self):
         super(VmdkReadHandleTest, self).setUp()
 
-        req_patcher = mock.patch('urllib2.Request')
+        req_patcher = mock.patch(
+            'six.moves.urllib.request.Request')
         self.addCleanup(req_patcher.stop)
         RequestMock = req_patcher.start()
         RequestMock.return_value = mock.Mock()
 
-        urlopen_patcher = mock.patch('urllib2.urlopen')
+        urlopen_patcher = mock.patch(
+            'six.moves.urllib.request.urlopen')
         self.addCleanup(urlopen_patcher.stop)
         urlopen_mock = urlopen_patcher.start()
         self._conn = mock.Mock()
@@ -281,7 +284,7 @@ class ImageReadHandleTest(base.TestCase):
         max_items = 10
         item = [1] * 10
 
-        class ImageReadIterator:
+        class ImageReadIterator(six.Iterator):
 
             def __init__(self):
                 self.num_items = 0
@@ -289,11 +292,13 @@ class ImageReadHandleTest(base.TestCase):
             def __iter__(self):
                 return self
 
-            def next(self):
+            def __next__(self):
                 if (self.num_items < max_items):
                     self.num_items += 1
                     return item
                 raise StopIteration
+
+            next = __next__
 
         handle = rw_handles.ImageReadHandle(ImageReadIterator())
         for _ in range(0, max_items):

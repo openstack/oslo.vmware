@@ -17,14 +17,17 @@
 Common classes that provide access to vSphere services.
 """
 
-import httplib
 import logging
 import os
 
 import netaddr
 import requests
 import six
+import six.moves.http_client as httplib
 import suds
+from suds import cache
+from suds import client
+from suds import plugin
 from suds import transport
 
 from oslo.utils import timeutils
@@ -42,7 +45,7 @@ SERVICE_INSTANCE = 'ServiceInstance'
 LOG = logging.getLogger(__name__)
 
 
-class ServiceMessagePlugin(suds.plugin.MessagePlugin):
+class ServiceMessagePlugin(plugin.MessagePlugin):
     """Suds plug-in handling some special cases while calling VI SDK."""
 
     def add_attribute_for_value(self, node):
@@ -149,7 +152,7 @@ class RequestsTransport(transport.Transport):
         return transport.Reply(resp.status_code, resp.headers, resp.content)
 
 
-class MemoryCache(suds.cache.ObjectCache):
+class MemoryCache(cache.ObjectCache):
     def __init__(self):
         self._cache = {}
 
@@ -187,11 +190,11 @@ class Service(object):
         LOG.debug("Creating suds client with soap_url='%s' and wsdl_url='%s'",
                   self.soap_url, self.wsdl_url)
         transport = RequestsTransport(cacert, insecure)
-        self.client = suds.client.Client(self.wsdl_url,
-                                         transport=transport,
-                                         location=self.soap_url,
-                                         plugins=[ServiceMessagePlugin()],
-                                         cache=_CACHE)
+        self.client = client.Client(self.wsdl_url,
+                                    transport=transport,
+                                    location=self.soap_url,
+                                    plugins=[ServiceMessagePlugin()],
+                                    cache=_CACHE)
         self._service_content = None
 
     @staticmethod

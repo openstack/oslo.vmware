@@ -21,14 +21,13 @@ VMDK files in VMware servers. It also contains a class to read images from
 glance server.
 """
 
-import httplib
 import logging
 import socket
-import urllib
-import urllib2
-import urlparse
 
 import netaddr
+import six.moves.http_client as httplib
+import six.moves.urllib.parse as urlparse
+import six.moves.urllib.request as urllib2
 
 from oslo.utils import excutils
 from oslo.vmware._i18n import _, _LE, _LW
@@ -176,7 +175,7 @@ class FileWriteHandle(FileHandle):
         soap_url = self._get_soap_url(scheme, host, port)
         param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
         self._url = '%s/folder/%s' % (soap_url, file_path)
-        self._url = self._url + '?' + urllib.urlencode(param_list)
+        self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self.conn = self._create_connection(self._url,
                                             file_size,
