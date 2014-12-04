@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-02 06:08+0000\n"
+"POT-Creation-Date: 2014-12-04 06:07+0000\n"
 "PO-Revision-Date: 2014-11-01 12:17+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
@@ -39,84 +39,84 @@ msgstr "Bail: %(lease)s est dans une erreur de status. Détails: %(error_msg)s."
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
 
-#: oslo/vmware/exceptions.py:50
+#: oslo/vmware/exceptions.py:56
 msgid "exception_summary must not be a list"
 msgstr "exception_summary ne doit pas etre une liste"
 
-#: oslo/vmware/exceptions.py:89
+#: oslo/vmware/exceptions.py:93
 msgid "fault_list must be a list"
 msgstr "fault_list doit etre une liste"
 
-#: oslo/vmware/exceptions.py:91
+#: oslo/vmware/exceptions.py:95
 msgid "details must be a dict"
 msgstr "details doit etre un dict"
 
-#: oslo/vmware/exceptions.py:121
+#: oslo/vmware/exceptions.py:131
 msgid "An unknown exception occurred."
 msgstr "Une exception inconnue s'est produite "
 
-#: oslo/vmware/exceptions.py:147
+#: oslo/vmware/exceptions.py:157
 msgid "VMware Driver configuration fault."
 msgstr "Redirection de la configuration du pilote VMware."
 
-#: oslo/vmware/exceptions.py:151
+#: oslo/vmware/exceptions.py:161
 msgid "No default value for use_linked_clone found."
 msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
 
-#: oslo/vmware/exceptions.py:155
+#: oslo/vmware/exceptions.py:165
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr "Paramètre manquant : %(param)s"
 
-#: oslo/vmware/exceptions.py:159
+#: oslo/vmware/exceptions.py:169
 msgid "Resource already exists."
 msgstr "La ressource existe déjà."
 
-#: oslo/vmware/exceptions.py:164
+#: oslo/vmware/exceptions.py:174
 msgid "Cannot delete file."
 msgstr "Le fichier ne peut pas etre supprimé."
 
-#: oslo/vmware/exceptions.py:169
+#: oslo/vmware/exceptions.py:179
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
 
-#: oslo/vmware/exceptions.py:174
+#: oslo/vmware/exceptions.py:184
 msgid "File fault."
 msgstr "Redirection fichier."
 
-#: oslo/vmware/exceptions.py:179
+#: oslo/vmware/exceptions.py:189
 msgid "File locked."
 msgstr "Fichier verrouillé."
 
-#: oslo/vmware/exceptions.py:184
+#: oslo/vmware/exceptions.py:194
 msgid "File not found."
 msgstr "Fichier non trouvé."
 
-#: oslo/vmware/exceptions.py:189
+#: oslo/vmware/exceptions.py:199
 msgid "Invalid power state."
 msgstr "Status de démarrage non valide."
 
-#: oslo/vmware/exceptions.py:194
+#: oslo/vmware/exceptions.py:204
 msgid "Invalid property."
 msgstr "Propriété non valide."
 
-#: oslo/vmware/exceptions.py:199
+#: oslo/vmware/exceptions.py:209
 msgid "No Permission."
 msgstr "Pas de permission."
 
-#: oslo/vmware/exceptions.py:204
+#: oslo/vmware/exceptions.py:214
 msgid "Not Authenticated."
 msgstr "Non authentifié."
 
-#: oslo/vmware/exceptions.py:209
+#: oslo/vmware/exceptions.py:219
 msgid "Entity has another operation in process."
 msgstr "L'entité a une autre opération en cours."
 
-#: oslo/vmware/exceptions.py:213
+#: oslo/vmware/exceptions.py:223
 msgid "Duplicate name."
 msgstr "Duplicat du nom."
 
-#: oslo/vmware/exceptions.py:247
+#: oslo/vmware/exceptions.py:257
 msgid "exception should be a subclass of VMwareDriverException"
 msgstr "exception devrait être une subclass de VMwareDriverException"
 
@@ -152,36 +152,17 @@ msgstr ""
 "Une erreur est survenue durant le transfère de l'image avec le lecteur: "
 "%(reader)s et l'écriture: %(writer)s"
 
-#: oslo/vmware/rw_handles.py:144
-msgid "Could not retrieve VMDK URL from lease info."
-msgstr "Impossible de récupérer VMDK URL depuis l'emplacement d'information."
+#: oslo/vmware/rw_handles.py:76
+#, python-format
+msgid "Error occurred while opening URL: %s for reading."
+msgstr "Une erreur est survenue pendant l'ouverture de URL: %s pour la lecture."
 
-#: oslo/vmware/rw_handles.py:201 oslo/vmware/rw_handles.py:340
-#: oslo/vmware/objects/datastore.py:291
+#: oslo/vmware/rw_handles.py:114 oslo/vmware/objects/datastore.py:291
 #, python-format
 msgid "Invalid scheme: %s."
 msgstr "Invalide schéma: %s"
 
-#: oslo/vmware/rw_handles.py:213 oslo/vmware/objects/datastore.py:304
-#, python-format
-msgid ""
-"Error occurred while creating HTTP connection to write to file with URL ="
-" %s."
-msgstr ""
-"Une erreur est survenue pendant la création des connexion HTTP pour "
-"écrire le fichier avec URL = %s."
-
-#: oslo/vmware/rw_handles.py:227 oslo/vmware/rw_handles.py:371
-#, python-format
-msgid "Connection error occurred while writing data to %s."
-msgstr "Erreur de connexion pendant l'écriture des données de %s"
-
-#: oslo/vmware/rw_handles.py:235 oslo/vmware/rw_handles.py:379
-#, python-format
-msgid "Error occurred while writing data to %s."
-msgstr "Une erreur est survenue pendant l'écriture des données de %s."
-
-#: oslo/vmware/rw_handles.py:356
+#: oslo/vmware/rw_handles.py:138
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to VMDK file with "
@@ -190,46 +171,55 @@ msgstr ""
 "Une erreur est survenue pendant la création des connexion HTTP pour "
 "écrire le fichier VMDK avec URL = %s."
 
-#: oslo/vmware/rw_handles.py:509
-#, python-format
-msgid "Error occurred while opening URL: %s for reading."
-msgstr "Une erreur est survenue pendant l'ouverture de URL: %s pour la lecture."
+#: oslo/vmware/rw_handles.py:225
+msgid "Could not retrieve VMDK URL from lease info."
+msgstr "Impossible de récupérer VMDK URL depuis l'emplacement d'information."
 
-#: oslo/vmware/rw_handles.py:529
+#: oslo/vmware/rw_handles.py:277 oslo/vmware/rw_handles.py:391
+#, python-format
+msgid "Connection error occurred while writing data to %s."
+msgstr "Erreur de connexion pendant l'écriture des données de %s"
+
+#: oslo/vmware/rw_handles.py:285 oslo/vmware/rw_handles.py:399
+#, python-format
+msgid "Error occurred while writing data to %s."
+msgstr "Une erreur est survenue pendant l'écriture des données de %s."
+
+#: oslo/vmware/rw_handles.py:536
 #, python-format
 msgid "Error occurred while reading data from %s."
 msgstr "Une erreur est survenue pendant la lecture des données depuis %s."
 
-#: oslo/vmware/service.py:241
+#: oslo/vmware/service.py:244
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr "Une erreur est survenue pendant l'appelle RetrievePropertiesEx."
 
-#: oslo/vmware/service.py:318
+#: oslo/vmware/service.py:321
 #, python-format
 msgid "No such SOAP method %s."
 msgstr "Pas de méthode SOAP %s."
 
-#: oslo/vmware/service.py:324
+#: oslo/vmware/service.py:327
 #, python-format
 msgid "httplib error in %s."
 msgstr "httplib erreur dans %s."
 
-#: oslo/vmware/service.py:328
+#: oslo/vmware/service.py:331
 #, python-format
 msgid "requests error in %s."
 msgstr "erreur de requetes dans %s."
 
-#: oslo/vmware/service.py:339
+#: oslo/vmware/service.py:342
 #, python-format
 msgid "Socket error in %s."
 msgstr "Erreur de socket dans %s."
 
-#: oslo/vmware/service.py:344
+#: oslo/vmware/service.py:347
 #, python-format
 msgid "Type error in %s."
 msgstr "Erreur de type dans %s."
 
-#: oslo/vmware/service.py:347
+#: oslo/vmware/service.py:350
 #, python-format
 msgid "Exception in %s."
 msgstr "Exception dans %s."
@@ -273,4 +263,13 @@ msgstr "Le chemin du composant ne peut pas etre \"vide\""
 #: oslo/vmware/objects/datastore.py:222
 msgid "Datastore path cannot be empty"
 msgstr "Le chemin du datastore ne peut pas etre \"vide\""
+
+#: oslo/vmware/objects/datastore.py:304
+#, python-format
+msgid ""
+"Error occurred while creating HTTP connection to write to file with URL ="
+" %s."
+msgstr ""
+"Une erreur est survenue pendant la création des connexion HTTP pour "
+"écrire le fichier avec URL = %s."
 
