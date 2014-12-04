@@ -238,6 +238,9 @@ class VMwareAPISessionTest(base.TestCase):
 
     def test_invoke_api_with_expected_exception(self):
         api_session = self._create_api_session(True)
+        api_session._create_session = mock.Mock()
+        vim_obj = api_session.vim
+        vim_obj.SessionIsActive.return_value = False
         ret = mock.Mock()
         responses = [exceptions.VimConnectionException(None), ret]
 
@@ -251,6 +254,27 @@ class VMwareAPISessionTest(base.TestCase):
         module.api = api
         with mock.patch.object(greenthread, 'sleep'):
             self.assertEqual(ret, api_session.invoke_api(module, 'api'))
+        api_session._create_session.assert_called_once_with()
+
+    def test_invoke_api_not_recreate_session(self):
+        api_session = self._create_api_session(True)
+        api_session._create_session = mock.Mock()
+        vim_obj = api_session.vim
+        vim_obj.SessionIsActive.return_value = True
+        ret = mock.Mock()
+        responses = [exceptions.VimConnectionException(None), ret]
+
+        def api(*args, **kwargs):
+            response = responses.pop(0)
+            if isinstance(response, Exception):
+                raise response
+            return response
+
+        module = mock.Mock()
+        module.api = api
+        with mock.patch.object(greenthread, 'sleep'):
+            self.assertEqual(ret, api_session.invoke_api(module, 'api'))
+        self.assertFalse(api_session._create_session.called)
 
     def test_invoke_api_with_vim_fault_exception(self):
         api_session = self._create_api_session(True)

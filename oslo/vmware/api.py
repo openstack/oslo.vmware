@@ -336,14 +336,17 @@ class VMwareAPISession(object):
 
             except exceptions.VimConnectionException:
                 with excutils.save_and_reraise_exception():
-                    # Re-create the session during connection exception.
-                    LOG.warn(_LW("Re-creating session due to connection "
-                                 "problems while invoking method "
-                                 "%(module)s.%(method)s."),
-                             {'module': module,
-                              'method': method},
-                             exc_info=True)
-                    self._create_session()
+                    # Re-create the session during connection exception only
+                    # if the session has expired. Otherwise, it could be
+                    # a transient issue.
+                    if not self._is_current_session_active():
+                        LOG.warn(_LW("Re-creating session due to connection "
+                                     "problems while invoking method "
+                                     "%(module)s.%(method)s."),
+                                 {'module': module,
+                                  'method': method},
+                                 exc_info=True)
+                        self._create_session()
 
         return _invoke_api(module, method, *args, **kwargs)
 
