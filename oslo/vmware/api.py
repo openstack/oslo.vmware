@@ -304,7 +304,7 @@ class VMwareAPISession(object):
                     # Also, the server responds with an empty response in the
                     # case of an inactive session. Therefore, we need a way to
                     # differentiate between these two cases.
-                    if self._is_current_session_active():
+                    if self.is_current_session_active():
                         LOG.debug("Returning empty response for "
                                   "%(module)s.%(method)s invocation.",
                                   {'module': module,
@@ -339,7 +339,7 @@ class VMwareAPISession(object):
                     # Re-create the session during connection exception only
                     # if the session has expired. Otherwise, it could be
                     # a transient issue.
-                    if not self._is_current_session_active():
+                    if not self.is_current_session_active():
                         LOG.warn(_LW("Re-creating session due to connection "
                                      "problems while invoking method "
                                      "%(module)s.%(method)s."),
@@ -350,7 +350,7 @@ class VMwareAPISession(object):
 
         return _invoke_api(module, method, *args, **kwargs)
 
-    def _is_current_session_active(self):
+    def is_current_session_active(self):
         """Check if current session is active.
 
         :returns: True if the session is active; False otherwise
