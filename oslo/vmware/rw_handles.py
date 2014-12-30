@@ -24,13 +24,13 @@ glance server.
 import logging
 import ssl
 
-import netaddr
 import requests
 import six
 import six.moves.urllib.parse as urlparse
 from urllib3 import connection as httplib
 
 from oslo.utils import excutils
+from oslo.utils import netutils
 from oslo.vmware._i18n import _, _LE, _LW
 from oslo.vmware import exceptions
 from oslo.vmware import vim_util
@@ -179,16 +179,9 @@ class FileHandle(object):
         """
         raise NotImplementedError()
 
-    def _is_valid_ipv6(self, address):
-        """Checks whether the given host address is a valid IPv6 address."""
-        try:
-            return netaddr.valid_ipv6(address)
-        except Exception:
-            return False
-
     def _get_soap_url(self, scheme, host, port):
         """Returns the IPv4/v6 compatible SOAP URL for the given host."""
-        if self._is_valid_ipv6(host):
+        if netutils.is_valid_ipv6(host):
             return '%s://[%s]:%d' % (scheme, host, port)
         return '%s://%s:%d' % (scheme, host, port)
 
@@ -202,7 +195,7 @@ class FileHandle(object):
         urlp = urlparse.urlparse(url)
         if urlp.netloc == '*':
             scheme, netloc, path, params, query, fragment = urlp
-            if netaddr.valid_ipv6(host):
+            if netutils.is_valid_ipv6(host):
                 netloc = '[%s]:%d' % (host, port)
             else:
                 netloc = "%s:%d" % (host, port)
