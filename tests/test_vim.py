@@ -18,8 +18,8 @@ Unit tests for classes to invoke VMware VI SOAP calls.
 """
 
 import mock
+from oslo_i18n import fixture as i18n_fixture
 
-from oslo import i18n
 from oslo.vmware._i18n import _
 from oslo.vmware import exceptions
 from oslo.vmware import vim
@@ -34,12 +34,7 @@ class VimTest(base.TestCase):
         patcher = mock.patch('suds.client.Client')
         self.addCleanup(patcher.stop)
         self.SudsClientMock = patcher.start()
-        back_use_lazy = i18n._lazy.USE_LAZY
-        i18n.enable_lazy()
-        self.addCleanup(self._restore_use_lazy, back_use_lazy)
-
-    def _restore_use_lazy(self, back_use_lazy):
-        i18n._lazy.USE_LAZY = back_use_lazy
+        self.useFixture(i18n_fixture.ToggleLazy(True))
 
     @mock.patch.object(vim.Vim, '__getattr__', autospec=True)
     def test_service_content(self, getattr_mock):
