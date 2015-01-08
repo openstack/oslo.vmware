@@ -23,11 +23,10 @@ from eventlet import greenthread
 from eventlet import timeout
 import mock
 
-from oslo.vmware import exceptions
-from oslo.vmware import image_transfer
-from oslo.vmware import rw_handles
-from oslo_vmware import image_transfer as new_image_transfer
-from tests import base
+from oslo_vmware import exceptions
+from oslo_vmware import image_transfer
+from oslo_vmware import rw_handles
+from oslo_vmware.tests import base
 
 
 class BlockingQueueTest(base.TestCase):
@@ -192,9 +191,9 @@ class ImageTransferUtilityTest(base.TestCase):
     """Tests for image_transfer utility methods."""
 
     @mock.patch.object(timeout, 'Timeout')
-    @mock.patch('oslo_vmware.image_transfer.ImageWriter')
-    @mock.patch('oslo_vmware.image_transfer.FileReadWriteTask')
-    @mock.patch('oslo_vmware.image_transfer.BlockingQueue')
+    @mock.patch.object(image_transfer, 'ImageWriter')
+    @mock.patch.object(image_transfer, 'FileReadWriteTask')
+    @mock.patch.object(image_transfer, 'BlockingQueue')
     def test_start_transfer(self, fake_BlockingQueue, fake_FileReadWriteTask,
                             fake_ImageWriter, fake_Timeout):
 
@@ -221,15 +220,14 @@ class ImageTransferUtilityTest(base.TestCase):
         fake_Timeout.return_value = fake_timer
 
         for write_file_handle in write_file_handles:
-            new_image_transfer._start_transfer(
-                context,
-                timeout_secs,
-                read_file_handle,
-                max_data_size,
-                write_file_handle=write_file_handle,
-                image_service=image_service,
-                image_id=image_id,
-                image_meta=image_meta)
+            image_transfer._start_transfer(context,
+                                           timeout_secs,
+                                           read_file_handle,
+                                           max_data_size,
+                                           write_file_handle=write_file_handle,
+                                           image_service=image_service,
+                                           image_id=image_id,
+                                           image_meta=image_meta)
 
         exp_calls = [mock.call(blocking_queue_size,
                                max_data_size)] * len(write_file_handles)
@@ -259,9 +257,44 @@ class ImageTransferUtilityTest(base.TestCase):
 
         write_file_handle1.close.assert_called_once()
 
+    @mock.patch.object(image_transfer, 'FileReadWriteTask')
+    @mock.patch.object(image_transfer, 'BlockingQueue')
+    def test_start_transfer_with_no_image_destination(self, fake_BlockingQueue,
+                                                      fake_FileReadWriteTask):
+
+        context = mock.Mock()
+        read_file_handle = mock.Mock()
+        write_file_handle = None
+        image_service = None
+        image_id = None
+        timeout_secs = 10
+        image_meta = {}
+        blocking_queue_size = 10
+        max_data_size = 30
+        blocking_queue = mock.Mock()
+
+        fake_BlockingQueue.return_value = blocking_queue
+
+        self.assertRaises(ValueError,
+                          image_transfer._start_transfer,
+                          context,
+                          timeout_secs,
+                          read_file_handle,
+                          max_data_size,
+                          write_file_handle=write_file_handle,
+                          image_service=image_service,
+                          image_id=image_id,
+                          image_meta=image_meta)
+
+        fake_BlockingQueue.assert_called_once_with(blocking_queue_size,
+                                                   max_data_size)
+
+        fake_FileReadWriteTask.assert_called_once_with(read_file_handle,
+                                                       blocking_queue)
+
     @mock.patch('oslo_vmware.rw_handles.FileWriteHandle')
     @mock.patch('oslo_vmware.rw_handles.ImageReadHandle')
-    @mock.patch('oslo_vmware.image_transfer._start_transfer')
+    @mock.patch.object(image_transfer, '_start_transfer')
     def test_download_flat_image(
             self,
             fake_transfer,
@@ -323,7 +356,7 @@ class ImageTransferUtilityTest(base.TestCase):
             write_file_handle=fake_FileWriteHandle)
 
     @mock.patch('oslo_vmware.rw_handles.VmdkWriteHandle')
-    @mock.patch('oslo_vmware.image_transfer._start_transfer')
+    @mock.patch.object(image_transfer, '_start_transfer')
     def test_download_stream_optimized_data(self, fake_transfer,
                                             fake_rw_handles_VmdkWriteHandle):
 
@@ -373,7 +406,7 @@ class ImageTransferUtilityTest(base.TestCase):
         fake_VmdkWriteHandle.get_imported_vm.assert_called_once()
 
     @mock.patch('oslo_vmware.rw_handles.ImageReadHandle')
-    @mock.patch('oslo_vmware.image_transfer.download_stream_optimized_data')
+    @mock.patch.object(image_transfer, 'download_stream_optimized_data')
     def test_download_stream_optimized_image(
             self, fake_download_stream_optimized_data,
             fake_rw_handles_ImageReadHandle):
@@ -426,7 +459,7 @@ class ImageTransferUtilityTest(base.TestCase):
             vm_import_spec=vm_import_spec,
             image_size=image_size)
 
-    @mock.patch('oslo_vmware.image_transfer._start_transfer')
+    @mock.patch.object(image_transfer, '_start_transfer')
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
     def test_copy_stream_optimized_disk(
             self, vmdk_read_handle, start_transfer):
@@ -456,7 +489,7 @@ class ImageTransferUtilityTest(base.TestCase):
             write_file_handle=write_handle)
 
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
-    @mock.patch('oslo_vmware.image_transfer._start_transfer')
+    @mock.patch.object(image_transfer, '_start_transfer')
     def test_upload_image(self, fake_transfer, fake_rw_handles_VmdkReadHandle):
 
         context = mock.Mock()

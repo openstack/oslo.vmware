@@ -19,9 +19,10 @@ import six
 import six.moves.http_client as httplib
 import suds
 
-from oslo.vmware import exceptions
-from oslo.vmware import service
-from tests import base
+from oslo_vmware import exceptions
+from oslo_vmware import service
+from oslo_vmware.tests import base
+from oslo_vmware import vim_util
 
 
 class ServiceMessagePluginTest(base.TestCase):
@@ -286,7 +287,7 @@ class ServiceTest(base.TestCase):
                           svc_obj.powerOn,
                           managed_object)
 
-    @mock.patch('oslo_vmware.vim_util.get_moref', return_value=None)
+    @mock.patch.object(vim_util, 'get_moref', return_value=None)
     def test_request_handler_no_value(self, mock_moref):
         managed_object = 'VirtualMachine'
         svc_obj = service.Service()

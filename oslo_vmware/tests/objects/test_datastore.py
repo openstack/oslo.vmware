@@ -16,11 +16,10 @@ import mock
 import six.moves.urllib.parse as urlparse
 
 from oslo.utils import units
-from oslo.vmware import constants
-from oslo.vmware.objects import datastore
-from oslo.vmware import vim_util
-from oslo_vmware import vim_util as new_vim_util
-from tests import base
+from oslo_vmware import constants
+from oslo_vmware.objects import datastore
+from oslo_vmware.tests import base
+from oslo_vmware import vim_util
 
 
 class HostMount(object):
@@ -90,7 +89,7 @@ class DatastoreTestCase(base.TestCase):
         session.invoke_api.return_value = summary
         ret = ds.get_summary(session)
         self.assertEqual(summary, ret)
-        session.invoke_api.assert_called_once_with(new_vim_util,
+        session.invoke_api.assert_called_once_with(vim_util,
                                                    'get_object_property',
                                                    session.vim,
                                                    ds.ref, 'summary')

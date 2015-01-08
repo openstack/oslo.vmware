@@ -23,9 +23,8 @@ import mock
 import six.moves.urllib.parse as urlparse
 import six.moves.urllib.request as urllib
 
-from oslo.vmware import pbm
-from oslo_vmware import pbm as new_pbm
-from tests import base
+from oslo_vmware import pbm
+from oslo_vmware.tests import base
 
 
 class PBMUtilityTest(base.TestCase):
@@ -70,7 +69,7 @@ class PBMUtilityTest(base.TestCase):
         profile.name = name
         return profile
 
-    @mock.patch('oslo_vmware.pbm.get_all_profiles')
+    @mock.patch.object(pbm, 'get_all_profiles')
     def test_get_profile_id_by_name(self, get_all_profiles):
         profiles = [self._create_profile(str(i), 'profile-%d' % i)
                     for i in range(0, 10)]
@@ -83,7 +82,7 @@ class PBMUtilityTest(base.TestCase):
         self.assertEqual(exp_profile_id, profile_id)
         get_all_profiles.assert_called_once_with(session)
 
-    @mock.patch('oslo_vmware.pbm.get_all_profiles')
+    @mock.patch.object(pbm, 'get_all_profiles')
     def test_get_profile_id_by_name_with_invalid_profile(self,
                                                          get_all_profiles):
         profiles = [self._create_profile(str(i), 'profile-%d' % i)
@@ -156,7 +155,7 @@ class PBMUtilityTest(base.TestCase):
         self.assertIsNone(wsdl)
 
         def expected_wsdl(version):
-            driver_abs_dir = os.path.abspath(os.path.dirname(new_pbm.__file__))
+            driver_abs_dir = os.path.abspath(os.path.dirname(pbm.__file__))
             path = os.path.join(driver_abs_dir, 'wsdl', version,
                                 'pbmService.wsdl')
             return urlparse.urljoin('file:', urllib.pathname2url(path))

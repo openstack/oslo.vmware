@@ -1,3 +1,6 @@
+# Copyright (c) 2014 VMware, Inc.
+# All Rights Reserved.
+#
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -10,17 +13,20 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import warnings
 
+"""
+Shared constants across the VMware ecosystem.
+"""
 
-def deprecated():
-    new_name = __name__.replace('.', '_')
-    warnings.warn(
-        ('The oslo namespace package is deprecated. Please use %s instead.' %
-         new_name),
-        DeprecationWarning,
-        stacklevel=3,
-    )
+# Datacenter path for HTTP access to datastores if the target server is an ESX/
+# ESXi system: http://goo.gl/B5Htr8 for more information.
+ESX_DATACENTER_PATH = 'ha-datacenter'
 
+# User Agent for HTTP requests between OpenStack and vCenter.
+USER_AGENT = 'OpenStack-ESX-Adapter'
 
-deprecated()
+# Key of the cookie header when using a SOAP session.
+SOAP_COOKIE_KEY = 'vmware_soap_session'
+
+# Key of the cookie header when using a CGI session.
+CGI_COOKIE_KEY = 'vmware_cgi_ticket'

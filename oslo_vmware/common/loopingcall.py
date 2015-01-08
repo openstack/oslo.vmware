@@ -22,7 +22,7 @@ from eventlet import event
 from eventlet import greenthread
 
 from oslo.utils import timeutils
-from oslo.vmware._i18n import _LE, _LW
+from oslo_vmware._i18n import _LE, _LW
 
 LOG = logging.getLogger(__name__)
 

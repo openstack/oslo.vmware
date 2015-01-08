@@ -21,8 +21,8 @@ import collections
 
 import mock
 
-from oslo.vmware import vim_util
-from tests import base
+from oslo_vmware.tests import base
+from oslo_vmware import vim_util
 
 
 class VimUtilTest(base.TestCase):
@@ -52,7 +52,7 @@ class VimUtilTest(base.TestCase):
         self.assertFalse(traversal_spec.skip)
         self.assertEqual("Datacenter", traversal_spec.type)
 
-    @mock.patch('oslo_vmware.vim_util.build_selection_spec')
+    @mock.patch.object(vim_util, 'build_selection_spec')
     def test_build_recursive_traversal_spec(self, build_selection_spec_mock):
         sel_spec = mock.Mock()
         rp_to_rp_sel_spec = mock.Mock()
@@ -252,6 +252,10 @@ class VimUtilTest(base.TestCase):
         self.assertEqual(1, vim.RetrievePropertiesEx.call_count)
         self.assertTrue(res is retrieve_result.objects)
         cancel_retrieval.assert_called_once_with(vim, retrieve_result)
+
+    def test_get_token(self):
+        retrieve_result = object()
+        self.assertFalse(vim_util._get_token(retrieve_result))
 
     @mock.patch('oslo_vmware.vim_util._get_token')
     def test_cancel_retrieval(self, get_token):

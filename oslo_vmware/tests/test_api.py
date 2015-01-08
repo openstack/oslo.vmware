@@ -23,10 +23,11 @@ import mock
 import six
 import suds
 
-from oslo.vmware import api
-from oslo.vmware import exceptions
-from oslo_vmware import vim_util as new_vim_util
-from tests import base
+from oslo_vmware import api
+from oslo_vmware import exceptions
+from oslo_vmware import pbm
+from oslo_vmware.tests import base
+from oslo_vmware import vim_util
 
 
 class RetryDecoratorTest(base.TestCase):
@@ -133,7 +134,7 @@ class VMwareAPISessionTest(base.TestCase):
                                         cacert=self.cert_mock,
                                         insecure=False)
 
-    @mock.patch('oslo_vmware.pbm.Pbm')
+    @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
         api_session = self._create_api_session(True)
         vim_obj = api_session.vim
@@ -371,7 +372,7 @@ class VMwareAPISessionTest(base.TestCase):
             ret = api_session.wait_for_task(task)
             self.assertEqual('success', ret.state)
             self.assertEqual(100, ret.progress)
-        api_session.invoke_api.assert_called_with(new_vim_util,
+        api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
                                                   'info')
@@ -396,7 +397,7 @@ class VMwareAPISessionTest(base.TestCase):
             self.assertRaises(exceptions.VMwareDriverException,
                               api_session.wait_for_task,
                               task)
-        api_session.invoke_api.assert_called_with(new_vim_util,
+        api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
                                                   'info')
@@ -412,7 +413,7 @@ class VMwareAPISessionTest(base.TestCase):
             self.assertRaises(exceptions.VimException,
                               api_session.wait_for_task,
                               task)
-        api_session.invoke_api.assert_called_once_with(new_vim_util,
+        api_session.invoke_api.assert_called_once_with(vim_util,
                                                        'get_object_property',
                                                        api_session.vim, task,
                                                        'info')
@@ -429,7 +430,7 @@ class VMwareAPISessionTest(base.TestCase):
         lease = mock.Mock()
         with mock.patch.object(greenthread, 'sleep'):
             api_session.wait_for_lease_ready(lease)
-        api_session.invoke_api.assert_called_with(new_vim_util,
+        api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, lease,
                                                   'state')
@@ -448,9 +449,9 @@ class VMwareAPISessionTest(base.TestCase):
             self.assertRaises(exceptions.VimException,
                               api_session.wait_for_lease_ready,
                               lease)
-        exp_calls = [mock.call(new_vim_util, 'get_object_property',
+        exp_calls = [mock.call(vim_util, 'get_object_property',
                                api_session.vim, lease, 'state')] * 2
-        exp_calls.append(mock.call(new_vim_util, 'get_object_property',
+        exp_calls.append(mock.call(vim_util, 'get_object_property',
                                    api_session.vim, lease, 'error'))
         self.assertEqual(exp_calls, api_session.invoke_api.call_args_list)
 
@@ -465,7 +466,7 @@ class VMwareAPISessionTest(base.TestCase):
         self.assertRaises(exceptions.VimException,
                           api_session.wait_for_lease_ready,
                           lease)
-        api_session.invoke_api.assert_called_once_with(new_vim_util,
+        api_session.invoke_api.assert_called_once_with(vim_util,
                                                        'get_object_property',
                                                        api_session.vim,
                                                        lease, 'state')
@@ -479,7 +480,7 @@ class VMwareAPISessionTest(base.TestCase):
                           api_session.wait_for_lease_ready,
                           lease)
         api_session.invoke_api.assert_called_once_with(
-            new_vim_util, 'get_object_property', api_session.vim, lease,
+            vim_util, 'get_object_property', api_session.vim, lease,
             'state')
 
     def _poll_task_well_known_exceptions(self, fault,
@@ -504,6 +505,10 @@ class VMwareAPISessionTest(base.TestCase):
             self.assertRaises(expected_exception,
                               api_session._poll_task,
                               'fake-task')
+
+    def test_poll_task_well_known_exceptions(self):
+        for k, v in six.iteritems(exceptions._fault_classes_registry):
+            self._poll_task_well_known_exceptions(k, v)
 
     def test_poll_task_unknown_exception(self):
         _unknown_exceptions = {

@@ -1,5 +1,3 @@
-# Copyright (c) 2014 VMware, Inc.
-#
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -12,16 +10,4 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo.vmware._i18n import _
-
-
-class Datacenter(object):
-
-    def __init__(self, ref, name):
-        """Datacenter object holds ref and name together for convenience."""
-        if name is None:
-            raise ValueError(_("Datacenter name cannot be None"))
-        if ref is None:
-            raise ValueError(_("Datacenter reference cannot be None"))
-        self.ref = ref
-        self.name = name
+from oslo_vmware.objects.datacenter import *  # noqa

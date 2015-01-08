@@ -20,10 +20,10 @@ Unit tests for classes to invoke VMware VI SOAP calls.
 import mock
 from oslo_i18n import fixture as i18n_fixture
 
-from oslo.vmware import exceptions
-from oslo.vmware import vim
 from oslo_vmware._i18n import _
-from tests import base
+from oslo_vmware import exceptions
+from oslo_vmware.tests import base
+from oslo_vmware import vim
 
 
 class VimTest(base.TestCase):

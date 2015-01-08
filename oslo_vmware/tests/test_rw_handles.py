@@ -20,10 +20,10 @@ Unit tests for read and write handles for image transfer.
 import mock
 import six
 
-from oslo.vmware import exceptions
-from oslo.vmware import rw_handles
-from oslo_vmware import vim_util as new_vim_util
-from tests import base
+from oslo_vmware import exceptions
+from oslo_vmware import rw_handles
+from oslo_vmware.tests import base
+from oslo_vmware import vim_util
 
 
 class FileHandleTest(base.TestCase):
@@ -166,7 +166,7 @@ class VmdkWriteHandleTest(base.TestCase):
                                             100)
 
         def session_invoke_api_side_effect(module, method, *args, **kwargs):
-            if module == new_vim_util and method == 'get_object_property':
+            if module == vim_util and method == 'get_object_property':
                 return 'ready'
             self.assertEqual(session.vim, module)
             self.assertEqual('HttpNfcLeaseComplete', method)
@@ -262,7 +262,7 @@ class VmdkReadHandleTest(base.TestCase):
                                            100)
 
         def session_invoke_api_side_effect(module, method, *args, **kwargs):
-            if module == new_vim_util and method == 'get_object_property':
+            if module == vim_util and method == 'get_object_property':
                 return 'ready'
             self.assertEqual(session.vim, module)
             self.assertEqual('HttpNfcLeaseComplete', method)
