@@ -23,6 +23,7 @@ in case of connection problems or server API call overload.
 
 import logging
 
+from oslo_concurrency import lockutils
 import six
 
 from oslo.utils import excutils
@@ -211,15 +212,23 @@ class VMwareAPISession(object):
         return self._pbm
 
     @RetryDecorator(exceptions=(exceptions.VimConnectionException,))
+    @lockutils.synchronized('oslo_vmware_api_lock')
     def _create_session(self):
         """Establish session with the server."""
+        # Another thread might have created the session while the current one
+        # was waiting for the lock.
+        if self._session_id and self.is_current_session_active():
+            LOG.debug("Current session: %s is active.",
+                      _trunc_id(self._session_id))
+            return
+
         session_manager = self.vim.service_content.sessionManager
         # Login and create new session with the server for making API calls.
         LOG.debug("Logging in with username = %s.", self._server_username)
         session = self.vim.Login(session_manager,
                                  userName=self._server_username,
                                  password=self._server_password)
-        prev_session_id, self._session_id = self._session_id, session.key
+        self._session_id = session.key
         # We need to save the username in the session since we may need it
         # later to check active session. The SessionIsActive method requires
         # the username parameter to be exactly same as that in the session
@@ -229,25 +238,6 @@ class VMwareAPISession(object):
         LOG.info(_LI("Successfully established new session; session ID is "
                      "%s."),
                  _trunc_id(self._session_id))
-
-        # Terminate the previous session (if exists) for preserving sessions
-        # as there is a limit on the number of sessions we can have.
-        if prev_session_id:
-            try:
-                LOG.info(_LI("Terminating the previous session with ID = %s"),
-                         _trunc_id(prev_session_id))
-                self.vim.TerminateSession(session_manager,
-                                          sessionId=[prev_session_id])
-            except Exception:
-                # This exception is something we can live with. It is
-                # just an extra caution on our side. The session might
-                # have been cleared already. We could have made a call to
-                # SessionIsActive, but that is an overhead because we
-                # anyway would have to call TerminateSession.
-                LOG.warn(_LW("Error occurred while terminating the previous "
-                             "session with ID = %s."),
-                         _trunc_id(prev_session_id),
-                         exc_info=True)
 
         # Set PBM client cookie.
         if self._pbm is not None:

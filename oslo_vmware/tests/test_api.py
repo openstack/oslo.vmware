@@ -170,24 +170,43 @@ class VMwareAPISessionTest(base.TestCase):
         self.assertEqual(session.key, api_session._session_id)
         pbm.set_soap_cookie.assert_called_once_with(cookie)
 
-    def test_create_session_with_existing_session(self):
+    def test_create_session_with_existing_inactive_session(self):
         old_session_key = '12345'
         new_session_key = '67890'
         session = mock.Mock()
         session.key = new_session_key
         api_session = self._create_api_session(False)
         api_session._session_id = old_session_key
+        api_session._session_username = api_session._server_username
         vim_obj = api_session.vim
         vim_obj.Login.return_value = session
+        vim_obj.SessionIsActive.return_value = False
 
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
+        vim_obj.SessionIsActive.assert_called_once_with(
+            session_manager, sessionID=old_session_key,
+            userName=VMwareAPISessionTest.USERNAME)
         vim_obj.Login.assert_called_once_with(
             session_manager, userName=VMwareAPISessionTest.USERNAME,
             password=VMwareAPISessionTest.PASSWORD)
-        vim_obj.TerminateSession.assert_called_once_with(
-            session_manager, sessionId=[old_session_key])
         self.assertEqual(new_session_key, api_session._session_id)
+
+    def test_create_session_with_existing_active_session(self):
+        old_session_key = '12345'
+        api_session = self._create_api_session(False)
+        api_session._session_id = old_session_key
+        api_session._session_username = api_session._server_username
+        vim_obj = api_session.vim
+        vim_obj.SessionIsActive.return_value = True
+
+        api_session._create_session()
+        session_manager = vim_obj.service_content.sessionManager
+        vim_obj.SessionIsActive.assert_called_once_with(
+            session_manager, sessionID=old_session_key,
+            userName=VMwareAPISessionTest.USERNAME)
+        self.assertFalse(vim_obj.Login.called)
+        self.assertEqual(old_session_key, api_session._session_id)
 
     def test_invoke_api(self):
         api_session = self._create_api_session(True)
