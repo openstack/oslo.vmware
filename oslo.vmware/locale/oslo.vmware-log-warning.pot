@@ -1,15 +1,15 @@
 # Translations template for oslo.vmware.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the oslo.vmware
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.4.0.15.g6803b57\n"
+"Project-Id-Version: oslo.vmware 0.8.0.post20\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-18 06:08+0000\n"
+"POT-Creation-Date: 2015-01-22 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,54 +18,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: oslo/vmware/api.py:99
+#: oslo_vmware/api.py:98
 #, python-format
 msgid ""
 "Exception which is in the suggested list of exceptions occurred while "
 "invoking function: %s."
 msgstr ""
 
-#: oslo/vmware/api.py:240
-#, python-format
-msgid "Error occurred while terminating the previous session with ID = %s."
-msgstr ""
-
-#: oslo/vmware/api.py:334
+#: oslo_vmware/api.py:333
 #, python-format
 msgid ""
 "Re-creating session due to connection problems while invoking method "
 "%(module)s.%(method)s."
 msgstr ""
 
-#: oslo/vmware/api.py:359
+#: oslo_vmware/api.py:358
 #, python-format
 msgid "Error occurred while checking whether the current session: %s is active."
 msgstr ""
 
-#: oslo/vmware/api.py:491
+#: oslo_vmware/api.py:486
 #, python-format
 msgid "Error occurred while reading error message for lease: %s."
 msgstr ""
 
-#: oslo/vmware/pbm.py:191
+#: oslo_vmware/pbm.py:196
 #, python-format
 msgid "PBM WSDL file %s not found."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:65
+#: oslo_vmware/rw_handles.py:148
 msgid "Error occurred while closing the file handle"
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:241
+#: oslo_vmware/rw_handles.py:289
 msgid "Error occurred while reading the HTTP response."
 msgstr ""
 
-#: oslo/vmware/rw_handles.py:447 oslo/vmware/rw_handles.py:609
+#: oslo_vmware/rw_handles.py:449 oslo_vmware/rw_handles.py:584
 #, python-format
 msgid "Error occurred while releasing the lease for %s."
 msgstr ""
 
-#: oslo/vmware/common/loopingcall.py:82
+#: oslo_vmware/common/loopingcall.py:82
 #, python-format
 msgid "task run outlasted interval by %s sec"
 msgstr ""
