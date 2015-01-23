@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ pip install 
+    $ pip install oslo.vmware
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv 
-    $ pip install 
+    $ mkvirtualenv oslo.vmware
+    $ pip install oslo.vmware
