@@ -4,8 +4,8 @@ Usage
 
 To use in a project::
 
-	from oslo.vmware import api
-	from oslo.vmware import vim_util
+	from oslo_vmware import api
+	from oslo_vmware import vim_util
 
 	api_session = api.VMwareAPISession('10.1.2.3', 'administrator',
 	                                   'password', 10, 0.1,
