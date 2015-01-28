@@ -1,13 +1,10 @@
-===================================
-oslo.vmware
-===================================
+=============
+ oslo.vmware
+=============
 
 Oslo VMware library for OpenStack projects
 
-* Free software: Apache license
+* License: Apache License, Version 2.0
 * Documentation: http://docs.openstack.org/developer/oslo.vmware
-
-Features
---------
-
-* TODO
+* Source: http://git.openstack.org/cgit/openstack/oslo.vmware
+* Bugs: http://bugs.launchpad.net/oslo.vmware
