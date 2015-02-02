@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-27 06:04+0000\n"
-"PO-Revision-Date: 2015-01-24 18:31+0000\n"
-"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-02 06:04+0000\n"
+"PO-Revision-Date: 2015-01-30 17:50+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/oslovmware/language/fr/)\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -52,6 +52,7 @@ msgid "details must be a dict"
 msgstr "details doit etre un dict"
 
 #: oslo_vmware/exceptions.py:131
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:27
 msgid "An unknown exception occurred."
 msgstr "Une exception inconnue s'est produite "
 
@@ -223,6 +224,56 @@ msgstr "Erreur de type dans %s."
 #, python-format
 msgid "Exception in %s."
 msgstr "Exception dans %s."
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:54
+#, python-format
+msgid "Bad %(resource)s request: %(msg)s"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:58
+#, python-format
+msgid "%(resource)s not found: %(msg)s"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:62
+#, python-format
+msgid "An unknown exception %(status)s occurred: %(response)s."
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:73
+#, python-format
+msgid "Resource %(uri)s has been redirected"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:77
+#, python-format
+msgid "Request %(uri)s is Bad, response %(response)s"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:81
+#, python-format
+msgid "Forbidden: %(uri)s"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:85
+#, python-format
+msgid "Resource %(uri)s not found"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:89
+#, python-format
+msgid "Media Type %(uri)s is not supported"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:93
+#, python-format
+msgid "Service Unavailable: %(uri)s"
+msgstr ""
+
+#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:97
+#, python-format
+msgid "Concurrent object access error: %(uri)s"
+msgstr ""
 
 #: oslo_vmware/objects/datacenter.py:23
 msgid "Datacenter name cannot be None"
