@@ -198,3 +198,21 @@ def get_pbm_wsdl_location(vc_version):
     pbm_wsdl = urlparse.urljoin('file:', urllib.pathname2url(pbm_service_wsdl))
     LOG.debug("Using PBM WSDL location: %s.", pbm_wsdl)
     return pbm_wsdl
+
+
+def get_profiles(session, vm):
+    """Query storage profiles associated with the given vm.
+
+    :param session: VMwareAPISession instance
+    :param vm: vm reference
+    :return: profile IDs
+    """
+    pbm = session.pbm
+    profile_manager = pbm.service_content.profileManager
+
+    object_ref = pbm.client.factory.create('ns0:PbmServerObjectRef')
+    object_ref.key = vm.value
+    object_ref.objectType = 'virtualMachine'
+
+    return session.invoke_api(pbm, 'PbmQueryAssociatedProfile',
+                              profile_manager, entity=object_ref)
