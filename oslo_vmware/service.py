@@ -310,7 +310,10 @@ class Service(object):
                 details = {}
                 if detail:
                     for fault in detail.getChildren():
-                        fault_list.append(fault.get("type"))
+                        fault_type = fault.get('type')
+                        if fault_type.endswith(exceptions.SECURITY_ERROR):
+                            fault_type = exceptions.NOT_AUTHENTICATED
+                        fault_list.append(fault_type)
                         for child in fault.getChildren():
                             details[child.name] = child.getText()
                 raise exceptions.VimFaultException(fault_list, fault_string,

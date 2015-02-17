@@ -37,6 +37,7 @@ NO_PERMISSION = 'NoPermission'
 NOT_AUTHENTICATED = 'NotAuthenticated'
 TASK_IN_PROGRESS = 'TaskInProgress'
 DUPLICATE_NAME = 'DuplicateName'
+SECURITY_ERROR = "SecurityError"
 
 
 class VimException(Exception):
