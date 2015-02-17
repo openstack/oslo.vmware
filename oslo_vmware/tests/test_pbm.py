@@ -171,3 +171,26 @@ class PBMUtilityTest(base.TestCase):
             path_exists.return_value = False
             wsdl = pbm.get_pbm_wsdl_location('5.5')
             self.assertIsNone(wsdl)
+
+    def test_get_profiles(self):
+        pbm_service = mock.Mock()
+        session = mock.Mock(pbm=pbm_service)
+
+        object_ref = mock.Mock()
+        pbm_service.client.factory.create.return_value = object_ref
+
+        profile_id = mock.sentinel.profile_id
+        session.invoke_api.return_value = profile_id
+
+        value = 'vm-1'
+        vm = mock.Mock(value=value)
+        ret = pbm.get_profiles(session, vm)
+
+        self.assertEqual(profile_id, ret)
+        session.invoke_api.assert_called_once_with(
+            pbm_service,
+            'PbmQueryAssociatedProfile',
+            pbm_service.service_content.profileManager,
+            entity=object_ref)
+        self.assertEqual(value, object_ref.key)
+        self.assertEqual('virtualMachine', object_ref.objectType)
