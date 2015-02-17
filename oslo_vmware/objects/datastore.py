@@ -14,7 +14,7 @@
 
 import logging
 import posixpath
-import random as _random
+import random as _random  # nosec
 
 import six.moves.http_client as httplib
 import six.moves.urllib.parse as urlparse
@@ -25,7 +25,7 @@ from oslo_vmware import exceptions
 from oslo_vmware import vim_util
 
 LOG = logging.getLogger(__name__)
-random = _random.SystemRandom()
+random = _random.SystemRandom()  # nosec
 
 
 def get_datastore_by_ref(session, ds_ref):
@@ -157,7 +157,7 @@ class Datastore(object):
 
     @staticmethod
     def choose_host(hosts):
-        i = random.randrange(0, len(hosts))
+        i = random.randrange(0, len(hosts))  # nosec
         return hosts[i]
 
 
