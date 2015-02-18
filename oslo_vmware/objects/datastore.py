@@ -14,7 +14,7 @@
 
 import logging
 import posixpath
-import random
+import random as _random
 
 import six.moves.http_client as httplib
 import six.moves.urllib.parse as urlparse
@@ -25,6 +25,7 @@ from oslo_vmware import exceptions
 from oslo_vmware import vim_util
 
 LOG = logging.getLogger(__name__)
+random = _random.SystemRandom()
 
 
 class Datastore(object):
