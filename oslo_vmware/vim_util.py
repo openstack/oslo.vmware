@@ -17,9 +17,15 @@
 The VMware API utility module.
 """
 
+import logging
+
 from suds import sudsobject
 
 from oslo.utils import timeutils
+from oslo_vmware._i18n import _LW
+
+
+LOG = logging.getLogger(__name__)
 
 
 def get_moref(value, type_):
@@ -314,6 +320,36 @@ def get_object_properties(vim, moref, properties_to_collect):
         options=options)
     cancel_retrieval(vim, retrieve_result)
     return retrieve_result.objects
+
+
+def get_object_properties_dict(vim, moref, properties_to_collect):
+    """Get properties of the given managed object as a dict.
+
+    :param vim: Vim object
+    :param moref: managed object reference
+    :param properties_to_collect: names of the managed object properties to be
+                                  collected
+    :returns: a dict of properties of the given managed object
+    :raises: VimException, VimFaultException, VimAttributeException,
+             VimSessionOverLoadException, VimConnectionException
+    """
+    obj_contents = get_object_properties(vim, moref, properties_to_collect)
+    if obj_contents is None:
+        return {}
+    property_dict = {}
+    if hasattr(obj_contents[0], 'propSet'):
+        dynamic_properties = obj_contents[0].propSet
+        if dynamic_properties:
+            for prop in dynamic_properties:
+                property_dict[prop.name] = prop.val
+    # The object may have information useful for logging
+    if hasattr(obj_contents[0], 'missingSet'):
+        for m in obj_contents[0].missingSet:
+            LOG.warning(_LW("Unable to retrieve value for %(path)s "
+                            "Reason: %(reason)s"),
+                        {'path': m.path,
+                         'reason': m.fault.localizedMessage})
+    return property_dict
 
 
 def _get_token(retrieve_result):

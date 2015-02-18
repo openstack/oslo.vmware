@@ -28,6 +28,30 @@ LOG = logging.getLogger(__name__)
 random = _random.SystemRandom()
 
 
+def get_datastore_by_ref(session, ds_ref):
+    """Returns a datastore object for a given reference.
+
+    :param session: a vmware api session object
+    :param ds_ref: managed object reference of a datastore
+    :rtype : a datastore object
+    """
+    lst_properties = ["summary.type",
+                      "summary.name",
+                      "summary.capacity",
+                      "summary.freeSpace"]
+    props = session.invoke_api(
+        vim_util,
+        "get_object_properties_dict",
+        session.vim,
+        ds_ref,
+        lst_properties)
+    # TODO(sabari): Instantiate with datacenter info.
+    return Datastore(ds_ref, props["summary.name"],
+                     capacity=props.get("summary.capacity"),
+                     freespace=props.get("summary.freeSpace"),
+                     type=props.get("summary.type"))
+
+
 class Datastore(object):
 
     def __init__(self, ref, name, capacity=None, freespace=None,
