@@ -4,14 +4,14 @@
 # project.
 #
 # Translators:
-# Maxime COQUEREL <max.coquerel@gmail.com>, 2014
+# Maxime COQUEREL <max.coquerel@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-02 06:04+0000\n"
-"PO-Revision-Date: 2015-01-30 17:50+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"POT-Creation-Date: 2015-02-22 06:04+0000\n"
+"PO-Revision-Date: 2015-02-18 02:48+0000\n"
+"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
 "language/fr/)\n"
 "Language: fr\n"
@@ -39,4 +39,4 @@ msgstr "Déconnexion et fin de la session encours avec l'identifiant = %s"
 
 #: oslo_vmware/network/nsx/nsxv/api/api.py:85
 msgid "NSXv: conflict on request. Trying again."
-msgstr ""
+msgstr "NSXv: conflit sur la requête. Essayer à nouveau."

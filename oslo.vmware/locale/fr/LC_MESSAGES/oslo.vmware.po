@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-02 06:04+0000\n"
-"PO-Revision-Date: 2015-01-30 17:50+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"POT-Creation-Date: 2015-02-22 06:04+0000\n"
+"PO-Revision-Date: 2015-02-18 02:47+0000\n"
+"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/oslovmware/language/fr/)\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -39,85 +39,85 @@ msgstr "Bail: %(lease)s est dans une erreur de status. Détails: %(error_msg)s."
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
 
-#: oslo_vmware/exceptions.py:56
+#: oslo_vmware/exceptions.py:57
 msgid "exception_summary must not be a list"
 msgstr "exception_summary ne doit pas etre une liste"
 
-#: oslo_vmware/exceptions.py:93
+#: oslo_vmware/exceptions.py:94
 msgid "fault_list must be a list"
 msgstr "fault_list doit etre une liste"
 
-#: oslo_vmware/exceptions.py:95
+#: oslo_vmware/exceptions.py:96
 msgid "details must be a dict"
 msgstr "details doit etre un dict"
 
-#: oslo_vmware/exceptions.py:131
+#: oslo_vmware/exceptions.py:132
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:27
 msgid "An unknown exception occurred."
 msgstr "Une exception inconnue s'est produite "
 
-#: oslo_vmware/exceptions.py:157
+#: oslo_vmware/exceptions.py:158
 msgid "VMware Driver configuration fault."
 msgstr "Redirection de la configuration du pilote VMware."
 
-#: oslo_vmware/exceptions.py:161
+#: oslo_vmware/exceptions.py:162
 msgid "No default value for use_linked_clone found."
 msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
 
-#: oslo_vmware/exceptions.py:165
+#: oslo_vmware/exceptions.py:166
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr "Paramètre manquant : %(param)s"
 
-#: oslo_vmware/exceptions.py:169
+#: oslo_vmware/exceptions.py:170
 msgid "Resource already exists."
 msgstr "La ressource existe déjà."
 
-#: oslo_vmware/exceptions.py:174
+#: oslo_vmware/exceptions.py:175
 msgid "Cannot delete file."
 msgstr "Le fichier ne peut pas etre supprimé."
 
-#: oslo_vmware/exceptions.py:179
+#: oslo_vmware/exceptions.py:180
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
 
-#: oslo_vmware/exceptions.py:184
+#: oslo_vmware/exceptions.py:185
 msgid "File fault."
 msgstr "Redirection fichier."
 
-#: oslo_vmware/exceptions.py:189
+#: oslo_vmware/exceptions.py:190
 msgid "File locked."
 msgstr "Fichier verrouillé."
 
-#: oslo_vmware/exceptions.py:194
+#: oslo_vmware/exceptions.py:195
 msgid "File not found."
 msgstr "Fichier non trouvé."
 
-#: oslo_vmware/exceptions.py:199
+#: oslo_vmware/exceptions.py:200
 msgid "Invalid power state."
 msgstr "Status de démarrage non valide."
 
-#: oslo_vmware/exceptions.py:204
+#: oslo_vmware/exceptions.py:205
 msgid "Invalid property."
 msgstr "Propriété non valide."
 
-#: oslo_vmware/exceptions.py:209
+#: oslo_vmware/exceptions.py:210
 msgid "No Permission."
 msgstr "Pas de permission."
 
-#: oslo_vmware/exceptions.py:214
+#: oslo_vmware/exceptions.py:215
 msgid "Not Authenticated."
 msgstr "Non authentifié."
 
-#: oslo_vmware/exceptions.py:219
+#: oslo_vmware/exceptions.py:220
 msgid "Entity has another operation in process."
 msgstr "L'entité a une autre opération en cours."
 
-#: oslo_vmware/exceptions.py:223
+#: oslo_vmware/exceptions.py:224
 msgid "Duplicate name."
 msgstr "Duplicat du nom."
 
-#: oslo_vmware/exceptions.py:257
+#: oslo_vmware/exceptions.py:258
 msgid "exception should be a subclass of VMwareDriverException"
 msgstr "exception devrait être une subclass de VMwareDriverException"
 
@@ -195,32 +195,32 @@ msgstr "Une erreur est survenue pendant la lecture des données depuis %s."
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr "Une erreur est survenue pendant l'appelle RetrievePropertiesEx."
 
-#: oslo_vmware/service.py:321
+#: oslo_vmware/service.py:324
 #, python-format
 msgid "No such SOAP method %s."
 msgstr "Pas de méthode SOAP %s."
 
-#: oslo_vmware/service.py:327
+#: oslo_vmware/service.py:330
 #, python-format
 msgid "httplib error in %s."
 msgstr "httplib erreur dans %s."
 
-#: oslo_vmware/service.py:331
+#: oslo_vmware/service.py:334
 #, python-format
 msgid "requests error in %s."
 msgstr "erreur de requetes dans %s."
 
-#: oslo_vmware/service.py:342
+#: oslo_vmware/service.py:345
 #, python-format
 msgid "Socket error in %s."
 msgstr "Erreur de socket dans %s."
 
-#: oslo_vmware/service.py:347
+#: oslo_vmware/service.py:350
 #, python-format
 msgid "Type error in %s."
 msgstr "Erreur de type dans %s."
 
-#: oslo_vmware/service.py:350
+#: oslo_vmware/service.py:353
 #, python-format
 msgid "Exception in %s."
 msgstr "Exception dans %s."
@@ -228,52 +228,52 @@ msgstr "Exception dans %s."
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:54
 #, python-format
 msgid "Bad %(resource)s request: %(msg)s"
-msgstr ""
+msgstr "Requête incorrecte %(resource)s: %(msg)s"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:58
 #, python-format
 msgid "%(resource)s not found: %(msg)s"
-msgstr ""
+msgstr "%(resource)s non trouvé: %(msg)s"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:62
 #, python-format
 msgid "An unknown exception %(status)s occurred: %(response)s."
-msgstr ""
+msgstr "Une exception inconnue %(status)s est produite: %(response)s."
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:73
 #, python-format
 msgid "Resource %(uri)s has been redirected"
-msgstr ""
+msgstr "La ressource %(uri)s a été redirigé"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:77
 #, python-format
 msgid "Request %(uri)s is Bad, response %(response)s"
-msgstr ""
+msgstr "La requête %(uri)s est mauvaise, réponse %(response)s"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:81
 #, python-format
 msgid "Forbidden: %(uri)s"
-msgstr ""
+msgstr "Interdit: %(uri)s"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:85
 #, python-format
 msgid "Resource %(uri)s not found"
-msgstr ""
+msgstr "Ressource %(uri)s non trouvé"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:89
 #, python-format
 msgid "Media Type %(uri)s is not supported"
-msgstr ""
+msgstr "Le type de média %(uri)s n'est pas supporté."
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:93
 #, python-format
 msgid "Service Unavailable: %(uri)s"
-msgstr ""
+msgstr "Service non disponible: %(uri)s"
 
 #: oslo_vmware/network/nsx/nsxv/common/exceptions.py:97
 #, python-format
 msgid "Concurrent object access error: %(uri)s"
-msgstr ""
+msgstr "Objet concurrent erreur d'accès: %(uri)s"
 
 #: oslo_vmware/objects/datacenter.py:23
 msgid "Datacenter name cannot be None"
