@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.8.0.post20\n"
+"Project-Id-Version: oslo.vmware 0.10.0.post2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-22 06:12+0000\n"
+"POT-Creation-Date: 2015-03-02 06:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,6 +58,11 @@ msgstr ""
 #: oslo_vmware/rw_handles.py:449 oslo_vmware/rw_handles.py:584
 #, python-format
 msgid "Error occurred while releasing the lease for %s."
+msgstr ""
+
+#: oslo_vmware/vim_util.py:348
+#, python-format
+msgid "Unable to retrieve value for %(path)s Reason: %(reason)s"
 msgstr ""
 
 #: oslo_vmware/common/loopingcall.py:82
