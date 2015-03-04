@@ -257,6 +257,43 @@ class VimUtilTest(base.TestCase):
         retrieve_result = object()
         self.assertFalse(vim_util._get_token(retrieve_result))
 
+    @mock.patch('oslo_vmware.vim_util.get_object_properties')
+    def test_get_object_properties_dict_empty(self, mock_obj_prop):
+        mock_obj_prop.return_value = None
+        vim = mock.Mock()
+        moref = mock.Mock()
+        res = vim_util.get_object_properties_dict(vim, moref, None)
+        self.assertEqual({}, res)
+
+    @mock.patch('oslo_vmware.vim_util.get_object_properties')
+    def test_get_object_properties_dict(self, mock_obj_prop):
+        expected_prop_dict = {'name': 'vm01'}
+        mock_obj_content = mock.Mock()
+        prop = mock.Mock()
+        prop.name = "name"
+        prop.val = "vm01"
+        mock_obj_content.propSet = [prop]
+        del mock_obj_content.missingSet
+        mock_obj_prop.return_value = [mock_obj_content]
+        vim = mock.Mock()
+        moref = mock.Mock()
+        res = vim_util.get_object_properties_dict(vim, moref, None)
+        self.assertEqual(expected_prop_dict, res)
+
+    @mock.patch('oslo_vmware.vim_util.get_object_properties')
+    def test_get_object_properties_dict_missing(self, mock_obj_prop):
+        mock_obj_content = mock.Mock()
+        missing_prop = mock.Mock()
+        missing_prop.path = "name"
+        missing_prop.fault = mock.Mock()
+        mock_obj_content.missingSet = [missing_prop]
+        del mock_obj_content.propSet
+        mock_obj_prop.return_value = [mock_obj_content]
+        vim = mock.Mock()
+        moref = mock.Mock()
+        res = vim_util.get_object_properties_dict(vim, moref, None)
+        self.assertEqual({}, res)
+
     @mock.patch('oslo_vmware.vim_util._get_token')
     def test_cancel_retrieval(self, get_token):
         token = mock.Mock()
