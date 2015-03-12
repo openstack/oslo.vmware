@@ -24,9 +24,9 @@ in case of connection problems or server API call overload.
 import logging
 
 from oslo_concurrency import lockutils
+from oslo_utils import excutils
 import six
 
-from oslo.utils import excutils
 from oslo_vmware._i18n import _, _LE, _LI, _LW
 from oslo_vmware.common import loopingcall
 from oslo_vmware import exceptions

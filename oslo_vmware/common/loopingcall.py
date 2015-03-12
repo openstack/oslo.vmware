@@ -20,8 +20,8 @@ import sys
 
 from eventlet import event
 from eventlet import greenthread
+from oslo_utils import timeutils
 
-from oslo.utils import timeutils
 from oslo_vmware._i18n import _LE, _LW
 
 LOG = logging.getLogger(__name__)

@@ -24,13 +24,13 @@ glance server.
 import logging
 import ssl
 
+from oslo_utils import excutils
+from oslo_utils import netutils
 import requests
 import six
 import six.moves.urllib.parse as urlparse
 from urllib3 import connection as httplib
 
-from oslo.utils import excutils
-from oslo.utils import netutils
 from oslo_vmware._i18n import _, _LE, _LW
 from oslo_vmware import exceptions
 from oslo_vmware import vim_util

@@ -359,7 +359,7 @@ class MemoryCacheTest(base.TestCase):
         cache2 = service.Service().client.options.cache
         self.assertIs(cache1, cache2)
 
-    @mock.patch('oslo.utils.timeutils.utcnow_ts')
+    @mock.patch('oslo_utils.timeutils.utcnow_ts')
     def test_cache_timeout(self, mock_utcnow_ts):
         mock_utcnow_ts.side_effect = [100, 125, 150, 175, 195, 200, 225]
 

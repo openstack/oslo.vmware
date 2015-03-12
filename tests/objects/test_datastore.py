@@ -13,9 +13,9 @@
 #    under the License.
 
 import mock
+from oslo_utils import units
 import six.moves.urllib.parse as urlparse
 
-from oslo.utils import units
 from oslo.vmware import constants
 from oslo.vmware.objects import datastore
 from oslo.vmware import vim_util

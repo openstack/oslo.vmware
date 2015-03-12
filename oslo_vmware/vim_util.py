@@ -19,9 +19,9 @@ The VMware API utility module.
 
 import logging
 
+from oslo_utils import timeutils
 from suds import sudsobject
 
-from oslo.utils import timeutils
 from oslo_vmware._i18n import _LW
 
 

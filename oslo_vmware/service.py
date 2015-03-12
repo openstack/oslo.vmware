@@ -21,6 +21,7 @@ import logging
 import os
 
 import netaddr
+from oslo_utils import timeutils
 import requests
 import six
 import six.moves.http_client as httplib
@@ -30,7 +31,6 @@ from suds import client
 from suds import plugin
 from suds import transport
 
-from oslo.utils import timeutils
 from oslo_vmware._i18n import _
 from oslo_vmware import exceptions
 from oslo_vmware import vim_util
