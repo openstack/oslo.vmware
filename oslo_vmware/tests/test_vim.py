@@ -20,8 +20,6 @@ Unit tests for classes to invoke VMware VI SOAP calls.
 import mock
 from oslo_i18n import fixture as i18n_fixture
 
-from oslo_vmware._i18n import _
-from oslo_vmware import exceptions
 from oslo_vmware.tests import base
 from oslo_vmware import vim
 
@@ -46,40 +44,6 @@ class VimTest(base.TestCase):
         getattr_ret.assert_called_once_with('ServiceInstance')
         self.assertEqual(self.SudsClientMock.return_value, vim_obj.client)
         self.assertEqual(getattr_ret.return_value, vim_obj.service_content)
-
-    def test_exception_summary_exception_as_list(self):
-        # assert that if a list is fed to the VimException object
-        # that it will error.
-        self.assertRaises(ValueError,
-                          exceptions.VimException,
-                          [], ValueError('foo'))
-
-    def test_exception_summary_string(self):
-        e = exceptions.VimException(_("string"), ValueError("foo"))
-        string = str(e)
-        self.assertEqual("string\nCause: foo", string)
-
-    def test_vim_fault_exception_string(self):
-        self.assertRaises(ValueError,
-                          exceptions.VimFaultException,
-                          "bad", ValueError("argument"))
-
-    def test_vim_fault_exception(self):
-        vfe = exceptions.VimFaultException([ValueError("example")], _("cause"))
-        string = str(vfe)
-        self.assertEqual("cause\nFaults: [ValueError('example',)]", string)
-
-    def test_vim_fault_exception_with_cause_and_details(self):
-        vfe = exceptions.VimFaultException([ValueError("example")],
-                                           "MyMessage",
-                                           "FooBar",
-                                           {'foo': 'bar'})
-        string = str(vfe)
-        self.assertEqual("MyMessage\n"
-                         "Cause: FooBar\n"
-                         "Faults: [ValueError('example',)]\n"
-                         "Details: {'foo': 'bar'}",
-                         string)
 
     def test_configure_non_default_host_port(self):
         vim_obj = vim.Vim('https', 'www.test.com', 12345)
