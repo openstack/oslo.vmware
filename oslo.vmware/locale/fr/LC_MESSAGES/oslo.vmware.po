@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-22 06:04+0000\n"
-"PO-Revision-Date: 2015-02-18 02:47+0000\n"
-"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
+"POT-Creation-Date: 2015-03-25 06:04+0000\n"
+"PO-Revision-Date: 2015-03-24 17:17+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/oslovmware/language/fr/)\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -52,7 +52,6 @@ msgid "details must be a dict"
 msgstr "details doit etre un dict"
 
 #: oslo_vmware/exceptions.py:132
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:27
 msgid "An unknown exception occurred."
 msgstr "Une exception inconnue s'est produite "
 
@@ -158,7 +157,7 @@ msgstr ""
 msgid "Error occurred while opening URL: %s for reading."
 msgstr "Une erreur est survenue pendant l'ouverture de URL: %s pour la lecture."
 
-#: oslo_vmware/rw_handles.py:114 oslo_vmware/objects/datastore.py:291
+#: oslo_vmware/rw_handles.py:114 oslo_vmware/objects/datastore.py:316
 #, python-format
 msgid "Invalid scheme: %s."
 msgstr "Invalide schéma: %s"
@@ -225,56 +224,6 @@ msgstr "Erreur de type dans %s."
 msgid "Exception in %s."
 msgstr "Exception dans %s."
 
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:54
-#, python-format
-msgid "Bad %(resource)s request: %(msg)s"
-msgstr "Requête incorrecte %(resource)s: %(msg)s"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:58
-#, python-format
-msgid "%(resource)s not found: %(msg)s"
-msgstr "%(resource)s non trouvé: %(msg)s"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:62
-#, python-format
-msgid "An unknown exception %(status)s occurred: %(response)s."
-msgstr "Une exception inconnue %(status)s est produite: %(response)s."
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:73
-#, python-format
-msgid "Resource %(uri)s has been redirected"
-msgstr "La ressource %(uri)s a été redirigé"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:77
-#, python-format
-msgid "Request %(uri)s is Bad, response %(response)s"
-msgstr "La requête %(uri)s est mauvaise, réponse %(response)s"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:81
-#, python-format
-msgid "Forbidden: %(uri)s"
-msgstr "Interdit: %(uri)s"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:85
-#, python-format
-msgid "Resource %(uri)s not found"
-msgstr "Ressource %(uri)s non trouvé"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:89
-#, python-format
-msgid "Media Type %(uri)s is not supported"
-msgstr "Le type de média %(uri)s n'est pas supporté."
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:93
-#, python-format
-msgid "Service Unavailable: %(uri)s"
-msgstr "Service non disponible: %(uri)s"
-
-#: oslo_vmware/network/nsx/nsxv/common/exceptions.py:97
-#, python-format
-msgid "Concurrent object access error: %(uri)s"
-msgstr "Objet concurrent erreur d'accès: %(uri)s"
-
 #: oslo_vmware/objects/datacenter.py:23
 msgid "Datacenter name cannot be None"
 msgstr "Le nom du datacenter ne peut pas être \"vide\""
@@ -283,39 +232,39 @@ msgstr "Le nom du datacenter ne peut pas être \"vide\""
 msgid "Datacenter reference cannot be None"
 msgstr "La référence du datastore ne peut pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:44
+#: oslo_vmware/objects/datastore.py:69
 msgid "Datastore name cannot be None"
 msgstr "Le nom du datastore ne peut pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:46
+#: oslo_vmware/objects/datastore.py:71
 msgid "Datastore reference cannot be None"
 msgstr "La référence du datastore ne peut pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:48
+#: oslo_vmware/objects/datastore.py:73
 msgid "Invalid capacity"
 msgstr "Capacité non valide"
 
-#: oslo_vmware/objects/datastore.py:51
+#: oslo_vmware/objects/datastore.py:76
 msgid "Capacity is smaller than free space"
 msgstr "La capacité est plus petite que l'espace libre"
 
-#: oslo_vmware/objects/datastore.py:79
+#: oslo_vmware/objects/datastore.py:104
 msgid "datacenter must be set to build url"
 msgstr "datacenter doit être initialiser pour construire url"
 
-#: oslo_vmware/objects/datastore.py:163
+#: oslo_vmware/objects/datastore.py:188
 msgid "Datastore name cannot be empty"
 msgstr "Le nom du datastore ne pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:168 oslo_vmware/objects/datastore.py:209
+#: oslo_vmware/objects/datastore.py:193 oslo_vmware/objects/datastore.py:234
 msgid "Path component cannot be None"
 msgstr "Le chemin du composant ne peut pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:222
+#: oslo_vmware/objects/datastore.py:247
 msgid "Datastore path cannot be empty"
 msgstr "Le chemin du datastore ne peut pas etre \"vide\""
 
-#: oslo_vmware/objects/datastore.py:304
+#: oslo_vmware/objects/datastore.py:329
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to file with URL ="
@@ -324,11 +273,11 @@ msgstr ""
 "Une erreur est survenue pendant la création des connexion HTTP pour "
 "écrire le fichier avec URL = %s."
 
-#: oslo_vmware/tests/test_vim.py:58
+#: oslo_vmware/tests/test_exceptions.py:35
 msgid "string"
 msgstr "chaîne de caractère"
 
-#: oslo_vmware/tests/test_vim.py:68
+#: oslo_vmware/tests/test_exceptions.py:45
 msgid "cause"
 msgstr "cause"
 
