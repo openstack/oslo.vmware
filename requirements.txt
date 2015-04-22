@@ -1,4 +1,4 @@
-stevedore>=0.14,<1.2
+stevedore>=0.14
 netaddr>=0.7.6,<=0.7.14
 
 # for timeutils
