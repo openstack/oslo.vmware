@@ -373,6 +373,19 @@ class VMwareAPISessionTest(base.TestCase):
             userName=api_session._session_username)
         api_session._create_session.assert_called_once_with()
 
+    def test_invoke_api_with_unknown_fault(self):
+        api_session = self._create_api_session(True)
+        fault_list = ['NotAFile']
+
+        module = mock.Mock()
+        module.api.side_effect = exceptions.VimFaultException(fault_list,
+                                                              'Not a file.')
+        ex = self.assertRaises(exceptions.VimFaultException,
+                               api_session.invoke_api,
+                               module,
+                               'api')
+        self.assertEqual(fault_list, ex.fault_list)
+
     def test_wait_for_task(self):
         api_session = self._create_api_session(True)
         task_info_list = [('queued', 0), ('running', 40), ('success', 100)]
@@ -413,7 +426,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
         with mock.patch.object(greenthread, 'sleep'):
-            self.assertRaises(exceptions.VMwareDriverException,
+            self.assertRaises(exceptions.VimFaultException,
                               api_session.wait_for_task,
                               task)
         api_session.invoke_api.assert_called_with(vim_util,
@@ -531,8 +544,8 @@ class VMwareAPISessionTest(base.TestCase):
 
     def test_poll_task_unknown_exception(self):
         _unknown_exceptions = {
-            'NotAFile': exceptions.VMwareDriverException,
-            'RuntimeFault': exceptions.VMwareDriverException
+            'NotAFile': exceptions.VimFaultException,
+            'RuntimeFault': exceptions.VimFaultException
         }
 
         for k, v in six.iteritems(_unknown_exceptions):
