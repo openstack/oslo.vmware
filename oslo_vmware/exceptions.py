@@ -271,7 +271,6 @@ def get_fault_class(name):
     fault_class = _fault_classes_registry.get(name)
     if not fault_class:
         LOG.debug('Fault %s not matched.', name)
-        fault_class = VMwareDriverException
     return fault_class
 
 
