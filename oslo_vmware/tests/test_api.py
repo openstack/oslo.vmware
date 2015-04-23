@@ -531,7 +531,7 @@ class VMwareAPISessionTest(base.TestCase):
 
     def test_poll_task_unknown_exception(self):
         _unknown_exceptions = {
-            'NoDiskSpace': exceptions.VMwareDriverException,
+            'NotAFile': exceptions.VMwareDriverException,
             'RuntimeFault': exceptions.VMwareDriverException
         }
 

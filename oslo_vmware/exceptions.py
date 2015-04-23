@@ -38,6 +38,7 @@ NOT_AUTHENTICATED = 'NotAuthenticated'
 TASK_IN_PROGRESS = 'TaskInProgress'
 DUPLICATE_NAME = 'DuplicateName'
 SECURITY_ERROR = "SecurityError"
+NO_DISK_SPACE = 'NoDiskSpace'
 
 
 class VimException(Exception):
@@ -224,6 +225,10 @@ class DuplicateName(VMwareDriverException):
     msg_fmt = _("Duplicate name.")
 
 
+class NoDiskSpaceException(VMwareDriverException):
+    msg_fmt = _("Insufficient disk space.")
+
+
 # Populate the fault registry with the exceptions that have
 # special treatment.
 _fault_classes_registry = {
@@ -239,6 +244,7 @@ _fault_classes_registry = {
     NOT_AUTHENTICATED: NotAuthenticatedException,
     TASK_IN_PROGRESS: TaskInProgress,
     DUPLICATE_NAME: DuplicateName,
+    NO_DISK_SPACE: NoDiskSpaceException,
 }
 
 
