@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-25 06:04+0000\n"
-"PO-Revision-Date: 2015-03-24 17:17+0000\n"
+"POT-Creation-Date: 2015-04-30 06:04+0000\n"
+"PO-Revision-Date: 2015-04-30 03:07+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/oslovmware/language/fr/)\n"
@@ -39,84 +39,88 @@ msgstr "Bail: %(lease)s est dans une erreur de status. Détails: %(error_msg)s."
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
 
-#: oslo_vmware/exceptions.py:57
+#: oslo_vmware/exceptions.py:58
 msgid "exception_summary must not be a list"
 msgstr "exception_summary ne doit pas etre une liste"
 
-#: oslo_vmware/exceptions.py:94
+#: oslo_vmware/exceptions.py:95
 msgid "fault_list must be a list"
 msgstr "fault_list doit etre une liste"
 
-#: oslo_vmware/exceptions.py:96
+#: oslo_vmware/exceptions.py:97
 msgid "details must be a dict"
 msgstr "details doit etre un dict"
 
-#: oslo_vmware/exceptions.py:132
+#: oslo_vmware/exceptions.py:133
 msgid "An unknown exception occurred."
 msgstr "Une exception inconnue s'est produite "
 
-#: oslo_vmware/exceptions.py:158
+#: oslo_vmware/exceptions.py:159
 msgid "VMware Driver configuration fault."
 msgstr "Redirection de la configuration du pilote VMware."
 
-#: oslo_vmware/exceptions.py:162
+#: oslo_vmware/exceptions.py:163
 msgid "No default value for use_linked_clone found."
 msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
 
-#: oslo_vmware/exceptions.py:166
+#: oslo_vmware/exceptions.py:167
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr "Paramètre manquant : %(param)s"
 
-#: oslo_vmware/exceptions.py:170
+#: oslo_vmware/exceptions.py:171
 msgid "Resource already exists."
 msgstr "La ressource existe déjà."
 
-#: oslo_vmware/exceptions.py:175
+#: oslo_vmware/exceptions.py:176
 msgid "Cannot delete file."
 msgstr "Le fichier ne peut pas etre supprimé."
 
-#: oslo_vmware/exceptions.py:180
+#: oslo_vmware/exceptions.py:181
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
 
-#: oslo_vmware/exceptions.py:185
+#: oslo_vmware/exceptions.py:186
 msgid "File fault."
 msgstr "Redirection fichier."
 
-#: oslo_vmware/exceptions.py:190
+#: oslo_vmware/exceptions.py:191
 msgid "File locked."
 msgstr "Fichier verrouillé."
 
-#: oslo_vmware/exceptions.py:195
+#: oslo_vmware/exceptions.py:196
 msgid "File not found."
 msgstr "Fichier non trouvé."
 
-#: oslo_vmware/exceptions.py:200
+#: oslo_vmware/exceptions.py:201
 msgid "Invalid power state."
 msgstr "Status de démarrage non valide."
 
-#: oslo_vmware/exceptions.py:205
+#: oslo_vmware/exceptions.py:206
 msgid "Invalid property."
 msgstr "Propriété non valide."
 
-#: oslo_vmware/exceptions.py:210
+#: oslo_vmware/exceptions.py:211
 msgid "No Permission."
 msgstr "Pas de permission."
 
-#: oslo_vmware/exceptions.py:215
+#: oslo_vmware/exceptions.py:216
 msgid "Not Authenticated."
 msgstr "Non authentifié."
 
-#: oslo_vmware/exceptions.py:220
+#: oslo_vmware/exceptions.py:221
 msgid "Entity has another operation in process."
 msgstr "L'entité a une autre opération en cours."
 
-#: oslo_vmware/exceptions.py:224
+#: oslo_vmware/exceptions.py:225
 msgid "Duplicate name."
 msgstr "Duplicat du nom."
 
-#: oslo_vmware/exceptions.py:258
+#: oslo_vmware/exceptions.py:229
+msgid "Insufficient disk space."
+msgstr ""
+
+#: oslo_vmware/exceptions.py:264
 msgid "exception should be a subclass of VMwareDriverException"
 msgstr "exception devrait être une subclass de VMwareDriverException"
 
