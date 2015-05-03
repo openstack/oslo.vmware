@@ -21,7 +21,6 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: oslo_vmware/api.py:98
 #, python-format
 msgid ""
 "Exception which is in the suggested list of exceptions occurred while "
@@ -30,7 +29,6 @@ msgstr ""
 "Exception qui est dans la liste proposée des exceptions est survenu lors de "
 "l'appel fonction: %s. "
 
-#: oslo_vmware/api.py:333
 #, python-format
 msgid ""
 "Re-creating session due to connection problems while invoking method "
@@ -39,7 +37,6 @@ msgstr ""
 "Re-création de session en raison de problèmes de connexion en invoquant la "
 "méthode %(module)s.%(method)s."
 
-#: oslo_vmware/api.py:358
 #, python-format
 msgid ""
 "Error occurred while checking whether the current session: %s is active."
@@ -47,37 +44,30 @@ msgstr ""
 "Une erreur est survenue pendant la vérification de la session en cours: %s "
 "est active."
 
-#: oslo_vmware/api.py:486
 #, python-format
 msgid "Error occurred while reading error message for lease: %s."
 msgstr ""
 "Une erreur est survenue pendant la lecture du message d'erreur pour le bail: "
 "%s."
 
-#: oslo_vmware/pbm.py:196
 #, python-format
 msgid "PBM WSDL file %s not found."
 msgstr "Fichier PBM WSDL %s non trouvé."
 
-#: oslo_vmware/rw_handles.py:148
 msgid "Error occurred while closing the file handle"
 msgstr "Une erreur est survenue pendant la fermeuture du fichier de traitement"
 
-#: oslo_vmware/rw_handles.py:289
 msgid "Error occurred while reading the HTTP response."
 msgstr "Une erreur est survenue pendant la lecture de la réponse HTTP."
 
-#: oslo_vmware/rw_handles.py:449 oslo_vmware/rw_handles.py:584
 #, python-format
 msgid "Error occurred while releasing the lease for %s."
 msgstr "Une erreur est survenue pendant la libération du bail pour %s."
 
-#: oslo_vmware/vim_util.py:348
 #, python-format
 msgid "Unable to retrieve value for %(path)s Reason: %(reason)s"
 msgstr "Impossible de récupérer les valeurs pour %(path)s Raison: %(reason)s"
 
-#: oslo_vmware/common/loopingcall.py:82
 #, python-format
 msgid "task run outlasted interval by %s sec"
 msgstr "Exécution de la tache par intervalle de %s sec"

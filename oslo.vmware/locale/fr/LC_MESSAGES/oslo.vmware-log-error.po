@@ -21,7 +21,6 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: oslo/vmware/api.py:104
 #, python-format
 msgid ""
 "Cannot retry upon suggested exception since retry count (%(retry_count)d) "
@@ -31,7 +30,6 @@ msgstr ""
 "nombre de tentatives (%(retry_count)d) a atteint le nombre de tentatives max "
 "(%(max_retry_count)d)."
 
-#: oslo/vmware/api.py:261
 #, python-format
 msgid ""
 "Error occurred while logging out and terminating the current session with ID "
@@ -40,27 +38,22 @@ msgstr ""
 "Une erreur est survenue pendant la fin de connexion et la fin de la session "
 "courante avec ID = %s."
 
-#: oslo/vmware/api.py:402
 #, python-format
 msgid "Error occurred while reading info of task: %s."
 msgstr ""
 "Une erreur est survenue pendant la lecture des informations de la taches: %s"
 
-#: oslo/vmware/api.py:457
 #, python-format
 msgid "Error occurred while checking state of lease: %s."
 msgstr "Une erreur est survenue pendant la vérification de l'état du bail: %s"
 
-#: oslo/vmware/exceptions.py:134
 msgid "Exception in string format operation"
 msgstr "Exception dans le formatage de la chaîne"
 
-#: oslo/vmware/exceptions.py:136
 #, python-format
 msgid "%(name)s: %(value)s"
 msgstr "%(name)s: %(value)s"
 
-#: oslo/vmware/rw_handles.py:404
 #, python-format
 msgid ""
 "Error occurred while updating the write progress of VMDK file with URL = %s."
@@ -68,7 +61,6 @@ msgstr ""
 "Une erreur est survenue pendant la mise à jour de la progression d'écriture "
 "du fichier VMDK avec URL = %s."
 
-#: oslo/vmware/rw_handles.py:553
 #, python-format
 msgid ""
 "Error occurred while updating the read progress of VMDK file with URL = %s."
@@ -76,6 +68,5 @@ msgstr ""
 "Une erreur est survenue pendant la mise à jour de la progression de lecture "
 "du fichier VMDK avec URL = %s."
 
-#: oslo/vmware/common/loopingcall.py:89
 msgid "in fixed duration looping call"
 msgstr "Fixe la durée de l'appel de la boucle"

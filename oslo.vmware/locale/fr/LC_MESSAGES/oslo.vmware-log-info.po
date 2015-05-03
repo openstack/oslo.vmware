@@ -21,18 +21,15 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: oslo_vmware/api.py:185
 #, python-format
 msgid "PBM WSDL updated to %s"
 msgstr "PBM WSD mise à jour de %s"
 
-#: oslo_vmware/api.py:238
 #, python-format
 msgid "Successfully established new session; session ID is %s."
 msgstr ""
 "nouvelle session établit avec succès; l'identifiant de la session est %s."
 
-#: oslo_vmware/api.py:249
 #, python-format
 msgid "Logging out and terminating the current session with ID = %s."
 msgstr "Déconnexion et fin de la session encours avec l'identifiant = %s"
