@@ -216,3 +216,21 @@ def get_profiles(session, vm):
 
     return session.invoke_api(pbm, 'PbmQueryAssociatedProfile',
                               profile_manager, entity=object_ref)
+
+
+def get_profiles_by_ids(session, profile_ids):
+    """Get storage profiles by IDs.
+
+    :param session: VMwareAPISession instance
+    :param profile_ids: profile IDs
+    :return: profile objects
+    """
+    profiles = []
+    if profile_ids:
+        pbm = session.pbm
+        profile_manager = pbm.service_content.profileManager
+        profiles = session.invoke_api(pbm,
+                                      'PbmRetrieveContent',
+                                      profile_manager,
+                                      profileIds=profile_ids)
+    return profiles
