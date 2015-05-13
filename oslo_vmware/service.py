@@ -56,7 +56,7 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
 
         :param node: XML value node
         """
-        if node.name == 'value':
+        if node.name == 'value' or node.name == 'val':
             node.set('xsi:type', 'xsd:string')
 
     def marshalled(self, context):
