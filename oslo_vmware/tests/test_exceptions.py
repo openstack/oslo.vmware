@@ -106,5 +106,7 @@ class ExceptionsTest(base.TestCase):
                          exceptions.get_fault_class("DuplicateName"))
         self.assertEqual(exceptions.NoDiskSpaceException,
                          exceptions.get_fault_class("NoDiskSpace"))
+        self.assertEqual(exceptions.ToolsUnavailableException,
+                         exceptions.get_fault_class("ToolsUnavailable"))
         # Test unknown fault.
         self.assertIsNone(exceptions.get_fault_class("NotAFile"))
