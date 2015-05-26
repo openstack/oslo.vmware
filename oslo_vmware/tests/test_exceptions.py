@@ -107,4 +107,5 @@ class ExceptionsTest(base.TestCase):
         self.assertEqual(exceptions.NoDiskSpaceException,
                          exceptions.get_fault_class("NoDiskSpace"))
         # Test unknown fault.
-        self.assertIsNone(exceptions.get_fault_class("NotAFile"))
+        self.assertEqual(exceptions.VMwareDriverException,
+                         exceptions.get_fault_class("NotAFile"))

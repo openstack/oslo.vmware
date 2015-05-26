@@ -321,8 +321,7 @@ class VMwareAPISession(object):
                         LOG.debug("Fault list: %s", excep.fault_list)
                         fault = excep.fault_list[0]
                         clazz = exceptions.get_fault_class(fault)
-                        if clazz:
-                            raise clazz(six.text_type(excep), excep.details)
+                        raise clazz(six.text_type(excep), excep.details)
                     raise
 
             except exceptions.VimConnectionException:
@@ -414,12 +413,7 @@ class VMwareAPISession(object):
                 error_msg = six.text_type(task_info.error.localizedMessage)
                 error = task_info.error
                 name = error.fault.__class__.__name__
-                fault_class = exceptions.get_fault_class(name)
-                if fault_class:
-                    task_ex = fault_class(error_msg)
-                else:
-                    task_ex = exceptions.VimFaultException([name],
-                                                           error_msg)
+                task_ex = exceptions.get_fault_class(name)(error_msg)
                 raise task_ex
 
     def wait_for_lease_ready(self, lease):
