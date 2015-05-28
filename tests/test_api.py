@@ -412,7 +412,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
         with mock.patch.object(greenthread, 'sleep'):
-            self.assertRaises(exceptions.VimFaultException,
+            self.assertRaises(exceptions.VMwareDriverException,
                               api_session.wait_for_task,
                               task)
         api_session.invoke_api.assert_called_with(new_vim_util,
@@ -526,8 +526,8 @@ class VMwareAPISessionTest(base.TestCase):
 
     def test_poll_task_unknown_exception(self):
         _unknown_exceptions = {
-            'NotAFile': exceptions.VimFaultException,
-            'RuntimeFault': exceptions.VimFaultException
+            'NoDiskSpace': exceptions.VMwareDriverException,
+            'RuntimeFault': exceptions.VMwareDriverException
         }
 
         for k, v in six.iteritems(_unknown_exceptions):

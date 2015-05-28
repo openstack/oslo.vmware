@@ -109,4 +109,5 @@ class ExceptionsTest(base.TestCase):
         self.assertEqual(exceptions.ToolsUnavailableException,
                          exceptions.get_fault_class("ToolsUnavailable"))
         # Test unknown fault.
-        self.assertIsNone(exceptions.get_fault_class("NotAFile"))
+        self.assertEqual(exceptions.VMwareDriverException,
+                         exceptions.get_fault_class("NotAFile"))
