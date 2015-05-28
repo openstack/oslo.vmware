@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 0.12.0.post2\n"
+"Project-Id-Version: oslo.vmware 0.13.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-30 06:04+0000\n"
+"POT-Creation-Date: 2015-05-28 06:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,98 +25,102 @@ msgid ""
 "invoking method %(module)s.%(method)s."
 msgstr ""
 
-#: oslo_vmware/api.py:464
+#: oslo_vmware/api.py:470
 #, python-format
 msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
 msgstr ""
 
-#: oslo_vmware/api.py:471
+#: oslo_vmware/api.py:477
 #, python-format
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:58
+#: oslo_vmware/exceptions.py:59
 msgid "exception_summary must not be a list"
 msgstr ""
 
-#: oslo_vmware/exceptions.py:95
+#: oslo_vmware/exceptions.py:96
 msgid "fault_list must be a list"
 msgstr ""
 
-#: oslo_vmware/exceptions.py:97
+#: oslo_vmware/exceptions.py:98
 msgid "details must be a dict"
 msgstr ""
 
-#: oslo_vmware/exceptions.py:133
+#: oslo_vmware/exceptions.py:134
 msgid "An unknown exception occurred."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:159
+#: oslo_vmware/exceptions.py:160
 msgid "VMware Driver configuration fault."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:163
+#: oslo_vmware/exceptions.py:164
 msgid "No default value for use_linked_clone found."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:167
+#: oslo_vmware/exceptions.py:168
 #, python-format
 msgid "Missing parameter : %(param)s"
 msgstr ""
 
-#: oslo_vmware/exceptions.py:171
+#: oslo_vmware/exceptions.py:172
 msgid "Resource already exists."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:176
+#: oslo_vmware/exceptions.py:177
 msgid "Cannot delete file."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:181
+#: oslo_vmware/exceptions.py:182
 msgid "File already exists."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:186
+#: oslo_vmware/exceptions.py:187
 msgid "File fault."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:191
+#: oslo_vmware/exceptions.py:192
 msgid "File locked."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:196
+#: oslo_vmware/exceptions.py:197
 msgid "File not found."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:201
+#: oslo_vmware/exceptions.py:202
 msgid "Invalid power state."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:206
+#: oslo_vmware/exceptions.py:207
 msgid "Invalid property."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:211
+#: oslo_vmware/exceptions.py:212
 msgid "No Permission."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:216
+#: oslo_vmware/exceptions.py:217
 msgid "Not Authenticated."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:221
+#: oslo_vmware/exceptions.py:222
 msgid "Entity has another operation in process."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:225
+#: oslo_vmware/exceptions.py:226
 msgid "Duplicate name."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:229
+#: oslo_vmware/exceptions.py:230
 msgid "Insufficient disk space."
 msgstr ""
 
-#: oslo_vmware/exceptions.py:264
+#: oslo_vmware/exceptions.py:234
+msgid "VMware Tools is not running."
+msgstr ""
+
+#: oslo_vmware/exceptions.py:269
 msgid "exception should be a subclass of VMwareDriverException"
 msgstr ""
 

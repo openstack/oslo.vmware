@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-25 06:04+0000\n"
+"POT-Creation-Date: 2015-05-28 06:05+0000\n"
 "PO-Revision-Date: 2015-03-24 17:17+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
@@ -22,6 +22,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #, python-format
+msgid "Logging out and terminating the current session with ID = %s."
+msgstr "Déconnexion et fin de la session encours avec l'identifiant = %s"
+
+#, python-format
 msgid "PBM WSDL updated to %s"
 msgstr "PBM WSD mise à jour de %s"
 
@@ -29,7 +33,3 @@ msgstr "PBM WSD mise à jour de %s"
 msgid "Successfully established new session; session ID is %s."
 msgstr ""
 "nouvelle session établit avec succès; l'identifiant de la session est %s."
-
-#, python-format
-msgid "Logging out and terminating the current session with ID = %s."
-msgstr "Déconnexion et fin de la session encours avec l'identifiant = %s"

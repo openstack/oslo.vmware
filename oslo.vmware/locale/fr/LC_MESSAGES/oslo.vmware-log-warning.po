@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-10 06:05+0000\n"
+"POT-Creation-Date: 2015-05-28 06:05+0000\n"
 "PO-Revision-Date: 2015-03-08 16:22+0000\n"
 "Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
@@ -23,11 +23,38 @@ msgstr ""
 
 #, python-format
 msgid ""
+"Error occurred while checking whether the current session: %s is active."
+msgstr ""
+"Une erreur est survenue pendant la vérification de la session en cours: %s "
+"est active."
+
+msgid "Error occurred while closing the file handle"
+msgstr "Une erreur est survenue pendant la fermeuture du fichier de traitement"
+
+#, python-format
+msgid "Error occurred while reading error message for lease: %s."
+msgstr ""
+"Une erreur est survenue pendant la lecture du message d'erreur pour le bail: "
+"%s."
+
+msgid "Error occurred while reading the HTTP response."
+msgstr "Une erreur est survenue pendant la lecture de la réponse HTTP."
+
+#, python-format
+msgid "Error occurred while releasing the lease for %s."
+msgstr "Une erreur est survenue pendant la libération du bail pour %s."
+
+#, python-format
+msgid ""
 "Exception which is in the suggested list of exceptions occurred while "
 "invoking function: %s."
 msgstr ""
 "Exception qui est dans la liste proposée des exceptions est survenu lors de "
 "l'appel fonction: %s. "
+
+#, python-format
+msgid "PBM WSDL file %s not found."
+msgstr "Fichier PBM WSDL %s non trouvé."
 
 #, python-format
 msgid ""
@@ -36,33 +63,6 @@ msgid ""
 msgstr ""
 "Re-création de session en raison de problèmes de connexion en invoquant la "
 "méthode %(module)s.%(method)s."
-
-#, python-format
-msgid ""
-"Error occurred while checking whether the current session: %s is active."
-msgstr ""
-"Une erreur est survenue pendant la vérification de la session en cours: %s "
-"est active."
-
-#, python-format
-msgid "Error occurred while reading error message for lease: %s."
-msgstr ""
-"Une erreur est survenue pendant la lecture du message d'erreur pour le bail: "
-"%s."
-
-#, python-format
-msgid "PBM WSDL file %s not found."
-msgstr "Fichier PBM WSDL %s non trouvé."
-
-msgid "Error occurred while closing the file handle"
-msgstr "Une erreur est survenue pendant la fermeuture du fichier de traitement"
-
-msgid "Error occurred while reading the HTTP response."
-msgstr "Une erreur est survenue pendant la lecture de la réponse HTTP."
-
-#, python-format
-msgid "Error occurred while releasing the lease for %s."
-msgstr "Une erreur est survenue pendant la libération du bail pour %s."
 
 #, python-format
 msgid "Unable to retrieve value for %(path)s Reason: %(reason)s"
