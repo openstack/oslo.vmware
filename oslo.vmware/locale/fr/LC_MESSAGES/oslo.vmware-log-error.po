@@ -1,5 +1,5 @@
 # Translations template for oslo.vmware.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the oslo.vmware
 # project.
 #
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-28 06:08+0000\n"
+"POT-Creation-Date: 2015-05-28 06:05+0000\n"
 "PO-Revision-Date: 2014-10-27 17:28+0000\n"
 "Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
@@ -22,6 +22,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #, python-format
+msgid "%(name)s: %(value)s"
+msgstr "%(name)s: %(value)s"
+
+#, python-format
 msgid ""
 "Cannot retry upon suggested exception since retry count (%(retry_count)d) "
 "reached max retry count (%(max_retry_count)d)."
@@ -29,6 +33,10 @@ msgstr ""
 "Vous ne pouvez pas recommencer cela à suggéré une exception puisque le "
 "nombre de tentatives (%(retry_count)d) a atteint le nombre de tentatives max "
 "(%(max_retry_count)d)."
+
+#, python-format
+msgid "Error occurred while checking state of lease: %s."
+msgstr "Une erreur est survenue pendant la vérification de l'état du bail: %s"
 
 #, python-format
 msgid ""
@@ -44,15 +52,11 @@ msgstr ""
 "Une erreur est survenue pendant la lecture des informations de la taches: %s"
 
 #, python-format
-msgid "Error occurred while checking state of lease: %s."
-msgstr "Une erreur est survenue pendant la vérification de l'état du bail: %s"
-
-msgid "Exception in string format operation"
-msgstr "Exception dans le formatage de la chaîne"
-
-#, python-format
-msgid "%(name)s: %(value)s"
-msgstr "%(name)s: %(value)s"
+msgid ""
+"Error occurred while updating the read progress of VMDK file with URL = %s."
+msgstr ""
+"Une erreur est survenue pendant la mise à jour de la progression de lecture "
+"du fichier VMDK avec URL = %s."
 
 #, python-format
 msgid ""
@@ -61,12 +65,8 @@ msgstr ""
 "Une erreur est survenue pendant la mise à jour de la progression d'écriture "
 "du fichier VMDK avec URL = %s."
 
-#, python-format
-msgid ""
-"Error occurred while updating the read progress of VMDK file with URL = %s."
-msgstr ""
-"Une erreur est survenue pendant la mise à jour de la progression de lecture "
-"du fichier VMDK avec URL = %s."
+msgid "Exception in string format operation"
+msgstr "Exception dans le formatage de la chaîne"
 
 msgid "in fixed duration looping call"
 msgstr "Fixe la durée de l'appel de la boucle"

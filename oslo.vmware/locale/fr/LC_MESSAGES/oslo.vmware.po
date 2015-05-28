@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-30 06:04+0000\n"
-"PO-Revision-Date: 2015-04-30 03:07+0000\n"
+"POT-Creation-Date: 2015-05-28 06:05+0000\n"
+"PO-Revision-Date: 2015-05-13 18:37+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
 "language/fr/)\n"
@@ -20,6 +20,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
+msgid "An unknown exception occurred."
+msgstr "Une exception inconnue s'est produite "
+
+msgid "Cannot delete file."
+msgstr "Le fichier ne peut pas etre supprimé."
+
+msgid "Capacity is smaller than free space"
+msgstr "La capacité est plus petite que l'espace libre"
+
+#, python-format
+msgid "Connection error occurred while writing data to %s."
+msgstr "Erreur de connexion pendant l'écriture des données de %s"
+
+msgid "Could not retrieve VMDK URL from lease info."
+msgstr "Impossible de récupérer VMDK URL depuis l'emplacement d'information."
+
 #, python-format
 msgid ""
 "Current session: %(session)s is inactive; re-creating the session while "
@@ -28,41 +44,80 @@ msgstr ""
 "Session courante: %(session)s est inactive; recréation de la session en "
 "invoquant la méthode %(module)s.%(method)s."
 
-#, python-format
-msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
-msgstr "Bail: %(lease)s est dans une erreur de status. Détails: %(error_msg)s."
+msgid "Datacenter name cannot be None"
+msgstr "Le nom du datacenter ne peut pas être \"vide\""
+
+msgid "Datacenter reference cannot be None"
+msgstr "La référence du datastore ne peut pas etre \"vide\""
+
+msgid "Datastore name cannot be None"
+msgstr "Le nom du datastore ne peut pas etre \"vide\""
+
+msgid "Datastore name cannot be empty"
+msgstr "Le nom du datastore ne pas etre \"vide\""
+
+msgid "Datastore path cannot be empty"
+msgstr "Le chemin du datastore ne peut pas etre \"vide\""
+
+msgid "Datastore reference cannot be None"
+msgstr "La référence du datastore ne peut pas etre \"vide\""
+
+msgid "Duplicate name."
+msgstr "Duplicat du nom."
+
+msgid "Entity has another operation in process."
+msgstr "L'entité a une autre opération en cours."
+
+msgid "Error occurred during file read-write task."
+msgstr ""
+"Une erreur est survenue pendant la tache de lecture-écriture du fichier."
 
 #, python-format
-msgid "Unknown state: %(state)s for lease: %(lease)s."
-msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
+msgid ""
+"Error occurred during image transfer with reader: %(reader)s and writer: "
+"%(writer)s"
+msgstr ""
+"Une erreur est survenue durant le transfère de l'image avec le lecteur: "
+"%(reader)s et l'écriture: %(writer)s"
 
-msgid "exception_summary must not be a list"
-msgstr "exception_summary ne doit pas etre une liste"
-
-msgid "fault_list must be a list"
-msgstr "fault_list doit etre une liste"
-
-msgid "details must be a dict"
-msgstr "details doit etre un dict"
-
-msgid "An unknown exception occurred."
-msgstr "Une exception inconnue s'est produite "
-
-msgid "VMware Driver configuration fault."
-msgstr "Redirection de la configuration du pilote VMware."
-
-msgid "No default value for use_linked_clone found."
-msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
+msgid "Error occurred while calling RetrievePropertiesEx."
+msgstr "Une erreur est survenue pendant l'appelle RetrievePropertiesEx."
 
 #, python-format
-msgid "Missing parameter : %(param)s"
-msgstr "Paramètre manquant : %(param)s"
+msgid ""
+"Error occurred while creating HTTP connection to write to VMDK file with URL "
+"= %s."
+msgstr ""
+"Une erreur est survenue pendant la création des connexion HTTP pour écrire "
+"le fichier VMDK avec URL = %s."
 
-msgid "Resource already exists."
-msgstr "La ressource existe déjà."
+#, python-format
+msgid ""
+"Error occurred while creating HTTP connection to write to file with URL = %s."
+msgstr ""
+"Une erreur est survenue pendant la création des connexion HTTP pour écrire "
+"le fichier avec URL = %s."
 
-msgid "Cannot delete file."
-msgstr "Le fichier ne peut pas etre supprimé."
+#, python-format
+msgid "Error occurred while opening URL: %s for reading."
+msgstr ""
+"Une erreur est survenue pendant l'ouverture de URL: %s pour la lecture."
+
+#, python-format
+msgid "Error occurred while reading data from %s."
+msgstr "Une erreur est survenue pendant la lecture des données depuis %s."
+
+#, python-format
+msgid "Error occurred while writing data to %s."
+msgstr "Une erreur est survenue pendant l'écriture des données de %s."
+
+#, python-format
+msgid "Error occurred while writing image: %s"
+msgstr "Une erreur est survenue pendant l'écriture de l'image: %s"
+
+#, python-format
+msgid "Exception in %s."
+msgstr "Exception dans %s."
 
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
@@ -76,100 +131,56 @@ msgstr "Fichier verrouillé."
 msgid "File not found."
 msgstr "Fichier non trouvé."
 
+#, python-format
+msgid "Image: %(image)s is in unknown state: %(state)s."
+msgstr "Image: %(image)s a un statut inconnu: %(state)s. "
+
+#, python-format
+msgid "Image: %s is in killed state."
+msgstr "Image: %s est en état tué"
+
+msgid "Invalid capacity"
+msgstr "Capacité non valide"
+
 msgid "Invalid power state."
 msgstr "Status de démarrage non valide."
 
 msgid "Invalid property."
 msgstr "Propriété non valide."
 
-msgid "No Permission."
-msgstr "Pas de permission."
-
-msgid "Not Authenticated."
-msgstr "Non authentifié."
-
-msgid "Entity has another operation in process."
-msgstr "L'entité a une autre opération en cours."
-
-msgid "Duplicate name."
-msgstr "Duplicat du nom."
-
-msgid "exception should be a subclass of VMwareDriverException"
-msgstr "exception devrait être une subclass de VMwareDriverException"
-
-#, python-format
-msgid "Image: %s is in killed state."
-msgstr "Image: %s est en état tué"
-
-#, python-format
-msgid "Image: %(image)s is in unknown state: %(state)s."
-msgstr "Image: %(image)s a un statut inconnu: %(state)s. "
-
-#, python-format
-msgid "Error occurred while writing image: %s"
-msgstr "Une erreur est survenue pendant l'écriture de l'image: %s"
-
-msgid "Error occurred during file read-write task."
-msgstr ""
-"Une erreur est survenue pendant la tache de lecture-écriture du fichier."
-
-msgid "No image destination given."
-msgstr "Pas d'image au sein de la destination donné."
-
-#, python-format
-msgid ""
-"Error occurred during image transfer with reader: %(reader)s and writer: "
-"%(writer)s"
-msgstr ""
-"Une erreur est survenue durant le transfère de l'image avec le lecteur: "
-"%(reader)s et l'écriture: %(writer)s"
-
-#, python-format
-msgid "Error occurred while opening URL: %s for reading."
-msgstr ""
-"Une erreur est survenue pendant l'ouverture de URL: %s pour la lecture."
-
 #, python-format
 msgid "Invalid scheme: %s."
 msgstr "Invalide schéma: %s"
 
 #, python-format
-msgid ""
-"Error occurred while creating HTTP connection to write to VMDK file with URL "
-"= %s."
-msgstr ""
-"Une erreur est survenue pendant la création des connexion HTTP pour écrire "
-"le fichier VMDK avec URL = %s."
-
-msgid "Could not retrieve VMDK URL from lease info."
-msgstr "Impossible de récupérer VMDK URL depuis l'emplacement d'information."
+msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
+msgstr "Bail: %(lease)s est dans une erreur de status. Détails: %(error_msg)s."
 
 #, python-format
-msgid "Connection error occurred while writing data to %s."
-msgstr "Erreur de connexion pendant l'écriture des données de %s"
+msgid "Missing parameter : %(param)s"
+msgstr "Paramètre manquant : %(param)s"
 
-#, python-format
-msgid "Error occurred while writing data to %s."
-msgstr "Une erreur est survenue pendant l'écriture des données de %s."
+msgid "No Permission."
+msgstr "Pas de permission."
 
-#, python-format
-msgid "Error occurred while reading data from %s."
-msgstr "Une erreur est survenue pendant la lecture des données depuis %s."
+msgid "No default value for use_linked_clone found."
+msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
 
-msgid "Error occurred while calling RetrievePropertiesEx."
-msgstr "Une erreur est survenue pendant l'appelle RetrievePropertiesEx."
+msgid "No image destination given."
+msgstr "Pas d'image au sein de la destination donné."
 
 #, python-format
 msgid "No such SOAP method %s."
 msgstr "Pas de méthode SOAP %s."
 
-#, python-format
-msgid "httplib error in %s."
-msgstr "httplib erreur dans %s."
+msgid "Not Authenticated."
+msgstr "Non authentifié."
 
-#, python-format
-msgid "requests error in %s."
-msgstr "erreur de requetes dans %s."
+msgid "Path component cannot be None"
+msgstr "Le chemin du composant ne peut pas etre \"vide\""
+
+msgid "Resource already exists."
+msgstr "La ressource existe déjà."
 
 #, python-format
 msgid "Socket error in %s."
@@ -180,48 +191,37 @@ msgid "Type error in %s."
 msgstr "Erreur de type dans %s."
 
 #, python-format
-msgid "Exception in %s."
-msgstr "Exception dans %s."
+msgid "Unknown state: %(state)s for lease: %(lease)s."
+msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
 
-msgid "Datacenter name cannot be None"
-msgstr "Le nom du datacenter ne peut pas être \"vide\""
+msgid "VMware Driver configuration fault."
+msgstr "Redirection de la configuration du pilote VMware."
 
-msgid "Datacenter reference cannot be None"
-msgstr "La référence du datastore ne peut pas etre \"vide\""
-
-msgid "Datastore name cannot be None"
-msgstr "Le nom du datastore ne peut pas etre \"vide\""
-
-msgid "Datastore reference cannot be None"
-msgstr "La référence du datastore ne peut pas etre \"vide\""
-
-msgid "Invalid capacity"
-msgstr "Capacité non valide"
-
-msgid "Capacity is smaller than free space"
-msgstr "La capacité est plus petite que l'espace libre"
+msgid "cause"
+msgstr "cause"
 
 msgid "datacenter must be set to build url"
 msgstr "datacenter doit être initialiser pour construire url"
 
-msgid "Datastore name cannot be empty"
-msgstr "Le nom du datastore ne pas etre \"vide\""
+msgid "details must be a dict"
+msgstr "details doit etre un dict"
 
-msgid "Path component cannot be None"
-msgstr "Le chemin du composant ne peut pas etre \"vide\""
+msgid "exception should be a subclass of VMwareDriverException"
+msgstr "exception devrait être une subclass de VMwareDriverException"
 
-msgid "Datastore path cannot be empty"
-msgstr "Le chemin du datastore ne peut pas etre \"vide\""
+msgid "exception_summary must not be a list"
+msgstr "exception_summary ne doit pas etre une liste"
+
+msgid "fault_list must be a list"
+msgstr "fault_list doit etre une liste"
 
 #, python-format
-msgid ""
-"Error occurred while creating HTTP connection to write to file with URL = %s."
-msgstr ""
-"Une erreur est survenue pendant la création des connexion HTTP pour écrire "
-"le fichier avec URL = %s."
+msgid "httplib error in %s."
+msgstr "httplib erreur dans %s."
+
+#, python-format
+msgid "requests error in %s."
+msgstr "erreur de requetes dans %s."
 
 msgid "string"
 msgstr "chaîne de caractère"
-
-msgid "cause"
-msgstr "cause"
