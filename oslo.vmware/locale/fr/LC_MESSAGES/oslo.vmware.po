@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  oslo.vmware\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-05-28 06:05+0000\n"
-"PO-Revision-Date: 2015-05-13 18:37+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"POT-Creation-Date: 2015-06-02 06:04+0000\n"
+"PO-Revision-Date: 2015-06-01 16:27+0000\n"
+"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/oslovmware/"
 "language/fr/)\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -139,6 +139,9 @@ msgstr "Image: %(image)s a un statut inconnu: %(state)s. "
 msgid "Image: %s is in killed state."
 msgstr "Image: %s est en état tué"
 
+msgid "Insufficient disk space."
+msgstr "Espace disque insuffisant."
+
 msgid "Invalid capacity"
 msgstr "Capacité non valide"
 
@@ -196,6 +199,9 @@ msgstr "Statut inconnu: %(state)s for lease: %(lease)s."
 
 msgid "VMware Driver configuration fault."
 msgstr "Redirection de la configuration du pilote VMware."
+
+msgid "VMware Tools is not running."
+msgstr "VMware Tools ne fonctionne pas."
 
 msgid "cause"
 msgstr "cause"
