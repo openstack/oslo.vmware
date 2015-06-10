@@ -21,7 +21,6 @@ plugin_name_pattern: '*.py'
 # globs of files which should be analyzed
 include:
     - '*.py'
-    - '*.pyw'
 
 # a list of strings, which if found in the path will cause files to be excluded
 # for example /tests/ - to remove all all files in tests directory
@@ -47,7 +46,7 @@ profiles:
         include:
             - hardcoded_sql_expressions
 
-blacklist_functions:
+blacklist_calls:
     bad_name_sets:
         - pickle:
             qualnames: [pickle.loads, pickle.load, pickle.Unpickler,
