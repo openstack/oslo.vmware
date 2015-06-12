@@ -23,6 +23,7 @@ glance server.
 
 import logging
 import ssl
+import time
 
 from oslo_utils import excutils
 from oslo_utils import netutils
@@ -39,6 +40,7 @@ from oslo_vmware import vim_util
 LOG = logging.getLogger(__name__)
 
 MIN_PROGRESS_DIFF_TO_LOG = 25
+MIN_UPDATE_INTERVAL = 60
 READ_CHUNKSIZE = 65536
 USER_AGENT = 'OpenStack-ESX-Adapter'
 
@@ -58,6 +60,7 @@ class FileHandle(object):
         self._eof = False
         self._file_handle = file_handle
         self._last_logged_progress = 0
+        self._last_progress_udpate = 0
 
     def _create_read_connection(self, url, cookies=None, cacerts=False):
         LOG.debug("Opening URL: %s for reading.", url)
@@ -404,6 +407,10 @@ class VmdkWriteHandle(FileHandle):
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
+        now = time.time()
+        if (now - self._last_progress_udpate < MIN_UPDATE_INTERVAL):
+            return
+        self._last_progress_udpate = now
         progress = int(float(self._bytes_written) / self._vmdk_size * 100)
         self._log_progress(progress)
 
@@ -540,6 +547,10 @@ class VmdkReadHandle(FileHandle):
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
+        now = time.time()
+        if (now - self._last_progress_udpate < MIN_UPDATE_INTERVAL):
+            return
+        self._last_progress_udpate = now
         progress = int(float(self._bytes_read) / self._vmdk_size * 100)
         self._log_progress(progress)
 
