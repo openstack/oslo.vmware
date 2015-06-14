@@ -108,5 +108,7 @@ class ExceptionsTest(base.TestCase):
                          exceptions.get_fault_class("NoDiskSpace"))
         self.assertEqual(exceptions.ToolsUnavailableException,
                          exceptions.get_fault_class("ToolsUnavailable"))
+        self.assertEqual(exceptions.ManagedObjectNotFoundException,
+                         exceptions.get_fault_class("ManagedObjectNotFound"))
         # Test unknown fault.
         self.assertIsNone(exceptions.get_fault_class("NotAFile"))

@@ -38,6 +38,7 @@ NO_DISK_SPACE = 'NoDiskSpace'
 NO_PERMISSION = 'NoPermission'
 NOT_AUTHENTICATED = 'NotAuthenticated'
 SECURITY_ERROR = "SecurityError"
+MANAGED_OBJECT_NOT_FOUND = 'ManagedObjectNotFound'
 TASK_IN_PROGRESS = 'TaskInProgress'
 TOOLS_UNAVAILABLE = 'ToolsUnavailable'
 
@@ -259,6 +260,11 @@ class ToolsUnavailableException(VimException):
     msg_fmt = _("VMware Tools is not running.")
 
 
+class ManagedObjectNotFoundException(VimException):
+    msg_fmt = _("Managed object not found.")
+    code = 404
+
+
 # Populate the fault registry with the exceptions that have
 # special treatment.
 _fault_classes_registry = {
@@ -271,6 +277,7 @@ _fault_classes_registry = {
     FILE_NOT_FOUND: FileNotFoundException,
     INVALID_POWER_STATE: InvalidPowerStateException,
     INVALID_PROPERTY: InvalidPropertyException,
+    MANAGED_OBJECT_NOT_FOUND: ManagedObjectNotFoundException,
     NO_DISK_SPACE: NoDiskSpaceException,
     NO_PERMISSION: NoPermissionException,
     NOT_AUTHENTICATED: NotAuthenticatedException,
