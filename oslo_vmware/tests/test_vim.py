@@ -105,5 +105,5 @@ class VMwareSudsTest(base.TestCase):
 
     def test_exception_with_deepcopy(self):
         self.assertIsNotNone(self.vim)
-        self.assertRaises(exceptions.VimException,
+        self.assertRaises(exceptions.VimAttributeException,
                           copy.deepcopy, self.vim)

@@ -59,7 +59,7 @@ class ExceptionsTest(base.TestCase):
                          string)
 
     def _create_subclass_exception(self):
-        class VimSubClass(exceptions.VMwareDriverException):
+        class VimSubClass(exceptions.VimException):
             pass
         return VimSubClass
 

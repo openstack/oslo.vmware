@@ -27,23 +27,30 @@ LOG = logging.getLogger(__name__)
 
 ALREADY_EXISTS = 'AlreadyExists'
 CANNOT_DELETE_FILE = 'CannotDeleteFile'
+DUPLICATE_NAME = 'DuplicateName'
 FILE_ALREADY_EXISTS = 'FileAlreadyExists'
 FILE_FAULT = 'FileFault'
 FILE_LOCKED = 'FileLocked'
 FILE_NOT_FOUND = 'FileNotFound'
 INVALID_POWER_STATE = 'InvalidPowerState'
 INVALID_PROPERTY = 'InvalidProperty'
+NO_DISK_SPACE = 'NoDiskSpace'
 NO_PERMISSION = 'NoPermission'
 NOT_AUTHENTICATED = 'NotAuthenticated'
-TASK_IN_PROGRESS = 'TaskInProgress'
-DUPLICATE_NAME = 'DuplicateName'
 SECURITY_ERROR = "SecurityError"
-NO_DISK_SPACE = 'NoDiskSpace'
+TASK_IN_PROGRESS = 'TaskInProgress'
 TOOLS_UNAVAILABLE = 'ToolsUnavailable'
 
 
-class VimException(Exception):
-    """The base exception class for all exceptions this library raises."""
+class VMwareDriverException(Exception):
+    """Base oslo.vmware exception
+
+    To correctly use this class, inherit from it and define
+    a 'msg_fmt' property. That msg_fmt will get printf'd
+    with the keyword arguments provided to the constructor.
+
+    """
+    msg_fmt = _("An unknown exception occurred.")
 
     if six.PY2:
         __str__ = lambda self: six.text_type(self).encode('utf8')
@@ -51,15 +58,38 @@ class VimException(Exception):
     else:
         __str__ = lambda self: self.description
 
-    def __init__(self, message, cause=None):
-        Exception.__init__(self)
-        if isinstance(message, list):
+    def __init__(self, message=None, details=None, **kwargs):
+
+        if message is not None and isinstance(message, list):
             # we need this to protect against developers using
             # this method like VimFaultException
-            raise ValueError(_("exception_summary must not be a list"))
+            raise ValueError(_("exception message must not be a list"))
 
-        self.msg = message
-        self.cause = cause
+        if details is not None and not isinstance(details, dict):
+            raise ValueError(_("details must be a dict"))
+
+        self.kwargs = kwargs
+        self.details = details
+        self.cause = None
+
+        if not message:
+            try:
+                message = self.msg_fmt % kwargs
+            except Exception:
+                # kwargs doesn't match a variable in the message
+                # log the issue and the kwargs
+                LOG.exception(_LE('Exception in string format operation'))
+                for name, value in six.iteritems(kwargs):
+                    LOG.error(_LE("%(name)s: %(value)s"),
+                              {'name': name, 'value': value})
+                # at least get the core message out if something happened
+                message = self.msg_fmt
+
+        super(VMwareDriverException, self).__init__(message)
+
+    @property
+    def msg(self):
+        return self.message
 
     @property
     def description(self):
@@ -72,37 +102,46 @@ class VimException(Exception):
         return descr
 
 
-class VimSessionOverLoadException(VimException):
+class VimException(VMwareDriverException):
+    """The base exception class for all VIM related exceptions."""
+
+    def __init__(self, message=None, cause=None, details=None, **kwargs):
+        super(VimException, self).__init__(message, details, **kwargs)
+        self.cause = cause
+
+
+class VimSessionOverLoadException(VMwareDriverException):
     """Thrown when there is an API call overload at the VMware server."""
-    pass
+
+    def __init__(self, message, cause=None):
+        super(VimSessionOverLoadException, self).__init__(message)
+        self.cause = cause
 
 
-class VimConnectionException(VimException):
+class VimConnectionException(VMwareDriverException):
     """Thrown when there is a connection problem."""
-    pass
+
+    def __init__(self, message, cause=None):
+        super(VimConnectionException, self).__init__(message)
+        self.cause = cause
 
 
-class VimAttributeException(VimException):
+class VimAttributeException(VMwareDriverException):
     """Thrown when a particular attribute cannot be found."""
-    pass
+
+    def __init__(self, message, cause=None):
+        super(VimAttributeException, self).__init__(message)
+        self.cause = cause
 
 
 class VimFaultException(VimException):
-    """Exception thrown when there are faults during VIM API calls."""
+    """Exception thrown when there are unrecognized VIM faults."""
 
     def __init__(self, fault_list, message, cause=None, details=None):
-        super(VimFaultException, self).__init__(message, cause)
+        super(VimFaultException, self).__init__(message, cause, details)
         if not isinstance(fault_list, list):
             raise ValueError(_("fault_list must be a list"))
-        if details is not None and not isinstance(details, dict):
-            raise ValueError(_("details must be a dict"))
         self.fault_list = fault_list
-        self.details = details
-
-    if six.PY2:
-        __unicode__ = lambda self: self.description
-    else:
-        __str__ = lambda self: self.description
 
     @property
     def description(self):
@@ -118,40 +157,12 @@ class VimFaultException(VimException):
         return descr
 
 
-class ImageTransferException(VimException):
+class ImageTransferException(VMwareDriverException):
     """Thrown when there is an error during image transfer."""
-    pass
 
-
-class VMwareDriverException(Exception):
-    """Base VMware Driver Exception
-
-    To correctly use this class, inherit from it and define
-    a 'msg_fmt' property. That msg_fmt will get printf'd
-    with the keyword arguments provided to the constructor.
-
-    """
-    msg_fmt = _("An unknown exception occurred.")
-
-    def __init__(self, message=None, details=None, **kwargs):
-        self.kwargs = kwargs
-        self.details = details
-
-        if not message:
-            try:
-                message = self.msg_fmt % kwargs
-
-            except Exception:
-                # kwargs doesn't match a variable in the message
-                # log the issue and the kwargs
-                LOG.exception(_LE('Exception in string format operation'))
-                for name, value in six.iteritems(kwargs):
-                    LOG.error(_LE("%(name)s: %(value)s"),
-                              {'name': name, 'value': value})
-                # at least get the core message out if something happened
-                message = self.msg_fmt
-
-        super(VMwareDriverException, self).__init__(message)
+    def __init__(self, message, cause=None):
+        super(ImageTransferException, self).__init__(message)
+        self.cause = cause
 
 
 class VMwareDriverConfigurationException(VMwareDriverException):
@@ -168,69 +179,69 @@ class MissingParameter(VMwareDriverException):
     msg_fmt = _("Missing parameter : %(param)s")
 
 
-class AlreadyExistsException(VMwareDriverException):
+class AlreadyExistsException(VimException):
     msg_fmt = _("Resource already exists.")
     code = 409
 
 
-class CannotDeleteFileException(VMwareDriverException):
+class CannotDeleteFileException(VimException):
     msg_fmt = _("Cannot delete file.")
     code = 403
 
 
-class FileAlreadyExistsException(VMwareDriverException):
+class FileAlreadyExistsException(VimException):
     msg_fmt = _("File already exists.")
     code = 409
 
 
-class FileFaultException(VMwareDriverException):
+class FileFaultException(VimException):
     msg_fmt = _("File fault.")
     code = 409
 
 
-class FileLockedException(VMwareDriverException):
+class FileLockedException(VimException):
     msg_fmt = _("File locked.")
     code = 403
 
 
-class FileNotFoundException(VMwareDriverException):
+class FileNotFoundException(VimException):
     msg_fmt = _("File not found.")
     code = 404
 
 
-class InvalidPowerStateException(VMwareDriverException):
+class InvalidPowerStateException(VimException):
     msg_fmt = _("Invalid power state.")
     code = 409
 
 
-class InvalidPropertyException(VMwareDriverException):
+class InvalidPropertyException(VimException):
     msg_fmt = _("Invalid property.")
     code = 400
 
 
-class NoPermissionException(VMwareDriverException):
+class NoPermissionException(VimException):
     msg_fmt = _("No Permission.")
     code = 403
 
 
-class NotAuthenticatedException(VMwareDriverException):
+class NotAuthenticatedException(VimException):
     msg_fmt = _("Not Authenticated.")
     code = 403
 
 
-class TaskInProgress(VMwareDriverException):
+class TaskInProgress(VimException):
     msg_fmt = _("Entity has another operation in process.")
 
 
-class DuplicateName(VMwareDriverException):
+class DuplicateName(VimException):
     msg_fmt = _("Duplicate name.")
 
 
-class NoDiskSpaceException(VMwareDriverException):
+class NoDiskSpaceException(VimException):
     msg_fmt = _("Insufficient disk space.")
 
 
-class ToolsUnavailableException(VMwareDriverException):
+class ToolsUnavailableException(VimException):
     msg_fmt = _("VMware Tools is not running.")
 
 
@@ -239,23 +250,23 @@ class ToolsUnavailableException(VMwareDriverException):
 _fault_classes_registry = {
     ALREADY_EXISTS: AlreadyExistsException,
     CANNOT_DELETE_FILE: CannotDeleteFileException,
+    DUPLICATE_NAME: DuplicateName,
     FILE_ALREADY_EXISTS: FileAlreadyExistsException,
     FILE_FAULT: FileFaultException,
     FILE_LOCKED: FileLockedException,
     FILE_NOT_FOUND: FileNotFoundException,
     INVALID_POWER_STATE: InvalidPowerStateException,
     INVALID_PROPERTY: InvalidPropertyException,
+    NO_DISK_SPACE: NoDiskSpaceException,
     NO_PERMISSION: NoPermissionException,
     NOT_AUTHENTICATED: NotAuthenticatedException,
     TASK_IN_PROGRESS: TaskInProgress,
-    DUPLICATE_NAME: DuplicateName,
-    NO_DISK_SPACE: NoDiskSpaceException,
     TOOLS_UNAVAILABLE: ToolsUnavailableException,
 }
 
 
 def get_fault_class(name):
-    """Get a named subclass of VMwareDriverException."""
+    """Get a named subclass of VimException."""
     name = str(name)
     fault_class = _fault_classes_registry.get(name)
     if not fault_class:
@@ -266,9 +277,9 @@ def get_fault_class(name):
 
 def register_fault_class(name, exception):
     fault_class = _fault_classes_registry.get(name)
-    if not issubclass(exception, VMwareDriverException):
+    if not issubclass(exception, VimException):
         raise TypeError(_("exception should be a subclass of "
-                          "VMwareDriverException"))
+                          "VimException"))
     if fault_class:
         LOG.debug('Overriding exception for %s', name)
     _fault_classes_registry[name] = exception
