@@ -21,7 +21,7 @@ import logging
 
 import six
 
-from oslo_vmware._i18n import _, _LE
+from oslo_vmware._i18n import _, _LE, _LW
 
 LOG = logging.getLogger(__name__)
 
@@ -165,10 +165,20 @@ class ImageTransferException(VMwareDriverException):
         self.cause = cause
 
 
+def _print_deprecation_warning(clazz):
+    LOG.warn(_LW("Exception %s is deprecated, it will be removed in the "
+                 "next release."), clazz.__name__)
+
+
 class VMwareDriverConfigurationException(VMwareDriverException):
     """Base class for all configuration exceptions.
     """
     msg_fmt = _("VMware Driver configuration fault.")
+
+    def __init__(self, message=None, details=None, **kwargs):
+        super(VMwareDriverConfigurationException, self).__init__(
+            message, details, **kwargs)
+        _print_deprecation_warning(self.__class__)
 
 
 class UseLinkedCloneConfigurationFault(VMwareDriverConfigurationException):
@@ -177,6 +187,10 @@ class UseLinkedCloneConfigurationFault(VMwareDriverConfigurationException):
 
 class MissingParameter(VMwareDriverException):
     msg_fmt = _("Missing parameter : %(param)s")
+
+    def __init__(self, message=None, details=None, **kwargs):
+        super(MissingParameter, self).__init__(message, details, **kwargs)
+        _print_deprecation_warning(self.__class__)
 
 
 class AlreadyExistsException(VimException):
