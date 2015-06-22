@@ -2,9 +2,9 @@
 # of appearance. Changing the order has an impact on the overall integration
 # process, which may cause wedges in the gate later.
 
-pbr>=0.11,<2.0
+pbr<2.0,>=0.11
 
-stevedore>=1.5.0  # Apache-2.0
+stevedore>=1.5.0 # Apache-2.0
 netaddr>=0.7.12
 
 # for timeutils
@@ -13,8 +13,8 @@ iso8601>=0.1.9
 # for jsonutils
 six>=1.9.0
 
-oslo.i18n>=1.5.0  # Apache-2.0
-oslo.utils>=1.6.0                       # Apache-2.0
+oslo.i18n>=1.5.0 # Apache-2.0
+oslo.utils>=1.6.0 # Apache-2.0
 Babel>=1.3
 
 # for the routing notifier
@@ -24,4 +24,4 @@ suds-jurko>=0.6
 eventlet>=0.17.3
 requests>=2.5.2
 urllib3>=1.8.3
-oslo.concurrency>=2.0.0         # Apache-2.0
+oslo.concurrency>=2.0.0 # Apache-2.0
