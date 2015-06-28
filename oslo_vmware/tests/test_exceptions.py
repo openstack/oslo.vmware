@@ -16,7 +16,6 @@
 """
 Unit tests for exceptions module.
 """
-
 from oslo_vmware._i18n import _
 from oslo_vmware import exceptions
 from oslo_vmware.tests import base
@@ -78,6 +77,10 @@ class ExceptionsTest(base.TestCase):
         self.assertRaises(TypeError,
                           exceptions.register_fault_class,
                           'ValueError', ValueError)
+
+    def test_log_exception_to_string(self):
+        self.assertEqual('Insufficient disk space.',
+                         str(exceptions.NoDiskSpaceException()))
 
     def test_get_fault_class(self):
         self.assertEqual(exceptions.AlreadyExistsException,

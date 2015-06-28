@@ -86,6 +86,8 @@ class VMwareDriverException(Exception):
                 # at least get the core message out if something happened
                 message = self.msg_fmt
 
+        if six.PY3:
+            self.message = message
         super(VMwareDriverException, self).__init__(message)
 
     @property
