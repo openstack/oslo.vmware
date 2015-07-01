@@ -309,7 +309,7 @@ class VMwareAPISession(object):
                             {'session': _trunc_id(self._session_id),
                              'module': module,
                              'method': method})
-                        LOG.warn(excep_msg, exc_info=True)
+                        LOG.debug(excep_msg)
                         self._create_session()
                         raise exceptions.VimConnectionException(excep_msg,
                                                                 excep)
@@ -332,12 +332,11 @@ class VMwareAPISession(object):
                     # if the session has expired. Otherwise, it could be
                     # a transient issue.
                     if not self.is_current_session_active():
-                        LOG.warn(_LW("Re-creating session due to connection "
-                                     "problems while invoking method "
-                                     "%(module)s.%(method)s."),
-                                 {'module': module,
-                                  'method': method},
-                                 exc_info=True)
+                        LOG.debug("Re-creating session due to connection "
+                                  "problems while invoking method "
+                                  "%(module)s.%(method)s.",
+                                  {'module': module,
+                                   'method': method})
                         self._create_session()
 
         return _invoke_api(module, method, *args, **kwargs)
@@ -356,11 +355,11 @@ class VMwareAPISession(object):
                 self.vim.service_content.sessionManager,
                 sessionID=self._session_id,
                 userName=self._session_username)
-        except exceptions.VimException:
-            LOG.warn(_LW("Error occurred while checking whether the "
-                         "current session: %s is active."),
-                     _trunc_id(self._session_id),
-                     exc_info=True)
+        except exceptions.VimException as ex:
+            LOG.debug("Error: %(error)s occurred while checking whether the "
+                      "current session: %(session)s is active.",
+                      {'error': six.text_type(ex),
+                       'session': _trunc_id(self._session_id)})
 
         return is_active
 
