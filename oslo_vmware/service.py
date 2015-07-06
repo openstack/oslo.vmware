@@ -358,3 +358,32 @@ class Service(object):
 
     def __str__(self):
         return "vSphere object"
+
+
+class SudsLogFilter(logging.Filter):
+    """Filter to mask/truncate vCenter credentials in suds logs."""
+
+    def filter(self, record):
+        if not hasattr(record.msg, 'childAtPath'):
+            return True
+
+        # Suds will log vCenter credentials if SessionManager.Login or
+        # SessionManager.SessionIsActive fails.
+        login = (record.msg.childAtPath('/Envelope/Body/Login') or
+                 record.msg.childAtPath('/Envelope/Body/SessionIsActive'))
+        if login is None:
+            return True
+
+        if login.childAtPath('userName') is not None:
+            login.childAtPath('userName').setText('***')
+        if login.childAtPath('password') is not None:
+            login.childAtPath('password').setText('***')
+
+        session_id = login.childAtPath('sessionID')
+        if session_id is not None:
+            session_id.setText(session_id.getText()[-5:])
+
+        return True
+
+# Set log filter to mask/truncate vCenter credentials in suds logs.
+suds.client.log.addFilter(SudsLogFilter())
