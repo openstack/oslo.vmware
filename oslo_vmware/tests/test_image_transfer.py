@@ -255,7 +255,7 @@ class ImageTransferUtilityTest(base.TestCase):
         self.assertEqual(len(write_file_handles),
                          read_file_handle.close.call_count)
 
-        write_file_handle1.close.assert_called_once()
+        write_file_handle1.close.assert_called_once_with()
 
     @mock.patch.object(image_transfer, 'FileReadWriteTask')
     @mock.patch.object(image_transfer, 'BlockingQueue')
@@ -403,7 +403,7 @@ class ImageTransferUtilityTest(base.TestCase):
             image_size,
             write_file_handle=fake_VmdkWriteHandle)
 
-        fake_VmdkWriteHandle.get_imported_vm.assert_called_once()
+        fake_VmdkWriteHandle.get_imported_vm.assert_called_once_with()
 
     @mock.patch('oslo_vmware.rw_handles.ImageReadHandle')
     @mock.patch.object(image_transfer, 'download_stream_optimized_data')

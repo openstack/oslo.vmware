@@ -142,7 +142,7 @@ class ServiceTest(base.TestCase):
         self.assertEqual(fault_list, ex.fault_list)
         self.assertEqual({'name': 'value'}, ex.details)
         self.assertEqual("MyFault", ex.msg)
-        doc.childAtPath.assertCalledOnceWith('/detail')
+        doc.childAtPath.assert_called_once_with('/detail')
 
     def test_request_handler_with_empty_web_fault_doc(self):
 
@@ -227,7 +227,7 @@ class ServiceTest(base.TestCase):
         self.assertEqual([exceptions.NOT_AUTHENTICATED], ex.fault_list)
         self.assertEqual({'name': 'value'}, ex.details)
         self.assertEqual("MyFault", ex.msg)
-        doc.childAtPath.assertCalledOnceWith('/detail')
+        doc.childAtPath.assert_called_once_with('/detail')
 
     def test_request_handler_with_attribute_error(self):
         managed_object = 'VirtualMachine'
