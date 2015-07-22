@@ -224,7 +224,7 @@ class VMwareAPISession(object):
 
         session_manager = self.vim.service_content.sessionManager
         # Login and create new session with the server for making API calls.
-        LOG.debug("Logging in with username = %s.", self._server_username)
+        LOG.debug("Logging into host: %s.", self._host)
         session = self.vim.Login(session_manager,
                                  userName=self._server_username,
                                  password=self._server_password)
