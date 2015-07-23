@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 1.16.0\n"
+"Project-Id-Version: oslo.vmware 1.17.1.dev5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-09 06:13+0000\n"
+"POT-Creation-Date: 2015-07-23 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,19 +25,7 @@ msgid ""
 "invoking function: %s."
 msgstr ""
 
-#: oslo_vmware/api.py:335
-#, python-format
-msgid ""
-"Re-creating session due to connection problems while invoking method "
-"%(module)s.%(method)s."
-msgstr ""
-
-#: oslo_vmware/api.py:360
-#, python-format
-msgid "Error occurred while checking whether the current session: %s is active."
-msgstr ""
-
-#: oslo_vmware/api.py:493
+#: oslo_vmware/api.py:492
 #, python-format
 msgid "Error occurred while reading error message for lease: %s."
 msgstr ""
