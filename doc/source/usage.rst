@@ -2,13 +2,24 @@
 Usage
 ========
 
-To use in a project::
+Example usage of getting a handle to a vSphere session and retrieving all the
+ESX hosts in a server::
 
-	from oslo_vmware import api
-	from oslo_vmware import vim_util
+    from oslo_vmware import api
+    from oslo_vmware import vim_util
 
-	api_session = api.VMwareAPISession('10.1.2.3', 'administrator',
-	                                   'password', 10, 0.1,
-	                                   create_session=False, port=443)
-	result = api_session.invoke_api(vim_util, 'get_objects',
-	                                api_session.vim, 'HostSystem', 100)
+    # Get a handle to a vSphere API session
+    session = api.VMwareAPISession(
+        '10.1.2.3',      # vSphere host endpoint
+        'administrator', # vSphere username
+        'password',      # vSphere password
+        10,              # Number of retries for connection failures in tasks
+        0.1              # Poll interval for async tasks (in seconds)
+    )
+
+    # Example call to get all the managed objects of type "HostSystem"
+    # on the server.
+    result = session.invoke_api(
+        vim_util,                           # Handle to VIM utility module
+        'get_objects',                      # API method name to invoke
+        session.vim, 'HostSystem', 100)     # Params to API method (*args)
