@@ -116,6 +116,9 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
 
     See http://stackoverflow.com/a/22989322
     """
+    def __init__(self, pool_maxsize=10):
+        super(LocalFileAdapter, self).__init__(pool_connections=pool_maxsize,
+                                               pool_maxsize=pool_maxsize)
 
     def _build_response_from_file(self, request):
         file_path = request.url[7:]
@@ -131,13 +134,14 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
 
 
 class RequestsTransport(transport.Transport):
-    def __init__(self, cacert=None, insecure=True):
+    def __init__(self, cacert=None, insecure=True, pool_maxsize=10):
         transport.Transport.__init__(self)
         # insecure flag is used only if cacert is not
         # specified.
         self.verify = cacert if cacert else not insecure
         self.session = requests.Session()
-        self.session.mount('file:///', LocalFileAdapter())
+        self.session.mount('file:///',
+                           LocalFileAdapter(pool_maxsize=pool_maxsize))
         self.cookiejar = self.session.cookies
 
     def open(self, request):
@@ -184,12 +188,12 @@ class Service(object):
     """
 
     def __init__(self, wsdl_url=None, soap_url=None,
-                 cacert=None, insecure=True):
+                 cacert=None, insecure=True, pool_maxsize=10):
         self.wsdl_url = wsdl_url
         self.soap_url = soap_url
         LOG.debug("Creating suds client with soap_url='%s' and wsdl_url='%s'",
                   self.soap_url, self.wsdl_url)
-        transport = RequestsTransport(cacert, insecure)
+        transport = RequestsTransport(cacert, insecure, pool_maxsize)
         self.client = client.Client(self.wsdl_url,
                                     transport=transport,
                                     location=self.soap_url,

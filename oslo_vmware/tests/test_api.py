@@ -102,6 +102,7 @@ class VMwareAPISessionTest(base.TestCase):
     PORT = 443
     USERNAME = 'admin'
     PASSWORD = 'password'
+    POOL_SIZE = 15
 
     def setUp(self):
         super(VMwareAPISessionTest, self).setUp()
@@ -122,7 +123,8 @@ class VMwareAPISessionTest(base.TestCase):
                                     _create_session,
                                     port=VMwareAPISessionTest.PORT,
                                     cacert=self.cert_mock,
-                                    insecure=False)
+                                    insecure=False,
+                                    pool_size=VMwareAPISessionTest.POOL_SIZE)
 
     def test_vim(self):
         api_session = self._create_api_session(False)
@@ -132,7 +134,9 @@ class VMwareAPISessionTest(base.TestCase):
                                         port=VMwareAPISessionTest.PORT,
                                         wsdl_url=api_session._vim_wsdl_loc,
                                         cacert=self.cert_mock,
-                                        insecure=False)
+                                        insecure=False,
+                                        pool_maxsize=VMwareAPISessionTest.
+                                        POOL_SIZE)
 
     @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
