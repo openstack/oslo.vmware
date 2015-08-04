@@ -440,6 +440,12 @@ class RequestsTransportTest(base.TestCase):
         self.assertEqual(mock.sentinel.headers, reply.headers)
         self.assertEqual(mock.sentinel.content, reply.message)
 
+    def test_set_conn_pool_size(self):
+        transport = service.RequestsTransport(pool_maxsize=100)
+        local_file_adapter = transport.session.adapters['file:///']
+        self.assertEqual(100, local_file_adapter._pool_connections)
+        self.assertEqual(100, local_file_adapter._pool_maxsize)
+
     @mock.patch('os.path.getsize')
     def test_send_with_local_file_url(self, get_size_mock):
         transport = service.RequestsTransport()
