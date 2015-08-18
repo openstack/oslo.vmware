@@ -380,8 +380,8 @@ class SudsLogFilter(logging.Filter):
 
         if login.childAtPath('userName') is not None:
             login.childAtPath('userName').setText('***')
-        if login.childAtPath('password') is not None:
-            login.childAtPath('password').setText('***')
+        if login.childAtPath('password') is not None:  # nosec
+            login.childAtPath('password').setText('***')  # nosec
 
         session_id = login.childAtPath('sessionID')
         if session_id is not None:
