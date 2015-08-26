@@ -24,6 +24,7 @@ from oslo_vmware import exceptions
 from oslo_vmware import rw_handles
 from oslo_vmware.tests import base
 from oslo_vmware import vim_util
+from urllib3 import connection as httplib
 
 
 class FileHandleTest(base.TestCase):
@@ -41,15 +42,23 @@ class FileHandleTest(base.TestCase):
         device_url_1 = mock.Mock()
         device_url_1.disk = True
         device_url_1.url = 'https://*/ds1/vm1.vmdk'
+        device_url_1.sslThumbprint = '11:22:33:44:55'
         lease_info = mock.Mock()
         lease_info.deviceUrl = [device_url_0, device_url_1]
         host = '10.1.2.3'
         port = 443
         exp_url = 'https://%s:%d/ds1/vm1.vmdk' % (host, port)
         vmw_http_file = rw_handles.FileHandle(None)
-        self.assertEqual(exp_url, vmw_http_file._find_vmdk_url(lease_info,
-                                                               host,
-                                                               port))
+        url, thumbprint = vmw_http_file._find_vmdk_url(lease_info, host, port)
+        self.assertEqual(exp_url, url)
+        self.assertEqual('11:22:33:44:55', thumbprint)
+
+    def test_create_connection(self):
+        handle = rw_handles.FileHandle(None)
+        conn = handle._create_connection('http://fira', 'GET')
+        self.assertIsInstance(conn, httplib.HTTPConnection)
+        conn = handle._create_connection('https://fira', 'GET')
+        self.assertIsInstance(conn, httplib.HTTPSConnection)
 
 
 class FileWriteHandleTest(base.TestCase):
@@ -182,12 +191,15 @@ class VmdkReadHandleTest(base.TestCase):
 
     def setUp(self):
         super(VmdkReadHandleTest, self).setUp()
-
-        send_patcher = mock.patch('requests.sessions.Session.send')
-        self.addCleanup(send_patcher.stop)
-        send_mock = send_patcher.start()
-        self._response = mock.Mock()
-        send_mock.return_value = self._response
+        self._resp = mock.Mock()
+        self._resp.read.return_value = 'fake-data'
+        self._conn = mock.Mock()
+        self._conn.getresponse.return_value = self._resp
+        patcher = mock.patch(
+            'urllib3.connection.HTTPConnection')
+        self.addCleanup(patcher.stop)
+        HTTPConnectionMock = patcher.start()
+        HTTPConnectionMock.return_value = self._conn
 
     def _create_mock_session(self, disk=True, progress=-1):
         device_url = mock.Mock()
@@ -227,25 +239,22 @@ class VmdkReadHandleTest(base.TestCase):
     def test_read(self):
         chunk_size = rw_handles.READ_CHUNKSIZE
         session = self._create_mock_session()
-        self._response.raw.read.return_value = [1] * chunk_size
         handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            chunk_size * 10)
-        handle.read(chunk_size)
-        self.assertEqual(chunk_size, handle._bytes_read)
-        self._response.raw.read.assert_called_once_with(chunk_size)
+        data = handle.read(chunk_size)
+        self.assertEqual('fake-data', data)
 
     def test_update_progress(self):
-        chunk_size = rw_handles.READ_CHUNKSIZE
+        chunk_size = len('fake-data')
         vmdk_size = chunk_size * 10
         session = self._create_mock_session(True, 10)
-        self._response.raw.read.return_value = [1] * chunk_size
         handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            vmdk_size)
-        handle.read(chunk_size)
+        data = handle.read(chunk_size)
         handle.update_progress()
-        self._response.raw.read.assert_called_once_with(chunk_size)
+        self.assertEqual('fake-data', data)
 
     def test_update_progress_with_error(self):
         session = self._create_mock_session(True, 10)
