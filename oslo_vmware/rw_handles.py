@@ -62,16 +62,47 @@ class FileHandle(object):
         self._last_logged_progress = 0
         self._last_progress_udpate = 0
 
-    def _create_read_connection(self, url, cookies=None, cacerts=False):
+    def _create_connection(self, url, method, cacerts=False,
+                           ssl_thumbprint=None):
+        _urlparse = urlparse.urlparse(url)
+        scheme, netloc, path, params, query, fragment = _urlparse
+        if scheme == 'http':
+            conn = httplib.HTTPConnection(netloc)
+        elif scheme == 'https':
+            conn = httplib.HTTPSConnection(netloc)
+            cert_reqs = None
+
+            # cacerts can be either True or False or contain
+            # actual certificates. If it is a boolean, then
+            # we need to set cert_reqs and clear the cacerts
+            if isinstance(cacerts, bool):
+                if cacerts:
+                    cert_reqs = ssl.CERT_REQUIRED
+                else:
+                    cert_reqs = ssl.CERT_NONE
+                cacerts = None
+            conn.set_cert(ca_certs=cacerts, cert_reqs=cert_reqs,
+                          assert_fingerprint=ssl_thumbprint)
+        else:
+            excep_msg = _("Invalid scheme: %s.") % scheme
+            LOG.error(excep_msg)
+            raise ValueError(excep_msg)
+
+        if query:
+            path = path + '?' + query
+        conn.putrequest(method, path)
+        return conn
+
+    def _create_read_connection(self, url, cookies=None, cacerts=False,
+                                ssl_thumbprint=None):
         LOG.debug("Opening URL: %s for reading.", url)
         try:
-            headers = {'User-Agent': USER_AGENT}
-            if cookies:
-                headers.update({'Cookie':
-                                self._build_vim_cookie_header(cookies)})
-            response = requests.get(url, headers=headers, stream=True,
-                                    verify=cacerts)
-            return response.raw
+            conn = self._create_connection(url, 'GET', cacerts, ssl_thumbprint)
+            vim_cookie = self._build_vim_cookie_header(cookies)
+            conn.putheader('User-Agent', USER_AGENT)
+            conn.putheader('Cookie', vim_cookie)
+            conn.endheaders()
+            return conn.getresponse()
         except Exception as excep:
             # TODO(vbala) We need to catch and raise specific exceptions
             # related to connection problems, invalid request and invalid
@@ -86,41 +117,15 @@ class FileHandle(object):
                                  cookies=None,
                                  overwrite=None,
                                  content_type=None,
-                                 cacerts=False):
+                                 cacerts=False,
+                                 ssl_thumbprint=None):
         """Create HTTP connection to write to VMDK file."""
         LOG.debug("Creating HTTP connection to write to file with "
                   "size = %(file_size)d and URL = %(url)s.",
                   {'file_size': file_size,
                    'url': url})
-        _urlparse = urlparse.urlparse(url)
-        scheme, netloc, path, params, query, fragment = _urlparse
-
         try:
-            if scheme == 'http':
-                conn = httplib.HTTPConnection(netloc)
-            elif scheme == 'https':
-                conn = httplib.HTTPSConnection(netloc)
-                cert_reqs = None
-
-                # cacerts can be either True or False or contain
-                # actual certificates. If it is a boolean, then
-                # we need to set cert_reqs and clear the cacerts
-                if isinstance(cacerts, bool):
-                    if cacerts:
-                        cert_reqs = ssl.CERT_REQUIRED
-                    else:
-                        cert_reqs = ssl.CERT_NONE
-                    cacerts = None
-
-                conn.set_cert(ca_certs=cacerts, cert_reqs=cert_reqs)
-            else:
-                excep_msg = _("Invalid scheme: %s.") % scheme
-                LOG.error(excep_msg)
-                raise ValueError(excep_msg)
-
-            if query:
-                path = path + '?' + query
-
+            conn = self._create_connection(url, 'PUT', cacerts, ssl_thumbprint)
             headers = {'User-Agent': USER_AGENT}
             if file_size:
                 headers.update({'Content-Length': str(file_size)})
@@ -131,8 +136,6 @@ class FileHandle(object):
                                self._build_vim_cookie_header(cookies)})
             if content_type:
                 headers.update({'Content-Type': content_type})
-
-            conn.putrequest('PUT', path)
             for key, value in six.iteritems(headers):
                 conn.putheader(key, value)
             conn.endheaders()
@@ -213,16 +216,18 @@ class FileHandle(object):
     def _find_vmdk_url(self, lease_info, host, port):
         """Find the URL corresponding to a VMDK file in lease info."""
         url = None
+        ssl_thumbprint = None
         for deviceUrl in lease_info.deviceUrl:
             if deviceUrl.disk:
                 url = self._fix_esx_url(deviceUrl.url, host, port)
+                ssl_thumbprint = deviceUrl.sslThumbprint
                 break
         if not url:
             excep_msg = _("Could not retrieve VMDK URL from lease info.")
             LOG.error(excep_msg)
             raise exceptions.VimException(excep_msg)
         LOG.debug("Found VMDK URL: %s from lease info.", url)
-        return url
+        return url, ssl_thumbprint
 
     def _log_progress(self, progress):
         """Log data transfer progress."""
@@ -338,7 +343,7 @@ class VmdkWriteHandle(FileHandle):
                                         'info')
 
         # Find VMDK URL where data is to be written
-        self._url = self._find_vmdk_url(lease_info, host, port)
+        self._url, thumbprint = self._find_vmdk_url(lease_info, host, port)
         self._vm_ref = lease_info.entity
 
         cookies = session.vim.client.options.transport.cookiejar
@@ -349,7 +354,7 @@ class VmdkWriteHandle(FileHandle):
                                                    cookies=cookies,
                                                    overwrite='t',
                                                    content_type=octet_stream,
-                                                   cacerts=session._cacert)
+                                                   ssl_thumbprint=thumbprint)
         FileHandle.__init__(self, self._conn)
 
     def get_imported_vm(self):
@@ -499,12 +504,11 @@ class VmdkReadHandle(FileHandle):
                                         'info')
 
         # find URL of the VMDK file to be read and open connection
-        self._url = self._find_vmdk_url(lease_info, host, port)
+        self._url, thumbprint = self._find_vmdk_url(lease_info, host, port)
         cookies = session.vim.client.options.transport.cookiejar
-        cacerts = session.vim.client.options.transport.verify
         self._conn = self._create_read_connection(self._url,
                                                   cookies=cookies,
-                                                  cacerts=cacerts)
+                                                  ssl_thumbprint=thumbprint)
         FileHandle.__init__(self, self._conn)
 
     def _create_and_wait_for_lease(self, session, vm_ref):
