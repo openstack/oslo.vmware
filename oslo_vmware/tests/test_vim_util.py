@@ -205,8 +205,8 @@ class VimUtilTest(base.TestCase):
             self.assertEqual([trav_spec], obj_spec.selectSet)
             self.assertFalse(obj_spec.skip)
 
-        vim.RetrievePropertiesEx.side_effect = \
-            vim_RetrievePropertiesEx_side_effect
+        vim.RetrievePropertiesEx.side_effect = (
+            vim_RetrievePropertiesEx_side_effect)
         vim_util.get_objects(vim, _type, max_objects)
         self.assertEqual(1, vim.RetrievePropertiesEx.call_count)
 
@@ -245,8 +245,8 @@ class VimUtilTest(base.TestCase):
 
             return retrieve_result
 
-        vim.RetrievePropertiesEx.side_effect = \
-            vim_RetrievePropertiesEx_side_effect
+        vim.RetrievePropertiesEx.side_effect = (
+            vim_RetrievePropertiesEx_side_effect)
 
         res = vim_util.get_object_properties(vim, moref, None)
         self.assertEqual(1, vim.RetrievePropertiesEx.call_count)
