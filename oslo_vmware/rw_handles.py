@@ -112,7 +112,7 @@ class FileHandle(object):
             LOG.exception(excep_msg)
             raise exceptions.VimException(excep_msg, excep)
 
-    def _create_write_connection(self, url,
+    def _create_write_connection(self, method, url,
                                  file_size=None,
                                  cookies=None,
                                  overwrite=None,
@@ -125,7 +125,8 @@ class FileHandle(object):
                   {'file_size': file_size,
                    'url': url})
         try:
-            conn = self._create_connection(url, 'PUT', cacerts, ssl_thumbprint)
+            conn = self._create_connection(url, method, cacerts,
+                                           ssl_thumbprint)
             headers = {'User-Agent': USER_AGENT}
             if file_size:
                 headers.update({'Content-Length': str(file_size)})
@@ -260,7 +261,8 @@ class FileWriteHandle(FileHandle):
         self._url = '%s/folder/%s' % (soap_url, file_path)
         self._url = self._url + '?' + urlparse.urlencode(param_list)
 
-        self._conn = self._create_write_connection(self._url,
+        self._conn = self._create_write_connection('PUT',
+                                                   self._url,
                                                    file_size,
                                                    cookies=cookies,
                                                    cacerts=cacerts)
@@ -310,7 +312,7 @@ class VmdkWriteHandle(FileHandle):
     """
 
     def __init__(self, session, host, port, rp_ref, vm_folder_ref, import_spec,
-                 vmdk_size):
+                 vmdk_size, http_method='PUT'):
         """Initializes the VMDK write handle with input parameters.
 
         :param session: valid API session to ESX/VC server
@@ -321,6 +323,7 @@ class VmdkWriteHandle(FileHandle):
                               of backing VM
         :param import_spec: import specification of the backing VM
         :param vmdk_size: size of the backing VM's VMDK file
+        :param http_method: either PUT or POST
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException,
                  ValueError
@@ -348,12 +351,20 @@ class VmdkWriteHandle(FileHandle):
 
         cookies = session.vim.client.options.transport.cookiejar
         # Create HTTP connection to write to VMDK URL
-        octet_stream = 'binary/octet-stream'
-        self._conn = self._create_write_connection(self._url,
+        if http_method == 'PUT':
+            overwrite = 't'
+            content_type = 'binary/octet-stream'
+        elif http_method == 'POST':
+            overwrite = None
+            content_type = 'application/x-vnd.vmware-streamVmdk'
+        else:
+            raise ValueError('http_method must be either PUT or POST')
+        self._conn = self._create_write_connection(http_method,
+                                                   self._url,
                                                    vmdk_size,
                                                    cookies=cookies,
-                                                   overwrite='t',
-                                                   content_type=octet_stream,
+                                                   overwrite=overwrite,
+                                                   content_type=content_type,
                                                    ssl_thumbprint=thumbprint)
         FileHandle.__init__(self, self._conn)
 
