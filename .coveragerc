@@ -4,4 +4,4 @@ source = vmware
 omit = vmware/tests/*,vmware/openstack/*
 
 [report]
-ignore-errors = True
+ignore_errors = True
