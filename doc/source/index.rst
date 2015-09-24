@@ -11,7 +11,6 @@ and APIs.
    installation
    usage
    contributing
-   history
 
 Code Documentation
 ==================
@@ -20,6 +19,15 @@ Code Documentation
    :maxdepth: 1
 
    api/autoindex
+
+Release Notes
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   history
+
 
 Indices and tables
 ==================
