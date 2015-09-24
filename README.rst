@@ -1,8 +1,9 @@
-=============
- oslo.vmware
-=============
+===================================================
+ oslo.vmware --- VMware support code for OpenStack
+===================================================
 
-The Oslo VMware library provides support for common VMware operations and APIs.
+The Oslo VMware library provides support for common VMware operations
+and APIs.
 
 * License: Apache License, Version 2.0
 * Documentation: http://docs.openstack.org/developer/oslo.vmware
