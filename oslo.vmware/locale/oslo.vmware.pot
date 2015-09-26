@@ -7,30 +7,30 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 1.18.0\n"
+"Project-Id-Version: oslo.vmware 1.21.1.dev13\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-29 06:34+0000\n"
+"POT-Creation-Date: 2015-09-26 06:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.0\n"
+"Generated-By: Babel 2.1.1\n"
 
-#: oslo_vmware/api.py:306
+#: oslo_vmware/api.py:311
 #, python-format
 msgid ""
 "Current session: %(session)s is inactive; re-creating the session while "
 "invoking method %(module)s.%(method)s."
 msgstr ""
 
-#: oslo_vmware/api.py:470
+#: oslo_vmware/api.py:475
 #, python-format
 msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
 msgstr ""
 
-#: oslo_vmware/api.py:477
+#: oslo_vmware/api.py:482
 #, python-format
 msgid "Unknown state: %(state)s for lease: %(lease)s."
 msgstr ""
@@ -158,72 +158,72 @@ msgid ""
 "%(writer)s"
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:79
-#, python-format
-msgid "Error occurred while opening URL: %s for reading."
-msgstr ""
-
-#: oslo_vmware/rw_handles.py:117 oslo_vmware/objects/datastore.py:316
+#: oslo_vmware/rw_handles.py:87 oslo_vmware/objects/datastore.py:315
 #, python-format
 msgid "Invalid scheme: %s."
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:141
+#: oslo_vmware/rw_handles.py:110
+#, python-format
+msgid "Error occurred while opening URL: %s for reading."
+msgstr ""
+
+#: oslo_vmware/rw_handles.py:145
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to VMDK file with "
 "URL = %s."
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:221
+#: oslo_vmware/rw_handles.py:227
 msgid "Could not retrieve VMDK URL from lease info."
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:273 oslo_vmware/rw_handles.py:387
+#: oslo_vmware/rw_handles.py:280 oslo_vmware/rw_handles.py:403
 #, python-format
 msgid "Connection error occurred while writing data to %s."
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:281 oslo_vmware/rw_handles.py:395
+#: oslo_vmware/rw_handles.py:288 oslo_vmware/rw_handles.py:411
 #, python-format
 msgid "Error occurred while writing data to %s."
 msgstr ""
 
-#: oslo_vmware/rw_handles.py:536
+#: oslo_vmware/rw_handles.py:551
 #, python-format
 msgid "Error occurred while reading data from %s."
 msgstr ""
 
-#: oslo_vmware/service.py:244
+#: oslo_vmware/service.py:248
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr ""
 
-#: oslo_vmware/service.py:324
+#: oslo_vmware/service.py:328
 #, python-format
 msgid "No such SOAP method %s."
 msgstr ""
 
-#: oslo_vmware/service.py:330
+#: oslo_vmware/service.py:334
 #, python-format
 msgid "httplib error in %s."
 msgstr ""
 
-#: oslo_vmware/service.py:334
+#: oslo_vmware/service.py:338
 #, python-format
 msgid "requests error in %s."
 msgstr ""
 
-#: oslo_vmware/service.py:345
+#: oslo_vmware/service.py:349
 #, python-format
 msgid "Socket error in %s."
 msgstr ""
 
-#: oslo_vmware/service.py:350
+#: oslo_vmware/service.py:354
 #, python-format
 msgid "Type error in %s."
 msgstr ""
 
-#: oslo_vmware/service.py:353
+#: oslo_vmware/service.py:357
 #, python-format
 msgid "Exception in %s."
 msgstr ""
@@ -236,39 +236,39 @@ msgstr ""
 msgid "Datacenter reference cannot be None"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:69
+#: oslo_vmware/objects/datastore.py:68
 msgid "Datastore name cannot be None"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:71
+#: oslo_vmware/objects/datastore.py:70
 msgid "Datastore reference cannot be None"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:73
+#: oslo_vmware/objects/datastore.py:72
 msgid "Invalid capacity"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:76
+#: oslo_vmware/objects/datastore.py:75
 msgid "Capacity is smaller than free space"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:104
+#: oslo_vmware/objects/datastore.py:103
 msgid "datacenter must be set to build url"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:188
+#: oslo_vmware/objects/datastore.py:187
 msgid "Datastore name cannot be empty"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:193 oslo_vmware/objects/datastore.py:234
+#: oslo_vmware/objects/datastore.py:192 oslo_vmware/objects/datastore.py:233
 msgid "Path component cannot be None"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:247
+#: oslo_vmware/objects/datastore.py:246
 msgid "Datastore path cannot be empty"
 msgstr ""
 
-#: oslo_vmware/objects/datastore.py:329
+#: oslo_vmware/objects/datastore.py:328
 #, python-format
 msgid ""
 "Error occurred while creating HTTP connection to write to file with URL ="
