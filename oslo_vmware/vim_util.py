@@ -389,6 +389,39 @@ def continue_retrieval(vim, retrieve_result):
         return vim.ContinueRetrievePropertiesEx(collector, token=token)
 
 
+class WithRetrieval(object):
+    """Context to retrieve results.
+
+    This context provides an iterator to retrieve results and cancel (when
+    needed) retrieve operation on __exit__.
+
+    Example:
+
+      with WithRetrieval(vim, retrieve_result) as objects:
+          for obj in objects:
+              # Use obj
+    """
+
+    def __init__(self, vim, retrieve_result):
+        super(WithRetrieval, self).__init__()
+        self.vim = vim
+        self.retrieve_result = retrieve_result
+
+    def __enter__(self):
+        return iter(self)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.retrieve_result:
+            cancel_retrieval(self.vim, self.retrieve_result)
+
+    def __iter__(self):
+        while self.retrieve_result:
+            for obj in self.retrieve_result.objects:
+                yield obj
+            self.retrieve_result = continue_retrieval(
+                self.vim, self.retrieve_result)
+
+
 def get_object_property(vim, moref, property_name):
     """Get property of the given managed object.
 
@@ -491,15 +524,14 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
     entity_name = None
     propSet = None
     path = ""
-    while retrieve_result:
-        for obj in retrieve_result.objects:
+    with WithRetrieval(vim, retrieve_result) as objects:
+        for obj in objects:
             if hasattr(obj, 'propSet'):
                 propSet = obj.propSet
                 if len(propSet) >= 1 and not entity_name:
                     entity_name = propSet[0].val
                 elif len(propSet) >= 1:
                     path = '%s/%s' % (propSet[0].val, path)
-        retrieve_result = continue_retrieval(vim, retrieve_result)
     # NOTE(arnaud): slice to exclude the root folder from the result.
     if propSet is not None and len(propSet) > 0:
         path = path[len(propSet[0].val):]
