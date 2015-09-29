@@ -242,7 +242,8 @@ class FileWriteHandle(FileHandle):
     """Write handle for a file in VMware server."""
 
     def __init__(self, host, port, data_center_name, datastore_name, cookies,
-                 file_path, file_size, scheme='https', cacerts=False):
+                 file_path, file_size, scheme='https', cacerts=False,
+                 thumbprint=None):
         """Initializes the write handle with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -254,6 +255,8 @@ class FileWriteHandle(FileHandle):
         :param file_path: datastore path where the file is written
         :param file_size: size of the file in bytes
         :param scheme: protocol-- http or https
+        :param cacerts: CA bundle file to use for SSL verification
+        :param thumbprint: expected SHA1 thumbprint of server's certificate
         :raises: VimConnectionException, ValueError
         """
         soap_url = self._get_soap_url(scheme, host, port)
@@ -265,7 +268,8 @@ class FileWriteHandle(FileHandle):
                                                    self._url,
                                                    file_size,
                                                    cookies=cookies,
-                                                   cacerts=cacerts)
+                                                   cacerts=cacerts,
+                                                   ssl_thumbprint=thumbprint)
         FileHandle.__init__(self, self._conn)
 
     def write(self, data):
