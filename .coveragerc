@@ -1,7 +1,8 @@
 [run]
 branch = True
-source = vmware
-omit = vmware/tests/*,vmware/openstack/*
+source = oslo_vmware
+omit = oslo_vmware/tests/*
 
 [report]
 ignore_errors = True
+precision = 2
