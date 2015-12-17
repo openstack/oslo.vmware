@@ -481,7 +481,7 @@ def register_extension(vim, key, type, label='OpenStack',
     desc.label = label
     desc.summary = summary
     os_ext.description = desc
-    os_ext.lastHeartbeatTime = timeutils.strtime()
+    os_ext.lastHeartbeatTime = timeutils.utcnow().isoformat()
     vim.client.service.RegisterExtension(extension_manager, os_ext)
 
 
