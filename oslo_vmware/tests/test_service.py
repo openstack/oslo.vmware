@@ -384,7 +384,7 @@ class MemoryCacheTest(base.TestCase):
         cache.put('key2', 'value2')
         self.assertEqual('value1', cache.get('key1'))
         self.assertEqual('value2', cache.get('key2'))
-        self.assertEqual(None, cache.get('key3'))
+        self.assertIsNone(cache.get('key3'))
 
     @mock.patch('suds.reader.DocumentReader.download')
     def test_shared_cache(self, mock_reader):
