@@ -152,8 +152,8 @@ class FileHandle(object):
         try:
             self._file_handle.close()
         except Exception:
-            LOG.warn(_LW("Error occurred while closing the file handle"),
-                     exc_info=True)
+            LOG.warning(_LW("Error occurred while closing the file handle"),
+                        exc_info=True)
 
     def _build_vim_cookie_header(self, vim_cookies):
         """Build ESX host session cookie header."""
@@ -300,8 +300,8 @@ class FileWriteHandle(FileHandle):
         try:
             self._conn.getresponse()
         except Exception:
-            LOG.warn(_LW("Error occurred while reading the HTTP response."),
-                     exc_info=True)
+            LOG.warning(_LW("Error occurred while reading the HTTP response."),
+                        exc_info=True)
         super(FileWriteHandle, self).close()
 
     def __str__(self):
@@ -473,9 +473,10 @@ class VmdkWriteHandle(FileHandle):
                           {'url': self._url,
                            'state': state})
         except exceptions.VimException:
-            LOG.warn(_LW("Error occurred while releasing the lease for %s."),
-                     self._url,
-                     exc_info=True)
+            LOG.warning(_LW("Error occurred while releasing the lease "
+                            "for %s."),
+                        self._url,
+                        exc_info=True)
         super(VmdkWriteHandle, self).close()
         LOG.debug("Closed VMDK write handle for %s.", self._url)
 
@@ -611,9 +612,10 @@ class VmdkReadHandle(FileHandle):
                           {'url': self._url,
                            'state': state})
         except exceptions.VimException:
-            LOG.warn(_LW("Error occurred while releasing the lease for %s."),
-                     self._url,
-                     exc_info=True)
+            LOG.warning(_LW("Error occurred while releasing the lease "
+                            "for %s."),
+                        self._url,
+                        exc_info=True)
             raise
         super(VmdkReadHandle, self).close()
         LOG.debug("Closed VMDK read handle for %s.", self._url)

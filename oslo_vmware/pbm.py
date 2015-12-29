@@ -196,7 +196,7 @@ def get_pbm_wsdl_location(vc_version):
     pbm_service_wsdl = os.path.join(curr_dir, 'wsdl', major_minor,
                                     'pbmService.wsdl')
     if not os.path.exists(pbm_service_wsdl):
-        LOG.warn(_LW("PBM WSDL file %s not found."), pbm_service_wsdl)
+        LOG.warning(_LW("PBM WSDL file %s not found."), pbm_service_wsdl)
         return
     pbm_wsdl = urlparse.urljoin('file:', urllib.pathname2url(pbm_service_wsdl))
     LOG.debug("Using PBM WSDL location: %s.", pbm_wsdl)

@@ -168,8 +168,8 @@ class ImageTransferException(VMwareDriverException):
 
 
 def _print_deprecation_warning(clazz):
-    LOG.warn(_LW("Exception %s is deprecated, it will be removed in the "
-                 "next release."), clazz.__name__)
+    LOG.warning(_LW("Exception %s is deprecated, it will be removed in the "
+                    "next release."), clazz.__name__)
 
 
 class VMwareDriverConfigurationException(VMwareDriverException):

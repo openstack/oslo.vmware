@@ -95,11 +95,11 @@ class RetryDecorator(object):
                 result = f(*args, **kwargs)
             except self._exceptions:
                 with excutils.save_and_reraise_exception() as ctxt:
-                    LOG.warn(_LW("Exception which is in the suggested list of "
-                                 "exceptions occurred while invoking function:"
-                                 " %s."),
-                             func_name,
-                             exc_info=True)
+                    LOG.warning(_LW("Exception which is in the suggested list "
+                                    "of exceptions occurred while invoking "
+                                    "function: %s."),
+                                func_name,
+                                exc_info=True)
                     if (self._max_retry_count != -1 and
                             self._retry_count >= self._max_retry_count):
                         LOG.error(_LE("Cannot retry upon suggested exception "
@@ -494,8 +494,8 @@ class VMwareAPISession(object):
                                    lease,
                                    'error')
         except exceptions.VimException:
-            LOG.warn(_LW("Error occurred while reading error message for "
-                         "lease: %s."),
-                     lease,
-                     exc_info=True)
+            LOG.warning(_LW("Error occurred while reading error message for "
+                            "lease: %s."),
+                        lease,
+                        exc_info=True)
             return "Unknown"
