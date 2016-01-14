@@ -25,6 +25,7 @@ import logging
 
 from oslo_concurrency import lockutils
 from oslo_utils import excutils
+from oslo_utils import reflection
 import six
 
 from oslo_vmware._i18n import _, _LE, _LI, _LW
@@ -82,9 +83,9 @@ class RetryDecorator(object):
         self._sleep_time = 0
 
     def __call__(self, f):
+        func_name = reflection.get_callable_name(f)
 
         def _func(*args, **kwargs):
-            func_name = f.__name__
             result = None
             try:
                 if self._retry_count:
@@ -118,7 +119,7 @@ class RetryDecorator(object):
         def func(*args, **kwargs):
             loop = loopingcall.DynamicLoopingCall(_func, *args, **kwargs)
             evt = loop.start(periodic_interval_max=self._max_sleep_time)
-            LOG.debug("Waiting for function %s to return.", f.__name__)
+            LOG.debug("Waiting for function %s to return.", func_name)
             return evt.wait()
 
         return func
