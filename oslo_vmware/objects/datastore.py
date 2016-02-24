@@ -310,7 +310,8 @@ class DatastoreURL(object):
             if self._scheme == 'http':
                 conn = httplib.HTTPConnection(self._server)
             elif self._scheme == 'https':
-                conn = httplib.HTTPSConnection(self._server)
+                # TODO(browne): This needs to be changed to use python requests
+                conn = httplib.HTTPSConnection(self._server)  # nosec
             else:
                 excep_msg = _("Invalid scheme: %s.") % self._scheme
                 LOG.error(excep_msg)
