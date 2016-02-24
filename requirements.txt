@@ -18,4 +18,4 @@ suds-jurko>=0.6 # LGPL
 eventlet!=0.18.3,>=0.18.2 # MIT
 requests!=2.9.0,>=2.8.1 # Apache-2.0
 urllib3>=1.8.3 # MIT
-oslo.concurrency>=2.3.0 # Apache-2.0
+oslo.concurrency>=3.5.0 # Apache-2.0
