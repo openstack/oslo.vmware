@@ -53,12 +53,12 @@ class ServiceTest(base.TestCase):
         self.SudsClientMock = patcher.start()
 
     def test_retrieve_properties_ex_fault_checker_with_empty_response(self):
-        try:
-            service.Service._retrieve_properties_ex_fault_checker(None)
-            assert False
-        except exceptions.VimFaultException as ex:
-            self.assertEqual([exceptions.NOT_AUTHENTICATED],
-                             ex.fault_list)
+        ex = self.assertRaises(
+            exceptions.VimFaultException,
+            service.Service._retrieve_properties_ex_fault_checker,
+            None)
+        self.assertEqual([exceptions.NOT_AUTHENTICATED],
+                         ex.fault_list)
 
     def test_retrieve_properties_ex_fault_checker(self):
         fault_list = ['FileFault', 'VimFault']
@@ -72,11 +72,11 @@ class ServiceTest(base.TestCase):
         response = mock.Mock()
         response.objects = [obj_cont]
 
-        try:
-            service.Service._retrieve_properties_ex_fault_checker(response)
-            assert False
-        except exceptions.VimFaultException as ex:
-            self.assertEqual(fault_list, ex.fault_list)
+        ex = self.assertRaises(
+            exceptions.VimFaultException,
+            service.Service._retrieve_properties_ex_fault_checker,
+            response)
+        self.assertEqual(fault_list, ex.fault_list)
 
     def test_request_handler(self):
         managed_object = 'VirtualMachine'
