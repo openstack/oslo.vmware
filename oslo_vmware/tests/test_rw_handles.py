@@ -341,6 +341,16 @@ class VmdkReadHandleTest(base.TestCase):
         handle.close()
         self.assertEqual(2, session.invoke_api.call_count)
 
+    def test_close_with_error(self):
+        session = self._create_mock_session()
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
+                                           'vm-1', '[ds] disk1.vmdk',
+                                           100)
+        session.invoke_api.side_effect = exceptions.VimException(None)
+
+        self.assertRaises(exceptions.VimException, handle.close)
+        self._resp.close.assert_called_once_with()
+
 
 class ImageReadHandleTest(base.TestCase):
     """Tests for ImageReadHandle."""

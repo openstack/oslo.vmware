@@ -617,7 +617,8 @@ class VmdkReadHandle(FileHandle):
                         self._url,
                         exc_info=True)
             raise
-        super(VmdkReadHandle, self).close()
+        finally:
+            super(VmdkReadHandle, self).close()
         LOG.debug("Closed VMDK read handle for %s.", self._url)
 
     def __str__(self):
