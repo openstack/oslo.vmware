@@ -1,34 +1,34 @@
 # Translations template for oslo.vmware.
-# Copyright (C) 2015 ORGANIZATION
+# Copyright (C) 2016 ORGANIZATION
 # This file is distributed under the same license as the oslo.vmware
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 1.21.1.dev13\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-09-26 06:11+0000\n"
+"Project-Id-Version: oslo.vmware 2.5.1.dev6\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-04-21 06:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.1.1\n"
+"Generated-By: Babel 2.2.0\n"
 
-#: oslo_vmware/api.py:188
+#: oslo_vmware/api.py:189
 #, python-format
 msgid "PBM WSDL updated to %s"
 msgstr ""
 
-#: oslo_vmware/api.py:243
+#: oslo_vmware/api.py:244
 #, python-format
 msgid "Successfully established new session; session ID is %s."
 msgstr ""
 
-#: oslo_vmware/api.py:254
+#: oslo_vmware/api.py:255
 #, python-format
 msgid "Logging out and terminating the current session with ID = %s."
 msgstr ""
