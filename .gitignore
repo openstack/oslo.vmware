@@ -51,3 +51,6 @@ ChangeLog
 *~
 .*.swp
 /doc/source/api/
+
+# reno build
+releasenotes/build
