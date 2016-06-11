@@ -1,0 +1,228 @@
+# Andi Chandler <andi@gowling.com>, 2016. #zanata
+# Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: oslo.vmware 2.7.1.dev8\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-02 23:59+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-06-09 11:20+0000\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>\n"
+"Language-Team: English (United Kingdom)\n"
+"Language: en-GB\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "An unknown exception occurred."
+msgstr "An unknown exception occurred."
+
+msgid "Cannot delete file."
+msgstr "Cannot delete file."
+
+msgid "Capacity is smaller than free space"
+msgstr "Capacity is smaller than free space"
+
+#, python-format
+msgid "Connection error occurred while writing data to %s."
+msgstr "Connection error occurred while writing data to %s."
+
+msgid "Could not retrieve VMDK URL from lease info."
+msgstr "Could not retrieve VMDK URL from lease info."
+
+#, python-format
+msgid ""
+"Current session: %(session)s is inactive; re-creating the session while "
+"invoking method %(module)s.%(method)s."
+msgstr ""
+"Current session: %(session)s is inactive; re-creating the session while "
+"invoking method %(module)s.%(method)s."
+
+msgid "Datacenter name cannot be None"
+msgstr "Datacentre name cannot be None"
+
+msgid "Datacenter reference cannot be None"
+msgstr "Datacentre reference cannot be None"
+
+msgid "Datastore name cannot be None"
+msgstr "Datastore name cannot be None"
+
+msgid "Datastore name cannot be empty"
+msgstr "Datastore name cannot be empty"
+
+msgid "Datastore path cannot be empty"
+msgstr "Datastore path cannot be empty"
+
+msgid "Datastore reference cannot be None"
+msgstr "Datastore reference cannot be None"
+
+msgid "Duplicate name."
+msgstr "Duplicate name."
+
+msgid "Entity has another operation in process."
+msgstr "Entity has another operation in process."
+
+msgid "Error occurred during file read-write task."
+msgstr "Error occurred during file read-write task."
+
+#, python-format
+msgid ""
+"Error occurred during image transfer with reader: %(reader)s and writer: "
+"%(writer)s"
+msgstr ""
+"Error occurred during image transfer with reader: %(reader)s and writer: "
+"%(writer)s"
+
+msgid "Error occurred while calling RetrievePropertiesEx."
+msgstr "Error occurred while calling RetrievePropertiesEx."
+
+#, python-format
+msgid ""
+"Error occurred while creating HTTP connection to write to VMDK file with URL "
+"= %s."
+msgstr ""
+"Error occurred while creating HTTP connection to write to VMDK file with URL "
+"= %s."
+
+#, python-format
+msgid ""
+"Error occurred while creating HTTP connection to write to file with URL = %s."
+msgstr ""
+"Error occurred while creating HTTP connection to write to file with URL = %s."
+
+#, python-format
+msgid "Error occurred while opening URL: %s for reading."
+msgstr "Error occurred while opening URL: %s for reading."
+
+#, python-format
+msgid "Error occurred while reading data from %s."
+msgstr "Error occurred while reading data from %s."
+
+#, python-format
+msgid "Error occurred while writing data to %s."
+msgstr "Error occurred while writing data to %s."
+
+#, python-format
+msgid "Error occurred while writing image: %s"
+msgstr "Error occurred while writing image: %s"
+
+#, python-format
+msgid "Exception in %s."
+msgstr "Exception in %s."
+
+msgid "File already exists."
+msgstr "File already exists."
+
+msgid "File fault."
+msgstr "File fault."
+
+msgid "File locked."
+msgstr "File locked."
+
+msgid "File not found."
+msgstr "File not found."
+
+#, python-format
+msgid "Image: %(image)s is in unknown state: %(state)s."
+msgstr "Image: %(image)s is in unknown state: %(state)s."
+
+#, python-format
+msgid "Image: %s is in killed state."
+msgstr "Image: %s is in killed state."
+
+msgid "Insufficient disk space."
+msgstr "Insufficient disk space."
+
+msgid "Invalid capacity"
+msgstr "Invalid capacity"
+
+msgid "Invalid power state."
+msgstr "Invalid power state."
+
+msgid "Invalid property."
+msgstr "Invalid property."
+
+#, python-format
+msgid "Invalid scheme: %s."
+msgstr "Invalid scheme: %s."
+
+#, python-format
+msgid "Lease: %(lease)s is in error state. Details: %(error_msg)s."
+msgstr "Lease: %(lease)s is in error state. Details: %(error_msg)s."
+
+msgid "Managed object not found."
+msgstr "Managed object not found."
+
+#, python-format
+msgid "Missing parameter : %(param)s"
+msgstr "Missing parameter : %(param)s"
+
+msgid "No Permission."
+msgstr "No Permission."
+
+msgid "No default value for use_linked_clone found."
+msgstr "No default value for use_linked_clone found."
+
+msgid "No image destination given."
+msgstr "No image destination given."
+
+#, python-format
+msgid "No such SOAP method %s."
+msgstr "No such SOAP method %s."
+
+msgid "Not Authenticated."
+msgstr "Not Authenticated."
+
+msgid "Path component cannot be None"
+msgstr "Path component cannot be None"
+
+msgid "Resource already exists."
+msgstr "Resource already exists."
+
+#, python-format
+msgid "Socket error in %s."
+msgstr "Socket error in %s."
+
+#, python-format
+msgid "Type error in %s."
+msgstr "Type error in %s."
+
+#, python-format
+msgid "Unknown state: %(state)s for lease: %(lease)s."
+msgstr "Unknown state: %(state)s for lease: %(lease)s."
+
+msgid "VMware Driver configuration fault."
+msgstr "VMware Driver configuration fault."
+
+msgid "VMware Tools is not running."
+msgstr "VMware Tools is not running."
+
+msgid "cause"
+msgstr "cause"
+
+msgid "datacenter must be set to build url"
+msgstr "datacentre must be set to build url"
+
+msgid "details must be a dict"
+msgstr "details must be a dict"
+
+msgid "exception message must not be a list"
+msgstr "exception message must not be a list"
+
+msgid "exception should be a subclass of VimException"
+msgstr "exception should be a subclass of VimException"
+
+msgid "fault_list must be a list"
+msgstr "fault_list must be a list"
+
+#, python-format
+msgid "httplib error in %s."
+msgstr "httplib error in %s."
+
+#, python-format
+msgid "requests error in %s."
+msgstr "requests error in %s."
+
+msgid "string"
+msgstr "string"
