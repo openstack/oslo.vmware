@@ -37,23 +37,6 @@ class FileHandleTest(base.TestCase):
         vmw_http_file.close()
         file_handle.close.assert_called_once_with()
 
-    def test_find_vmdk_url(self):
-        device_url_0 = mock.Mock()
-        device_url_0.disk = False
-        device_url_1 = mock.Mock()
-        device_url_1.disk = True
-        device_url_1.url = 'https://*/ds1/vm1.vmdk'
-        device_url_1.sslThumbprint = '11:22:33:44:55'
-        lease_info = mock.Mock()
-        lease_info.deviceUrl = [device_url_0, device_url_1]
-        host = '10.1.2.3'
-        port = 443
-        exp_url = 'https://%s:%d/ds1/vm1.vmdk' % (host, port)
-        vmw_http_file = rw_handles.FileHandle(None)
-        url, thumbprint = vmw_http_file._find_vmdk_url(lease_info, host, port)
-        self.assertEqual(exp_url, url)
-        self.assertEqual('11:22:33:44:55', thumbprint)
-
     @mock.patch('urllib3.connection.HTTPConnection')
     def test_create_connection_http(self, http_conn):
         conn = mock.Mock()
@@ -140,6 +123,48 @@ class FileWriteHandleTest(base.TestCase):
         self._conn.close.assert_called_once_with()
 
 
+class VmdkHandleTest(base.TestCase):
+    """Tests for VmdkHandle."""
+
+    def test_find_vmdk_url(self):
+        device_url_0 = mock.Mock()
+        device_url_0.disk = False
+        device_url_1 = mock.Mock()
+        device_url_1.disk = True
+        device_url_1.url = 'https://*/ds1/vm1.vmdk'
+        device_url_1.sslThumbprint = '11:22:33:44:55'
+        lease_info = mock.Mock()
+        lease_info.deviceUrl = [device_url_0, device_url_1]
+        host = '10.1.2.3'
+        port = 443
+        exp_url = 'https://%s:%d/ds1/vm1.vmdk' % (host, port)
+        vmw_http_file = rw_handles.VmdkHandle(None, None, None, None)
+        url, thumbprint = vmw_http_file._find_vmdk_url(lease_info, host, port)
+        self.assertEqual(exp_url, url)
+        self.assertEqual('11:22:33:44:55', thumbprint)
+
+    def test_update_progress(self):
+        session = mock.Mock()
+        lease = mock.Mock()
+        handle = rw_handles.VmdkHandle(session, lease, 'fake-url', None)
+        handle._get_progress = mock.Mock(return_value=50)
+
+        handle.update_progress()
+
+        session.invoke_api.assert_called_once_with(session.vim,
+                                                   'HttpNfcLeaseProgress',
+                                                   lease, percent=50)
+
+    def test_update_progress_with_error(self):
+        session = mock.Mock()
+        handle = rw_handles.VmdkHandle(session, None, 'fake-url', None)
+
+        handle._get_progress = mock.Mock(return_value=0)
+        session.invoke_api.side_effect = exceptions.VimException(None)
+
+        self.assertRaises(exceptions.VimException, handle.update_progress)
+
+
 class VmdkWriteHandleTest(base.TestCase):
     """Tests for VmdkWriteHandle."""
 
@@ -219,14 +244,6 @@ class VmdkWriteHandleTest(base.TestCase):
                                             vmdk_size)
         handle.write([1] * data_size)
         handle.update_progress()
-
-    def test_update_progress_with_error(self):
-        session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            100)
-        session.invoke_api.side_effect = exceptions.VimException(None)
-        self.assertRaises(exceptions.VimException, handle.update_progress)
 
     def test_close(self):
         session = self._create_mock_session()
@@ -315,14 +332,6 @@ class VmdkReadHandleTest(base.TestCase):
         data = handle.read(chunk_size)
         handle.update_progress()
         self.assertEqual('fake-data', data)
-
-    def test_update_progress_with_error(self):
-        session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           100)
-        session.invoke_api.side_effect = exceptions.VimException(None)
-        self.assertRaises(exceptions.VimException, handle.update_progress)
 
     def test_close(self):
         session = self._create_mock_session()
