@@ -129,14 +129,15 @@ class VMwareAPISessionTest(base.TestCase):
     def test_vim(self):
         api_session = self._create_api_session(False)
         api_session.vim
-        self.VimMock.assert_called_with(protocol=api_session._scheme,
-                                        host=VMwareAPISessionTest.SERVER_IP,
-                                        port=VMwareAPISessionTest.PORT,
-                                        wsdl_url=api_session._vim_wsdl_loc,
-                                        cacert=self.cert_mock,
-                                        insecure=False,
-                                        pool_maxsize=VMwareAPISessionTest.
-                                        POOL_SIZE)
+        self.VimMock.assert_called_with(
+            protocol=api_session._scheme,
+            host=VMwareAPISessionTest.SERVER_IP,
+            port=VMwareAPISessionTest.PORT,
+            wsdl_url=api_session._vim_wsdl_loc,
+            cacert=self.cert_mock,
+            insecure=False,
+            pool_maxsize=VMwareAPISessionTest.POOL_SIZE,
+            connection_timeout=None)
 
     @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
