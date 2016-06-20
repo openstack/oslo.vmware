@@ -19,6 +19,7 @@ Functions and classes for image transfer between ESX/VC & image service.
 
 import errno
 import logging
+import tarfile
 
 from eventlet import event
 from eventlet import greenthread
@@ -28,6 +29,7 @@ from eventlet import timeout
 from oslo_vmware._i18n import _
 from oslo_vmware import constants
 from oslo_vmware import exceptions
+from oslo_vmware import image_util
 from oslo_vmware.objects import datastore as ds_obj
 from oslo_vmware import rw_handles
 from oslo_vmware import vim_util
@@ -496,6 +498,19 @@ def download_stream_optimized_data(context, timeout_secs, read_handle,
     return write_handle.get_imported_vm()
 
 
+def _get_vmdk_handle(ova_handle):
+
+    with tarfile.open(mode="r|", fileobj=ova_handle) as tar:
+        vmdk_name = None
+        for tar_info in tar:
+            if tar_info and tar_info.name.endswith(".ovf"):
+                vmdk_name = image_util.get_vmdk_name_from_ovf(
+                    tar.extractfile(tar_info))
+            elif vmdk_name and tar_info.name.startswith(vmdk_name):
+                # Actual file name is <vmdk_name>.XXXXXXX
+                return tar.extractfile(tar_info)
+
+
 def download_stream_optimized_image(context, timeout_secs, image_service,
                                     image_id, **kwargs):
     """Download stream optimized image from image service to VMware server.
@@ -512,13 +527,24 @@ def download_stream_optimized_image(context, timeout_secs, image_service,
              VimSessionOverLoadException, VimConnectionException,
              ImageTransferException, ValueError
     """
-    LOG.debug("Downloading image: %s from image service as a stream "
-              "optimized file.",
-              image_id)
+    metadata = image_service.show(context, image_id)
+    container_format = metadata.get('container_format')
+
+    LOG.debug("Downloading image: %(id)s (container: %(container)s) from image"
+              " service as a stream optimized file.",
+              {'id': image_id,
+               'container': container_format})
 
     # TODO(vbala) catch specific exceptions raised by download call
     read_iter = image_service.download(context, image_id)
     read_handle = rw_handles.ImageReadHandle(read_iter)
+
+    if container_format == 'ova':
+        read_handle = _get_vmdk_handle(read_handle)
+        if read_handle is None:
+            raise exceptions.ImageTransferException(
+                _("No vmdk found in the OVA image %s.") % image_id)
+
     imported_vm = download_stream_optimized_data(context, timeout_secs,
                                                  read_handle, **kwargs)
 

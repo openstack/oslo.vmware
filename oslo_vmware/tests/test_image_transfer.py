@@ -405,59 +405,148 @@ class ImageTransferUtilityTest(base.TestCase):
 
         fake_VmdkWriteHandle.get_imported_vm.assert_called_once_with()
 
+    @mock.patch('tarfile.open')
+    @mock.patch('oslo_vmware.image_util.get_vmdk_name_from_ovf')
+    def test_get_vmdk_handle(self, get_vmdk_name_from_ovf, tar_open):
+
+        ovf_info = mock.Mock()
+        ovf_info.name = 'test.ovf'
+        vmdk_info = mock.Mock()
+        vmdk_info.name = 'test.vmdk'
+        tar = mock.Mock()
+        tar.__iter__ = mock.Mock(return_value=iter([ovf_info, vmdk_info]))
+        tar.__enter__ = mock.Mock(return_value=tar)
+        tar.__exit__ = mock.Mock(return_value=None)
+        tar_open.return_value = tar
+
+        ovf_handle = mock.Mock()
+        get_vmdk_name_from_ovf.return_value = 'test.vmdk'
+        vmdk_handle = mock.Mock()
+        tar.extractfile.side_effect = [ovf_handle, vmdk_handle]
+
+        ova_handle = mock.sentinel.ova_handle
+        ret = image_transfer._get_vmdk_handle(ova_handle)
+
+        self.assertEqual(vmdk_handle, ret)
+        tar_open.assert_called_once_with(mode="r|", fileobj=ova_handle)
+        self.assertEqual([mock.call(ovf_info), mock.call(vmdk_info)],
+                         tar.extractfile.call_args_list)
+        get_vmdk_name_from_ovf.assert_called_once_with(ovf_handle)
+
+    @mock.patch('tarfile.open')
+    def test_get_vmdk_handle_with_invalid_ova(self, tar_open):
+
+        tar = mock.Mock()
+        tar.__iter__ = mock.Mock(return_value=iter([]))
+        tar.__enter__ = mock.Mock(return_value=tar)
+        tar.__exit__ = mock.Mock(return_value=None)
+        tar_open.return_value = tar
+
+        ova_handle = mock.sentinel.ova_handle
+        ret = image_transfer._get_vmdk_handle(ova_handle)
+
+        self.assertIsNone(ret)
+        tar_open.assert_called_once_with(mode="r|", fileobj=ova_handle)
+        self.assertFalse(tar.extractfile.called)
+
     @mock.patch('oslo_vmware.rw_handles.ImageReadHandle')
     @mock.patch.object(image_transfer, 'download_stream_optimized_data')
-    def test_download_stream_optimized_image(
-            self, fake_download_stream_optimized_data,
-            fake_rw_handles_ImageReadHandle):
+    @mock.patch.object(image_transfer, '_get_vmdk_handle')
+    def _test_download_stream_optimized_image(
+            self,
+            get_vmdk_handle,
+            download_stream_optimized_data,
+            image_read_handle,
+            container=None,
+            invalid_ova=False):
 
-        context = mock.Mock()
-        session = mock.Mock()
-        image_id = mock.Mock()
-        timeout_secs = 10
-        image_size = 1000
-        host = '127.0.0.1'
-        port = 443
-        resource_pool = 'rp-1'
-        vm_folder = 'folder-1'
-        vm_import_spec = None
-
-        fake_iter = 'fake_iter'
         image_service = mock.Mock()
-        image_service.download = mock.Mock()
-        image_service.download.return_value = fake_iter
+        if container:
+            image_service.show.return_value = {'container_format': container}
+        read_iter = mock.sentinel.read_iter
+        image_service.download.return_value = read_iter
+        read_handle = mock.sentinel.read_handle
+        image_read_handle.return_value = read_handle
 
-        fake_ImageReadHandle = 'fake_ImageReadHandle'
-        fake_rw_handles_ImageReadHandle.return_value = fake_ImageReadHandle
+        if container == 'ova':
+            if invalid_ova:
+                get_vmdk_handle.return_value = None
+            else:
+                vmdk_handle = mock.sentinel.vmdk_handle
+                get_vmdk_handle.return_value = vmdk_handle
 
-        image_transfer.download_stream_optimized_image(
-            context,
-            timeout_secs,
-            image_service,
-            image_id,
-            session=session,
-            host=host,
-            port=port,
-            resource_pool=resource_pool,
-            vm_folder=vm_folder,
-            vm_import_spec=vm_import_spec,
-            image_size=image_size)
+        imported_vm = mock.sentinel.imported_vm
+        download_stream_optimized_data.return_value = imported_vm
 
-        image_service.download.assert_called_once_with(context, image_id)
+        context = mock.sentinel.context
+        timeout_secs = mock.sentinel.timeout_secs
+        image_id = mock.sentinel.image_id
+        session = mock.sentinel.session
+        image_size = mock.sentinel.image_size
+        host = mock.sentinel.host
+        port = mock.sentinel.port
+        resource_pool = mock.sentinel.port
+        vm_folder = mock.sentinel.vm_folder
+        vm_import_spec = mock.sentinel.vm_import_spec
 
-        fake_rw_handles_ImageReadHandle.assert_called_once_with(fake_iter)
+        if container == 'ova' and invalid_ova:
+            self.assertRaises(exceptions.ImageTransferException,
+                              image_transfer.download_stream_optimized_image,
+                              context,
+                              timeout_secs,
+                              image_service,
+                              image_id,
+                              session=session,
+                              host=host,
+                              port=port,
+                              resource_pool=resource_pool,
+                              vm_folder=vm_folder,
+                              vm_import_spec=vm_import_spec,
+                              image_size=image_size)
+        else:
+            ret = image_transfer.download_stream_optimized_image(
+                context,
+                timeout_secs,
+                image_service,
+                image_id,
+                session=session,
+                host=host,
+                port=port,
+                resource_pool=resource_pool,
+                vm_folder=vm_folder,
+                vm_import_spec=vm_import_spec,
+                image_size=image_size)
 
-        fake_download_stream_optimized_data.assert_called_once_with(
-            context,
-            timeout_secs,
-            fake_ImageReadHandle,
-            session=session,
-            host=host,
-            port=port,
-            resource_pool=resource_pool,
-            vm_folder=vm_folder,
-            vm_import_spec=vm_import_spec,
-            image_size=image_size)
+            self.assertEqual(imported_vm, ret)
+            image_service.show.assert_called_once_with(context, image_id)
+            image_service.download.assert_called_once_with(context, image_id)
+            image_read_handle.assert_called_once_with(read_iter)
+            if container == 'ova':
+                get_vmdk_handle.assert_called_once_with(read_handle)
+                exp_read_handle = vmdk_handle
+            else:
+                exp_read_handle = read_handle
+            download_stream_optimized_data.assert_called_once_with(
+                context,
+                timeout_secs,
+                exp_read_handle,
+                session=session,
+                host=host,
+                port=port,
+                resource_pool=resource_pool,
+                vm_folder=vm_folder,
+                vm_import_spec=vm_import_spec,
+                image_size=image_size)
+
+    def test_download_stream_optimized_image(self):
+        self._test_download_stream_optimized_image()
+
+    def test_download_stream_optimized_image_ova(self):
+        self._test_download_stream_optimized_image(container='ova')
+
+    def test_download_stream_optimized_image_invalid_ova(self):
+        self._test_download_stream_optimized_image(container='ova',
+                                                   invalid_ova=True)
 
     @mock.patch.object(image_transfer, '_start_transfer')
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
