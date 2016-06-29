@@ -607,15 +607,17 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
                                             kwargs.get('vmdk_file_path'),
                                             file_size)
 
+    # TODO(vbala) Remove this after we delete the keyword argument 'is_public'
+    # from all client code.
+    if 'is_public' in kwargs:
+        LOG.debug("Ignoring keyword argument 'is_public'.")
+
     # Set the image properties. It is important to set the 'size' to 0.
     # Otherwise, the image service client will use the VM's disk capacity
     # which will not be the image size after upload, since it is converted
     # to a stream-optimized sparse disk.
     image_metadata = {'disk_format': 'vmdk',
-                      'is_public': kwargs.get('is_public'),
                       'name': kwargs.get('image_name'),
-                      'status': 'active',
-                      'container_format': 'bare',
                       'size': 0,
                       'properties': {'vmware_image_version':
                                      kwargs.get('image_version'),

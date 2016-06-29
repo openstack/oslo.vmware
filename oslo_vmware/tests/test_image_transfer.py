@@ -593,7 +593,11 @@ class ImageTransferUtilityTest(base.TestCase):
         host = '127.0.0.1'
         port = 443
         file_path = '/fake_path'
+
+        # TODO(vbala) Remove this after we delete the keyword argument
+        # 'is_public' from all client code.
         is_public = False
+
         image_name = 'fake_image'
         image_version = 1
 
@@ -623,10 +627,7 @@ class ImageTransferUtilityTest(base.TestCase):
                                                                image_size)
 
         image_metadata = {'disk_format': 'vmdk',
-                          'is_public': is_public,
                           'name': image_name,
-                          'status': 'active',
-                          'container_format': 'bare',
                           'size': 0,
                           'properties': {'vmware_image_version': image_version,
                                          'vmware_disktype': 'streamOptimized',
