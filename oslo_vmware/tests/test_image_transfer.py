@@ -135,7 +135,8 @@ class ImageTransferUtilityTest(base.TestCase):
             resource_pool,
             vm_folder,
             vm_import_spec,
-            image_size)
+            image_size,
+            'PUT')
 
         fake_transfer.assert_called_once_with(read_handle,
                                               fake_VmdkWriteHandle,

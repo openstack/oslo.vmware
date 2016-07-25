@@ -159,7 +159,8 @@ def download_stream_optimized_data(context, timeout_secs, read_handle,
                                               kwargs.get('resource_pool'),
                                               kwargs.get('vm_folder'),
                                               kwargs.get('vm_import_spec'),
-                                              file_size)
+                                              file_size,
+                                              kwargs.get('http_method', 'PUT'))
     _start_transfer(read_handle, write_handle, timeout_secs)
     return write_handle.get_imported_vm()
 
