@@ -18,6 +18,7 @@
 Unit tests for session management and API invocation classes.
 """
 
+from datetime import datetime
 from eventlet import greenthread
 import mock
 import six
@@ -399,6 +400,8 @@ class VMwareAPISessionTest(base.TestCase):
             (state, progress) = task_info_list.pop(0)
             task_info = mock.Mock()
             task_info.progress = progress
+            task_info.queueTime = datetime(2016, 12, 6, 15, 29, 43, 79060)
+            task_info.completeTime = datetime(2016, 12, 6, 15, 29, 50, 79060)
             task_info.state = state
             return task_info
 
@@ -538,9 +541,11 @@ class VMwareAPISessionTest(base.TestCase):
         with (
             mock.patch.object(api_session, 'invoke_api', fake_invoke_api)
         ):
+            fake_task = mock.Mock()
+            fake_task.value = 'task-1'
             self.assertRaises(expected_exception,
                               api_session._poll_task,
-                              'fake-task')
+                              fake_task)
 
     def test_poll_task_well_known_exceptions(self):
         for k, v in six.iteritems(exceptions._fault_classes_registry):
