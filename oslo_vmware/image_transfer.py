@@ -137,6 +137,36 @@ def download_flat_image(context, timeout_secs, image_service, image_id,
               image_id)
 
 
+def download_file(
+        read_handle, host, port, dc_name, ds_name, cookies,
+        upload_file_path, file_size, cacerts, timeout_secs):
+    """Download file to VMware server.
+
+    :param read_handle: file read handle
+    :param host: VMware server host name or IP address
+    :param port: VMware server port number
+    :param dc_name: name of the datacenter which contains the destination
+                    datastore
+    :param ds_name: name of the destination datastore
+    :param cookies: cookies to build the cookie header while establishing
+                    http connection with VMware server
+    :param upload_file_path: destination datastore file path
+    :param file_size: source file size
+    :param cacerts: CA bundle file to use for SSL verification
+    :param timeout_secs: timeout in seconds to wait for the download to
+                         complete
+    """
+    write_handle = rw_handles.FileWriteHandle(host,
+                                              port,
+                                              dc_name,
+                                              ds_name,
+                                              cookies,
+                                              upload_file_path,
+                                              file_size,
+                                              cacerts=cacerts)
+    _start_transfer(read_handle, write_handle, timeout_secs)
+
+
 def download_stream_optimized_data(context, timeout_secs, read_handle,
                                    **kwargs):
     """Download stream optimized data to VMware server.
