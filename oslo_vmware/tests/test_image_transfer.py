@@ -345,11 +345,11 @@ class ImageTransferUtilityTest(base.TestCase):
     @mock.patch.object(image_transfer, '_start_transfer')
     def test_upload_image(self, fake_transfer, fake_rw_handles_VmdkReadHandle):
 
-        context = mock.Mock()
-        image_id = mock.Mock()
-        owner_id = mock.Mock()
-        session = mock.Mock()
-        vm = mock.Mock()
+        context = mock.sentinel.context
+        image_id = mock.sentinel.image_id
+        owner_id = mock.sentinel.owner_id
+        session = mock.sentinel.session
+        vm = mock.sentinel.vm
         image_service = mock.Mock()
 
         timeout_secs = 10
@@ -390,10 +390,10 @@ class ImageTransferUtilityTest(base.TestCase):
                                                                file_path,
                                                                image_size)
 
+        ver_str = six.text_type(image_version)
         image_metadata = {'disk_format': 'vmdk',
                           'name': image_name,
-                          'size': 0,
-                          'properties': {'vmware_image_version': image_version,
+                          'properties': {'vmware_image_version': ver_str,
                                          'vmware_disktype': 'streamOptimized',
                                          'owner_id': owner_id}}
 

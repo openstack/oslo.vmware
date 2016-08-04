@@ -21,9 +21,10 @@ import logging
 import tarfile
 
 from eventlet import timeout
+import six
 
 from oslo_utils import units
-from oslo_vmware._i18n import _
+from oslo_vmware._i18n import _, _LW
 from oslo_vmware.common import loopingcall
 from oslo_vmware import constants
 from oslo_vmware import exceptions
@@ -279,6 +280,7 @@ def copy_stream_optimized_disk(
     LOG.debug("Downloaded virtual disk: %s.", vmdk_file_path)
 
 
+# TODO(vbala) Remove dependency on image service provided by the client.
 def upload_image(context, timeout_secs, image_service, image_id, owner_id,
                  **kwargs):
     """Upload the VM's disk file to image service.
@@ -308,17 +310,17 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
     if 'is_public' in kwargs:
         LOG.debug("Ignoring keyword argument 'is_public'.")
 
-    # Set the image properties. It is important to set the 'size' to 0.
-    # Otherwise, the image service client will use the VM's disk capacity
-    # which will not be the image size after upload, since it is converted
-    # to a stream-optimized sparse disk.
+    if 'image_version' in kwargs:
+        LOG.warning(_LW("The keyword argument 'image_version' is deprecated "
+                        "and will be ignored in the next release."))
+
+    image_ver = six.text_type(kwargs.get('image_version'))
     image_metadata = {'disk_format': 'vmdk',
                       'name': kwargs.get('image_name'),
-                      'size': 0,
-                      'properties': {'vmware_image_version':
-                                     kwargs.get('image_version'),
+                      'properties': {'vmware_image_version': image_ver,
                                      'vmware_disktype': 'streamOptimized',
                                      'owner_id': owner_id}}
+
     updater = loopingcall.FixedIntervalLoopingCall(read_handle.update_progress)
     try:
         updater.start(interval=NFC_LEASE_UPDATE_PERIOD)
