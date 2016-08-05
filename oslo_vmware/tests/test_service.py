@@ -413,7 +413,7 @@ class RequestsTransportTest(base.TestCase):
     def test_open(self):
         transport = service.RequestsTransport()
 
-        data = "Hello World"
+        data = b"Hello World"
         resp = mock.Mock(content=data)
         transport.session.get = mock.Mock(return_value=resp)
 

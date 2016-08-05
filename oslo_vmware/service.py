@@ -146,7 +146,7 @@ class RequestsTransport(transport.Transport):
 
     def open(self, request):
         resp = self.session.get(request.url, verify=self.verify)
-        return six.StringIO(resp.content)
+        return six.BytesIO(resp.content)
 
     def send(self, request):
         resp = self.session.post(request.url,
