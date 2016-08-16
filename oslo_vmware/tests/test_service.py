@@ -419,8 +419,9 @@ class MemoryCacheTest(base.TestCase):
         self.assertEqual('value2', cache.get('key2'))
         self.assertIsNone(cache.get('key3'))
 
-    @mock.patch('suds.reader.DocumentReader.download')
-    def test_shared_cache(self, mock_reader):
+    @mock.patch('suds.reader.DefinitionsReader.open')
+    @mock.patch('suds.reader.DocumentReader.download', create=True)
+    def test_shared_cache(self, mock_reader, mock_open):
         cache1 = service.Service().client.options.cache
         cache2 = service.Service().client.options.cache
         self.assertIs(cache1, cache2)
