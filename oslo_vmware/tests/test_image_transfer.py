@@ -29,8 +29,8 @@ class ImageTransferUtilityTest(base.TestCase):
     """Tests for image_transfer utility methods."""
 
     def test_start_transfer(self):
-        data = 'image-data-here'
-        read_handle = six.StringIO(data)
+        data = b'image-data-here'
+        read_handle = six.BytesIO(data)
         write_handle = mock.Mock()
         image_transfer._start_transfer(read_handle, write_handle, None)
         write_handle.write.assert_called_once_with(data)
