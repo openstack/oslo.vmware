@@ -483,6 +483,21 @@ class RequestsTransportTest(base.TestCase):
             resp = transport.session.send(request)
             self.assertEqual(data, resp.content)
 
+    def test_send_with_connection_timeout(self):
+        transport = service.RequestsTransport(connection_timeout=120)
+
+        request = mock.Mock(url=mock.sentinel.url,
+                            message=mock.sentinel.message,
+                            headers=mock.sentinel.req_headers)
+        with mock.patch.object(transport.session, "post") as mock_post:
+            transport.send(request)
+            mock_post.assert_called_once_with(
+                mock.sentinel.url,
+                data=mock.sentinel.message,
+                headers=mock.sentinel.req_headers,
+                timeout=120,
+                verify=transport.verify)
+
 
 class SudsLogFilterTest(base.TestCase):
     """Tests for SudsLogFilter."""

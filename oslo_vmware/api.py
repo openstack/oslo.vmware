@@ -139,7 +139,8 @@ class VMwareAPISession(object):
     def __init__(self, host, server_username, server_password,
                  api_retry_count, task_poll_interval, scheme='https',
                  create_session=True, wsdl_loc=None, pbm_wsdl_loc=None,
-                 port=443, cacert=None, insecure=True, pool_size=10):
+                 port=443, cacert=None, insecure=True, pool_size=10,
+                 connection_timeout=None):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -161,6 +162,8 @@ class VMwareAPISession(object):
                          used only if cacert is not specified
         :param pool_size: Maximum number of connections in http
                           connection pool
+        :param connection_timeout: Maximum time in seconds to wait for peer to
+                                   respond.
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException
         """
@@ -180,6 +183,7 @@ class VMwareAPISession(object):
         self._cacert = cacert
         self._insecure = insecure
         self._pool_size = pool_size
+        self._connection_timeout = connection_timeout
         if create_session:
             self._create_session()
 
@@ -197,7 +201,8 @@ class VMwareAPISession(object):
                                 wsdl_url=self._vim_wsdl_loc,
                                 cacert=self._cacert,
                                 insecure=self._insecure,
-                                pool_maxsize=self._pool_size)
+                                pool_maxsize=self._pool_size,
+                                connection_timeout=self._connection_timeout)
         return self._vim
 
     @property
@@ -209,7 +214,8 @@ class VMwareAPISession(object):
                                 wsdl_url=self._pbm_wsdl_loc,
                                 cacert=self._cacert,
                                 insecure=self._insecure,
-                                pool_maxsize=self._pool_size)
+                                pool_maxsize=self._pool_size,
+                                connection_timeout=self._connection_timeout)
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
