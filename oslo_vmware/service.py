@@ -143,6 +143,8 @@ class RequestsTransport(transport.Transport):
         self.session = requests.Session()
         self.session.mount('file:///',
                            LocalFileAdapter(pool_maxsize=pool_maxsize))
+        self.session.mount('https://', requests.adapters.HTTPAdapter(
+            pool_connections=pool_maxsize, pool_maxsize=pool_maxsize))
         self.cookiejar = self.session.cookies
         self._connection_timeout = connection_timeout
 
