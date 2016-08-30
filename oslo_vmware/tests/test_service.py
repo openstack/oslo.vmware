@@ -445,6 +445,9 @@ class RequestsTransportTest(base.TestCase):
         local_file_adapter = transport.session.adapters['file:///']
         self.assertEqual(100, local_file_adapter._pool_connections)
         self.assertEqual(100, local_file_adapter._pool_maxsize)
+        https_adapter = transport.session.adapters['https://']
+        self.assertEqual(100, https_adapter._pool_connections)
+        self.assertEqual(100, https_adapter._pool_maxsize)
 
     @mock.patch('os.path.getsize')
     def test_send_with_local_file_url(self, get_size_mock):
