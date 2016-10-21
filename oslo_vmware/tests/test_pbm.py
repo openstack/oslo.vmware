@@ -37,8 +37,7 @@ class PBMUtilityTest(base.TestCase):
 
         def invoke_api_side_effect(module, method, *args, **kwargs):
             self.assertEqual(session.pbm, module)
-            self.assertTrue(method in ['PbmQueryProfile',
-                                       'PbmRetrieveContent'])
+            self.assertIn(method, ['PbmQueryProfile', 'PbmRetrieveContent'])
             self.assertEqual(session.pbm.service_content.profileManager,
                              args[0])
             if method == 'PbmQueryProfile':
