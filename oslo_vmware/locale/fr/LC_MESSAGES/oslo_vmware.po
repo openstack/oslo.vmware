@@ -8,9 +8,9 @@
 # Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: oslo.vmware 2.5.1.dev6\n"
+"Project-Id-Version: oslo.vmware 2.15.1.dev2\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-04-19 23:10+0000\n"
+"POT-Creation-Date: 2016-10-22 08:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -70,18 +70,6 @@ msgstr "Duplicat du nom."
 msgid "Entity has another operation in process."
 msgstr "L'entité a une autre opération en cours."
 
-msgid "Error occurred during file read-write task."
-msgstr ""
-"Une erreur est survenue pendant la tache de lecture-écriture du fichier."
-
-#, python-format
-msgid ""
-"Error occurred during image transfer with reader: %(reader)s and writer: "
-"%(writer)s"
-msgstr ""
-"Une erreur est survenue durant le transfère de l'image avec le lecteur: "
-"%(reader)s et l'écriture: %(writer)s"
-
 msgid "Error occurred while calling RetrievePropertiesEx."
 msgstr "Une erreur est survenue pendant l'appelle RetrievePropertiesEx."
 
@@ -114,10 +102,6 @@ msgid "Error occurred while writing data to %s."
 msgstr "Une erreur est survenue pendant l'écriture des données de %s."
 
 #, python-format
-msgid "Error occurred while writing image: %s"
-msgstr "Une erreur est survenue pendant l'écriture de l'image: %s"
-
-#, python-format
 msgid "Exception in %s."
 msgstr "Exception dans %s."
 
@@ -132,14 +116,6 @@ msgstr "Fichier verrouillé."
 
 msgid "File not found."
 msgstr "Fichier non trouvé."
-
-#, python-format
-msgid "Image: %(image)s is in unknown state: %(state)s."
-msgstr "Image: %(image)s a un statut inconnu: %(state)s. "
-
-#, python-format
-msgid "Image: %s is in killed state."
-msgstr "Image: %s est en état tué"
 
 msgid "Insufficient disk space."
 msgstr "Espace disque insuffisant."
@@ -173,9 +149,6 @@ msgstr "Pas de permission."
 
 msgid "No default value for use_linked_clone found."
 msgstr "Pas de valeur par défaut pour use_linked_clone trouvé."
-
-msgid "No image destination given."
-msgstr "Pas d'image au sein de la destination donné."
 
 #, python-format
 msgid "No such SOAP method %s."
