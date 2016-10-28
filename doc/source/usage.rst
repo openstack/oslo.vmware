@@ -1,6 +1,6 @@
-========
-Usage
-========
+=======
+ Usage
+=======
 
 Example usage of getting a handle to a vSphere session and retrieving all the
 ESX hosts in a server::
