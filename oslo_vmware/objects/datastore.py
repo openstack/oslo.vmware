@@ -37,7 +37,9 @@ def get_datastore_by_ref(session, ds_ref):
     lst_properties = ["summary.type",
                       "summary.name",
                       "summary.capacity",
-                      "summary.freeSpace"]
+                      "summary.freeSpace",
+                      "summary.uncommitted"]
+
     props = session.invoke_api(
         vim_util,
         "get_object_properties_dict",
@@ -48,19 +50,22 @@ def get_datastore_by_ref(session, ds_ref):
     return Datastore(ds_ref, props["summary.name"],
                      capacity=props.get("summary.capacity"),
                      freespace=props.get("summary.freeSpace"),
+                     uncommitted=props.get("summary.uncommitted"),
                      type=props.get("summary.type"))
 
 
 class Datastore(object):
 
     def __init__(self, ref, name, capacity=None, freespace=None,
-                 type=None, datacenter=None):
+                 uncommitted=None, type=None, datacenter=None):
         """Datastore object holds ref and name together for convenience.
 
         :param ref: a vSphere reference to a datastore
         :param name: vSphere unique name for this datastore
         :param capacity: (optional) capacity in bytes of this datastore
         :param freespace: (optional) free space in bytes of datastore
+        :param uncommitted: (optional) Total additional storage space
+                            in bytes of datastore
         :param type: (optional) datastore type
         :param datacenter: (optional) oslo_vmware Datacenter object
         """
@@ -78,6 +83,7 @@ class Datastore(object):
         self.name = name
         self.capacity = capacity
         self.freespace = freespace
+        self.uncommitted = uncommitted
         self.type = type
         self.datacenter = datacenter
 

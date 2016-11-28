@@ -43,11 +43,12 @@ class DatastoreTestCase(base.TestCase):
 
     def test_ds(self):
         ds = datastore.Datastore(
-            "fake_ref", "ds_name", 2 * units.Gi, 1 * units.Gi)
+            "fake_ref", "ds_name", 2 * units.Gi, 1 * units.Gi, 1 * units.Gi)
         self.assertEqual('ds_name', ds.name)
         self.assertEqual('fake_ref', ds.ref)
         self.assertEqual(2 * units.Gi, ds.capacity)
         self.assertEqual(1 * units.Gi, ds.freespace)
+        self.assertEqual(1 * units.Gi, ds.uncommitted)
 
     def test_ds_invalid_space(self):
         self.assertRaises(ValueError, datastore.Datastore,
