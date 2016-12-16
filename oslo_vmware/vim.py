@@ -21,7 +21,7 @@ class Vim(service.Service):
 
     def __init__(self, protocol='https', host='localhost', port=None,
                  wsdl_url=None, cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None):
+                 connection_timeout=None, op_id_prefix='oslo.vmware'):
         """Constructs a VIM service client object.
 
         :param protocol: http or https
@@ -36,6 +36,7 @@ class Vim(service.Service):
                              connection pool
         :param connection_timeout: Maximum time in seconds to wait for peer to
                                    respond.
+        :param op_id_prefix: String prefix for the operation ID.
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
@@ -44,7 +45,8 @@ class Vim(service.Service):
         if wsdl_url is None:
             wsdl_url = soap_url + '/vimService.wsdl'
         super(Vim, self).__init__(wsdl_url, soap_url, cacert, insecure,
-                                  pool_maxsize, connection_timeout)
+                                  pool_maxsize, connection_timeout,
+                                  op_id_prefix)
 
     def retrieve_service_content(self):
         return self.RetrieveServiceContent(service.SERVICE_INSTANCE)

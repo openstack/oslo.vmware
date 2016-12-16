@@ -140,7 +140,7 @@ class VMwareAPISession(object):
                  api_retry_count, task_poll_interval, scheme='https',
                  create_session=True, wsdl_loc=None, pbm_wsdl_loc=None,
                  port=443, cacert=None, insecure=True, pool_size=10,
-                 connection_timeout=None):
+                 connection_timeout=None, op_id_prefix='oslo.vmware'):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -164,6 +164,7 @@ class VMwareAPISession(object):
                           connection pool
         :param connection_timeout: Maximum time in seconds to wait for peer to
                                    respond.
+        :param op_id_prefix: String prefix for the operation ID.
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException
         """
@@ -184,6 +185,7 @@ class VMwareAPISession(object):
         self._insecure = insecure
         self._pool_size = pool_size
         self._connection_timeout = connection_timeout
+        self._op_id_prefix = op_id_prefix
         if create_session:
             self._create_session()
 
@@ -202,7 +204,8 @@ class VMwareAPISession(object):
                                 cacert=self._cacert,
                                 insecure=self._insecure,
                                 pool_maxsize=self._pool_size,
-                                connection_timeout=self._connection_timeout)
+                                connection_timeout=self._connection_timeout,
+                                op_id_prefix=self._op_id_prefix)
         return self._vim
 
     @property
@@ -215,7 +218,8 @@ class VMwareAPISession(object):
                                 cacert=self._cacert,
                                 insecure=self._insecure,
                                 pool_maxsize=self._pool_size,
-                                connection_timeout=self._connection_timeout)
+                                connection_timeout=self._connection_timeout,
+                                op_id_prefix=self._op_id_prefix)
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
@@ -401,13 +405,15 @@ class VMwareAPISession(object):
 
         :param task: managed object reference of the task
         """
-        LOG.debug("Invoking VIM API to read info of task: %s.", task)
         try:
+            # we poll tasks too often, so skip logging the opID as it generates
+            # too much noise in the logs
             task_info = self.invoke_api(vim_util,
                                         'get_object_property',
                                         self.vim,
                                         task,
-                                        'info')
+                                        'info',
+                                        skip_op_id=True)
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
                 LOG.exception(_LE("Error occurred while reading info of "
