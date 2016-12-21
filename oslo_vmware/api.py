@@ -119,7 +119,6 @@ class RetryDecorator(object):
         def func(*args, **kwargs):
             loop = loopingcall.DynamicLoopingCall(_func, *args, **kwargs)
             evt = loop.start(periodic_interval_max=self._max_sleep_time)
-            LOG.debug("Waiting for function %s to return.", func_name)
             return evt.wait()
 
         return func
@@ -463,13 +462,13 @@ class VMwareAPISession(object):
 
         :param lease: lease whose state is to be polled
         """
-        LOG.debug("Invoking VIM API to read state of lease: %s.", lease)
         try:
             state = self.invoke_api(vim_util,
                                     'get_object_property',
                                     self.vim,
                                     lease,
-                                    'state')
+                                    'state',
+                                    skip_op_id=True)
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
                 LOG.exception(_LE("Error occurred while checking "

@@ -474,7 +474,8 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, lease,
-                                                  'state')
+                                                  'state',
+                                                  skip_op_id=True)
         self.assertEqual(num_states, api_session.invoke_api.call_count)
 
     def test_wait_for_lease_ready_with_error_state(self):
@@ -491,7 +492,8 @@ class VMwareAPISessionTest(base.TestCase):
                               api_session.wait_for_lease_ready,
                               lease)
         exp_calls = [mock.call(vim_util, 'get_object_property',
-                               api_session.vim, lease, 'state')] * 2
+                               api_session.vim, lease, 'state',
+                               skip_op_id=True)] * 2
         exp_calls.append(mock.call(vim_util, 'get_object_property',
                                    api_session.vim, lease, 'error'))
         self.assertEqual(exp_calls, api_session.invoke_api.call_args_list)
@@ -510,7 +512,8 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_once_with(vim_util,
                                                        'get_object_property',
                                                        api_session.vim,
-                                                       lease, 'state')
+                                                       lease, 'state',
+                                                       skip_op_id=True)
 
     def test_wait_for_lease_ready_with_invoke_api_exception(self):
         api_session = self._create_api_session(True)
@@ -522,7 +525,7 @@ class VMwareAPISessionTest(base.TestCase):
                           lease)
         api_session.invoke_api.assert_called_once_with(
             vim_util, 'get_object_property', api_session.vim, lease,
-            'state')
+            'state', skip_op_id=True)
 
     def _poll_task_well_known_exceptions(self, fault,
                                          expected_exception):
