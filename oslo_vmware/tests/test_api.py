@@ -137,7 +137,8 @@ class VMwareAPISessionTest(base.TestCase):
             cacert=self.cert_mock,
             insecure=False,
             pool_maxsize=VMwareAPISessionTest.POOL_SIZE,
-            connection_timeout=None)
+            connection_timeout=None,
+            op_id_prefix='oslo.vmware')
 
     @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
@@ -412,7 +413,8 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
-                                                  'info')
+                                                  'info',
+                                                  skip_op_id=True)
         self.assertEqual(task_info_list_size,
                          api_session.invoke_api.call_count)
 
@@ -437,7 +439,8 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
                                                   api_session.vim, task,
-                                                  'info')
+                                                  'info',
+                                                  skip_op_id=True)
         self.assertEqual(task_info_list_size,
                          api_session.invoke_api.call_count)
 
@@ -453,7 +456,8 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api.assert_called_once_with(vim_util,
                                                        'get_object_property',
                                                        api_session.vim, task,
-                                                       'info')
+                                                       'info',
+                                                       skip_op_id=True)
 
     def test_wait_for_lease_ready(self):
         api_session = self._create_api_session(True)

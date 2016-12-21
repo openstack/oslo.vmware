@@ -285,13 +285,14 @@ def get_objects(vim, type_, max_objects, properties_to_collect=None,
                                     options=options)
 
 
-def get_object_properties(vim, moref, properties_to_collect):
+def get_object_properties(vim, moref, properties_to_collect, skip_op_id=False):
     """Get properties of the given managed object.
 
     :param vim: Vim object
     :param moref: managed object reference
     :param properties_to_collect: names of the managed object properties to be
                                   collected
+    :param skip_op_id: whether to skip putting opID in the request
     :returns: properties of the given managed object
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
@@ -317,7 +318,8 @@ def get_object_properties(vim, moref, properties_to_collect):
     retrieve_result = vim.RetrievePropertiesEx(
         vim.service_content.propertyCollector,
         specSet=[property_filter_spec],
-        options=options)
+        options=options,
+        skip_op_id=skip_op_id)
     cancel_retrieval(vim, retrieve_result)
     return retrieve_result.objects
 
@@ -422,17 +424,19 @@ class WithRetrieval(object):
                 self.vim, self.retrieve_result)
 
 
-def get_object_property(vim, moref, property_name):
+def get_object_property(vim, moref, property_name, skip_op_id=False):
     """Get property of the given managed object.
 
     :param vim: Vim object
     :param moref: managed object reference
     :param property_name: name of the property to be retrieved
+    :param skip_op_id: whether to skip putting opID in the request
     :returns: property of the given managed object
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    props = get_object_properties(vim, moref, [property_name])
+    props = get_object_properties(vim, moref, [property_name],
+                                  skip_op_id=skip_op_id)
     prop_val = None
     if props:
         prop = None

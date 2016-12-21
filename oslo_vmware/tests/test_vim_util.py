@@ -222,7 +222,8 @@ class VimUtilTest(base.TestCase):
         moref._type = "VirtualMachine"
         retrieve_result = mock.Mock()
 
-        def vim_RetrievePropertiesEx_side_effect(pc, specSet, options):
+        def vim_RetrievePropertiesEx_side_effect(pc, specSet, options,
+                                                 skip_op_id=False):
             self.assertTrue(pc is vim.service_content.propertyCollector)
             self.assertEqual(1, options.maxObjects)
 
@@ -361,7 +362,7 @@ class VimUtilTest(base.TestCase):
         val = vim_util.get_object_property(vim, moref, property_name)
         self.assertEqual(prop.val, val)
         get_object_properties.assert_called_once_with(
-            vim, moref, [property_name])
+            vim, moref, [property_name], skip_op_id=False)
 
     def test_find_extension(self):
         vim = mock.Mock()

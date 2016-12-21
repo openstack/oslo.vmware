@@ -22,6 +22,7 @@ import os
 
 import netaddr
 from oslo_utils import timeutils
+from oslo_utils import uuidutils
 import requests
 import six
 import six.moves.http_client as httplib
@@ -29,6 +30,7 @@ import suds
 from suds import cache
 from suds import client
 from suds import plugin
+import suds.sax.element as element
 from suds import transport
 
 from oslo_vmware._i18n import _
@@ -70,6 +72,7 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
         # Suds builds the entire request object based on the WSDL schema.
         # VI SDK throws server errors if optional SOAP nodes are sent
         # without values; e.g., <test/> as opposed to <test>test</test>.
+
         context.envelope.prune()
         context.envelope.walk(self.add_attribute_for_value)
 
@@ -194,9 +197,10 @@ class Service(object):
 
     def __init__(self, wsdl_url=None, soap_url=None,
                  cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None):
+                 connection_timeout=None, op_id_prefix='oslo.vmware'):
         self.wsdl_url = wsdl_url
         self.soap_url = soap_url
+        self.op_id_prefix = op_id_prefix
         LOG.debug("Creating suds client with soap_url='%s' and wsdl_url='%s'",
                   self.soap_url, self.wsdl_url)
         transport = RequestsTransport(cacert=cacert,
@@ -260,6 +264,17 @@ class Service(object):
                                                fault_string,
                                                details=details)
 
+    def _add_operation_id(self, op_id):
+        """Add operation ID for the next remote call to vCenter.
+
+        The operation ID is a random string which allows to correlate log
+        messages across different systems (OpenStack, vCenter, ESX).
+        """
+        headers = [element.Element('operationID').setText(op_id)]
+        if self.client.options.soapheaders is not None:
+            headers.append(self.client.options.soapheaders)
+        self.client.set_options(soapheaders=headers)
+
     @property
     def service_content(self):
         if self._service_content is None:
@@ -297,6 +312,18 @@ class Service(object):
                                                         managed_object)
                 if managed_object is None:
                     return
+
+                skip_op_id = kwargs.pop('skip_op_id', False)
+                if not skip_op_id:
+                    # Generate opID. It will appear in vCenter and ESX logs for
+                    # this particular remote call.
+                    op_id = '%s-%s' % (self.op_id_prefix,
+                                       uuidutils.generate_uuid())
+                    LOG.debug('Invoking %s.%s with opID=%s',
+                              managed_object._type,
+                              attr_name,
+                              op_id)
+                    self._add_operation_id(op_id)
                 request = getattr(self.client.service, attr_name)
                 response = request(managed_object, **kwargs)
                 if (attr_name.lower() == 'retrievepropertiesex'):
