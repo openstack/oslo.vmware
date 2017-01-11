@@ -25,7 +25,6 @@ import os
 
 import six.moves.urllib.parse as urlparse
 import six.moves.urllib.request as urllib
-import suds.sax.element as element
 
 from oslo_vmware._i18n import _LW
 from oslo_vmware import service
@@ -70,8 +69,7 @@ class Pbm(service.Service):
 
         :param cookie: cookie to set
         """
-        elem = element.Element('vcSessionCookie').setText(cookie)
-        self.client.set_options(soapheaders=elem)
+        self._vc_session_cookie = cookie
 
     def retrieve_service_content(self):
         ref = vim_util.get_moref(service.SERVICE_INSTANCE, SERVICE_TYPE)

@@ -374,7 +374,7 @@ class ServiceTest(base.TestCase):
         svc_obj.client.options.transport.cookiejar = [cookie]
         self.assertIsNone(svc_obj.get_http_cookie())
 
-    def test_add_operation_id(self):
+    def test_set_soap_headers(self):
         def fake_set_options(*args, **kwargs):
             headers = kwargs['soapheaders']
             self.assertEqual(1, len(headers))
@@ -384,20 +384,19 @@ class ServiceTest(base.TestCase):
         svc_obj = service.Service()
         svc_obj.client.options.soapheaders = None
         setattr(svc_obj.client, 'set_options', fake_set_options)
-        svc_obj._add_operation_id('fira-12345')
+        svc_obj._set_soap_headers('fira-12345')
 
-    def test_add_operation_id_with_existing_header(self):
+    def test_soap_headers_pbm(self):
         def fake_set_options(*args, **kwargs):
             headers = kwargs['soapheaders']
             self.assertEqual(2, len(headers))
-            txt = headers[0].getText()
-            self.assertEqual('fira-12345', txt)
-            self.assertEqual('vc-session-cookie', headers[1])
+            self.assertEqual('vc-session-cookie', headers[0].getText())
+            self.assertEqual('fira-12345', headers[1].getText())
 
         svc_obj = service.Service()
-        svc_obj.client.options.soapheaders = 'vc-session-cookie'
+        svc_obj._vc_session_cookie = 'vc-session-cookie'
         setattr(svc_obj.client, 'set_options', fake_set_options)
-        svc_obj._add_operation_id('fira-12345')
+        svc_obj._set_soap_headers('fira-12345')
 
 
 class MemoryCacheTest(base.TestCase):

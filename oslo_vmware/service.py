@@ -213,6 +213,7 @@ class Service(object):
                                     plugins=[ServiceMessagePlugin()],
                                     cache=_CACHE)
         self._service_content = None
+        self._vc_session_cookie = None
 
     @staticmethod
     def build_base_url(protocol, host, port):
@@ -264,16 +265,24 @@ class Service(object):
                                                fault_string,
                                                details=details)
 
-    def _add_operation_id(self, op_id):
-        """Add operation ID for the next remote call to vCenter.
+    def _set_soap_headers(self, op_id):
+        """Set SOAP headers for the next remote call to vCenter.
 
+        SOAP headers may include operation ID and vcSessionCookie.
         The operation ID is a random string which allows to correlate log
         messages across different systems (OpenStack, vCenter, ESX).
+        vcSessionCookie is needed when making PBM calls.
         """
-        headers = [element.Element('operationID').setText(op_id)]
-        if self.client.options.soapheaders is not None:
-            headers.append(self.client.options.soapheaders)
-        self.client.set_options(soapheaders=headers)
+        headers = []
+        if self._vc_session_cookie:
+            elem = element.Element('vcSessionCookie').setText(
+                self._vc_session_cookie)
+            headers.append(elem)
+        if op_id:
+            elem = element.Element('operationID').setText(op_id)
+            headers.append(elem)
+        if headers:
+            self.client.set_options(soapheaders=headers)
 
     @property
     def service_content(self):
@@ -314,6 +323,7 @@ class Service(object):
                     return
 
                 skip_op_id = kwargs.pop('skip_op_id', False)
+                op_id = None
                 if not skip_op_id:
                     # Generate opID. It will appear in vCenter and ESX logs for
                     # this particular remote call.
@@ -323,7 +333,7 @@ class Service(object):
                               managed_object._type,
                               attr_name,
                               op_id)
-                    self._add_operation_id(op_id)
+                self._set_soap_headers(op_id)
                 request = getattr(self.client.service, attr_name)
                 response = request(managed_object, **kwargs)
                 if (attr_name.lower() == 'retrievepropertiesex'):
