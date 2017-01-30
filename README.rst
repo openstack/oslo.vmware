@@ -2,8 +2,8 @@
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/oslo.vmware.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/badges/oslo.vmware.svg
+    :target: https://governance.openstack.org/reference/tags/index.html
 
 .. Change things from this point on
 
@@ -23,6 +23,6 @@ The Oslo VMware library provides support for common VMware operations
 and APIs.
 
 * License: Apache License, Version 2.0
-* Documentation: http://docs.openstack.org/developer/oslo.vmware
-* Source: http://git.openstack.org/cgit/openstack/oslo.vmware
-* Bugs: http://bugs.launchpad.net/oslo.vmware
+* Documentation: https://docs.openstack.org/developer/oslo.vmware
+* Source: https://git.openstack.org/cgit/openstack/oslo.vmware
+* Bugs: https://bugs.launchpad.net/oslo.vmware
