@@ -60,6 +60,13 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
         """
         if node.name == 'value' or node.name == 'val':
             node.set('xsi:type', 'xsd:string')
+        # removeKey may be a 'int' or a 'string'
+        if node.name == 'removeKey':
+            try:
+                int(node.text)
+                node.set('xsi:type', 'xsd:int')
+            except (ValueError, TypeError):
+                node.set('xsi:type', 'xsd:string')
 
     def marshalled(self, context):
         """Modifies the envelope document before it is sent.
