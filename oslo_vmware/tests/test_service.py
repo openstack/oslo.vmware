@@ -19,29 +19,38 @@ import six
 import six.moves.http_client as httplib
 import suds
 
+import ddt
 from oslo_vmware import exceptions
 from oslo_vmware import service
 from oslo_vmware.tests import base
 from oslo_vmware import vim_util
 
 
+@ddt.ddt
 class ServiceMessagePluginTest(base.TestCase):
     """Test class for ServiceMessagePlugin."""
 
-    def test_add_attribute_for_value(self):
+    def setUp(self):
+        super(ServiceMessagePluginTest, self).setUp()
+        self.plugin = service.ServiceMessagePlugin()
+
+    @ddt.data(('value', 'foo', 'string'), ('removeKey', '1', 'int'),
+              ('removeKey', 'foo', 'string'))
+    @ddt.unpack
+    def test_add_attribute_for_value(self, name, text, expected_xsd_type):
         node = mock.Mock()
-        node.name = 'value'
-        plugin = service.ServiceMessagePlugin()
-        plugin.add_attribute_for_value(node)
-        node.set.assert_called_once_with('xsi:type', 'xsd:string')
+        node.name = name
+        node.text = text
+        self.plugin.add_attribute_for_value(node)
+        node.set.assert_called_once_with('xsi:type',
+                                         'xsd:%s' % expected_xsd_type)
 
     def test_marshalled(self):
-        plugin = service.ServiceMessagePlugin()
         context = mock.Mock()
-        plugin.marshalled(context)
+        self.plugin.marshalled(context)
         context.envelope.prune.assert_called_once_with()
         context.envelope.walk.assert_called_once_with(
-            plugin.add_attribute_for_value)
+            self.plugin.add_attribute_for_value)
 
 
 class ServiceTest(base.TestCase):
