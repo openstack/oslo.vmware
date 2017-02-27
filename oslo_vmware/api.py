@@ -419,13 +419,25 @@ class VMwareAPISession(object):
                                   "task: %s."),
                               task)
         else:
+            task_detail = {'id': task.value}
+            # some internal tasks do not have 'name' set
+            if getattr(task_info, 'name', None):
+                task_detail['name'] = task_info.name
+
             if task_info.state in ['queued', 'running']:
                 if hasattr(task_info, 'progress'):
                     LOG.debug("Task: %(task)s progress is %(progress)s%%.",
-                              {'task': task,
+                              {'task': task_detail,
                                'progress': task_info.progress})
             elif task_info.state == 'success':
-                LOG.debug("Task: %s status is success.", task)
+                def get_completed_task():
+                    complete_time = getattr(task_info, 'completeTime', None)
+                    if complete_time:
+                        duration = complete_time - task_info.queueTime
+                        task_detail['duration_secs'] = duration.total_seconds()
+                    return task_detail
+                LOG.debug("Task: %s completed successfully.",
+                          get_completed_task())
                 raise loopingcall.LoopingCallDone(task_info)
             else:
                 error_msg = six.text_type(task_info.error.localizedMessage)
