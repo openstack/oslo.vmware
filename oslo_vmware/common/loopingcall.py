@@ -22,7 +22,6 @@ from eventlet import event
 from eventlet import greenthread
 from oslo_utils import timeutils
 
-from oslo_vmware._i18n import _LE, _LW
 
 LOG = logging.getLogger(__name__)
 
@@ -79,15 +78,15 @@ class FixedIntervalLoopingCall(LoopingCallBase):
                         break
                     delay = interval - timeutils.delta_seconds(start, end)
                     if delay <= 0:
-                        LOG.warning(_LW('task run outlasted interval '
-                                        'by %s sec'),
+                        LOG.warning('task run outlasted interval '
+                                    'by %s sec',
                                     -delay)
                     greenthread.sleep(delay if delay > 0 else 0)
             except LoopingCallDone as e:
                 self.stop()
                 done.send(e.retvalue)
             except Exception:
-                LOG.exception(_LE('in fixed duration looping call'))
+                LOG.exception('in fixed duration looping call')
                 done.send_exception(*sys.exc_info())
                 return
             else:

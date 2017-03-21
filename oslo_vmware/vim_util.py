@@ -22,9 +22,6 @@ import logging
 from oslo_utils import timeutils
 from suds import sudsobject
 
-from oslo_vmware._i18n import _LW
-
-
 LOG = logging.getLogger(__name__)
 
 
@@ -347,8 +344,8 @@ def get_object_properties_dict(vim, moref, properties_to_collect):
     # The object may have information useful for logging
     if hasattr(obj_contents[0], 'missingSet'):
         for m in obj_contents[0].missingSet:
-            LOG.warning(_LW("Unable to retrieve value for %(path)s "
-                            "Reason: %(reason)s"),
+            LOG.warning("Unable to retrieve value for %(path)s "
+                        "Reason: %(reason)s",
                         {'path': m.path,
                          'reason': m.fault.localizedMessage})
     return property_dict

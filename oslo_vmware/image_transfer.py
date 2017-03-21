@@ -24,7 +24,7 @@ from eventlet import timeout
 import six
 
 from oslo_utils import units
-from oslo_vmware._i18n import _, _LW
+from oslo_vmware._i18n import _
 from oslo_vmware.common import loopingcall
 from oslo_vmware import constants
 from oslo_vmware import exceptions
@@ -311,8 +311,8 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
         LOG.debug("Ignoring keyword argument 'is_public'.")
 
     if 'image_version' in kwargs:
-        LOG.warning(_LW("The keyword argument 'image_version' is deprecated "
-                        "and will be ignored in the next release."))
+        LOG.warning("The keyword argument 'image_version' is deprecated "
+                    "and will be ignored in the next release.")
 
     image_ver = six.text_type(kwargs.get('image_version'))
     image_metadata = {'disk_format': 'vmdk',

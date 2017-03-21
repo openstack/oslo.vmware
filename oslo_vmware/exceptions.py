@@ -21,7 +21,7 @@ import logging
 
 import six
 
-from oslo_vmware._i18n import _, _LE, _LW
+from oslo_vmware._i18n import _
 
 LOG = logging.getLogger(__name__)
 
@@ -79,9 +79,9 @@ class VMwareDriverException(Exception):
             except Exception:
                 # kwargs doesn't match a variable in the message
                 # log the issue and the kwargs
-                LOG.exception(_LE('Exception in string format operation'))
+                LOG.exception('Exception in string format operation')
                 for name, value in six.iteritems(kwargs):
-                    LOG.error(_LE("%(name)s: %(value)s"),
+                    LOG.error("%(name)s: %(value)s",
                               {'name': name, 'value': value})
                 # at least get the core message out if something happened
                 message = self.msg_fmt
@@ -168,8 +168,8 @@ class ImageTransferException(VMwareDriverException):
 
 
 def _print_deprecation_warning(clazz):
-    LOG.warning(_LW("Exception %s is deprecated, it will be removed in the "
-                    "next release."), clazz.__name__)
+    LOG.warning("Exception %s is deprecated, it will be removed in the "
+                "next release.", clazz.__name__)
 
 
 class VMwareDriverConfigurationException(VMwareDriverException):

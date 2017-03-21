@@ -28,7 +28,7 @@ from oslo_utils import excutils
 from oslo_utils import reflection
 import six
 
-from oslo_vmware._i18n import _, _LE, _LI, _LW
+from oslo_vmware._i18n import _
 from oslo_vmware.common import loopingcall
 from oslo_vmware import exceptions
 from oslo_vmware import pbm
@@ -96,17 +96,17 @@ class RetryDecorator(object):
                 result = f(*args, **kwargs)
             except self._exceptions:
                 with excutils.save_and_reraise_exception() as ctxt:
-                    LOG.warning(_LW("Exception which is in the suggested list "
-                                    "of exceptions occurred while invoking "
-                                    "function: %s."),
+                    LOG.warning("Exception which is in the suggested list "
+                                "of exceptions occurred while invoking "
+                                "function: %s.",
                                 func_name,
                                 exc_info=True)
                     if (self._max_retry_count != -1 and
                             self._retry_count >= self._max_retry_count):
-                        LOG.error(_LE("Cannot retry upon suggested exception "
-                                      "since retry count (%(retry_count)d) "
-                                      "reached max retry count "
-                                      "(%(max_retry_count)d)."),
+                        LOG.error("Cannot retry upon suggested exception "
+                                  "since retry count (%(retry_count)d) "
+                                  "reached max retry count "
+                                  "(%(max_retry_count)d).",
                                   {'retry_count': self._retry_count,
                                    'max_retry_count': self._max_retry_count})
                     else:
@@ -191,7 +191,7 @@ class VMwareAPISession(object):
     def pbm_wsdl_loc_set(self, pbm_wsdl_loc):
         self._pbm_wsdl_loc = pbm_wsdl_loc
         self._pbm = None
-        LOG.info(_LI('PBM WSDL updated to %s'), pbm_wsdl_loc)
+        LOG.info('PBM WSDL updated to %s', pbm_wsdl_loc)
 
     @property
     def vim(self):
@@ -250,8 +250,8 @@ class VMwareAPISession(object):
         # object. We can't use the username used for login since the Login
         # method ignores the case.
         self._session_username = session.userName
-        LOG.info(_LI("Successfully established new session; session ID is "
-                     "%s."),
+        LOG.info("Successfully established new session; session ID is "
+                 "%s.",
                  _trunc_id(self._session_id))
 
         # Set PBM client cookie.
@@ -261,16 +261,16 @@ class VMwareAPISession(object):
     def logout(self):
         """Log out and terminate the current session."""
         if self._session_id:
-            LOG.info(_LI("Logging out and terminating the current session "
-                         "with ID = %s."),
+            LOG.info("Logging out and terminating the current session "
+                     "with ID = %s.",
                      _trunc_id(self._session_id))
             try:
                 self.vim.Logout(self.vim.service_content.sessionManager)
                 self._session_id = None
             except Exception:
-                LOG.exception(_LE("Error occurred while logging out and "
-                                  "terminating the current session with "
-                                  "ID = %s."),
+                LOG.exception("Error occurred while logging out and "
+                              "terminating the current session with "
+                              "ID = %s.",
                               _trunc_id(self._session_id))
         else:
             LOG.debug("No session exists to log out.")
@@ -415,8 +415,8 @@ class VMwareAPISession(object):
                                         skip_op_id=True)
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_LE("Error occurred while reading info of "
-                                  "task: %s."),
+                LOG.exception("Error occurred while reading info of "
+                              "task: %s.",
                               task)
         else:
             task_detail = {'id': task.value}
@@ -483,8 +483,8 @@ class VMwareAPISession(object):
                                     skip_op_id=True)
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception(_LE("Error occurred while checking "
-                                  "state of lease: %s."),
+                LOG.exception("Error occurred while checking "
+                              "state of lease: %s.",
                               lease)
         else:
             if state == 'ready':
@@ -518,8 +518,8 @@ class VMwareAPISession(object):
                                    lease,
                                    'error')
         except exceptions.VimException:
-            LOG.warning(_LW("Error occurred while reading error message for "
-                            "lease: %s."),
+            LOG.warning("Error occurred while reading error message for "
+                        "lease: %s.",
                         lease,
                         exc_info=True)
             return "Unknown"
