@@ -113,7 +113,7 @@ class Datastore(object):
                             self.name)
 
     def __str__(self):
-        return '[%s]' % self._name
+        return '[%s]' % self.name
 
     def get_summary(self, session):
         """Get datastore summary.
