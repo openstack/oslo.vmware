@@ -50,6 +50,9 @@ LOG = logging.getLogger(__name__)
 class ServiceMessagePlugin(plugin.MessagePlugin):
     """Suds plug-in handling some special cases while calling VI SDK."""
 
+    # list of XML elements which are allowed to be empty
+    EMPTY_ELEMENTS = ["VirtualMachineEmptyProfileSpec"]
+
     def add_attribute_for_value(self, node):
         """Helper to handle AnyType.
 
@@ -68,6 +71,15 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
             except (ValueError, TypeError):
                 node.set('xsi:type', 'xsd:string')
 
+    def prune(self, el):
+        pruned = []
+        for c in el.children:
+            self.prune(c)
+            if c.isempty(False) and c.name not in self.EMPTY_ELEMENTS:
+                pruned.append(c)
+        for p in pruned:
+            el.children.remove(p)
+
     def marshalled(self, context):
         """Modifies the envelope document before it is sent.
 
@@ -80,7 +92,7 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
         # VI SDK throws server errors if optional SOAP nodes are sent
         # without values; e.g., <test/> as opposed to <test>test</test>.
 
-        context.envelope.prune()
+        self.prune(context.envelope)
         context.envelope.walk(self.add_attribute_for_value)
 
 

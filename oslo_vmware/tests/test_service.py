@@ -47,8 +47,9 @@ class ServiceMessagePluginTest(base.TestCase):
 
     def test_marshalled(self):
         context = mock.Mock()
+        self.plugin.prune = mock.Mock()
         self.plugin.marshalled(context)
-        context.envelope.prune.assert_called_once_with()
+        self.plugin.prune.assert_called_once_with(context.envelope)
         context.envelope.walk.assert_called_once_with(
             self.plugin.add_attribute_for_value)
 
