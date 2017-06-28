@@ -95,7 +95,8 @@ class DatastoreTestCase(base.TestCase):
                                                    session.vim,
                                                    ds.ref, 'summary')
 
-    def test_get_connected_hosts(self):
+    def _test_get_connected_hosts(self, in_maintenance_mode,
+                                  m1_accessible=True):
         session = mock.Mock()
         ds_ref = vim_util.get_moref('ds-0', 'Datastore')
         ds = datastore.Datastore(ds_ref, 'ds-name')
@@ -103,7 +104,7 @@ class DatastoreTestCase(base.TestCase):
         ds.get_summary.return_value.accessible = False
         self.assertEqual([], ds.get_connected_hosts(session))
         ds.get_summary.return_value.accessible = True
-        m1 = HostMount("m1", MountInfo('readWrite', True, True))
+        m1 = HostMount("m1", MountInfo('readWrite', True, m1_accessible))
         m2 = HostMount("m2", MountInfo('read', True, True))
         m3 = HostMount("m3", MountInfo('readWrite', False, True))
         m4 = HostMount("m4", MountInfo('readWrite', True, False))
@@ -111,11 +112,45 @@ class DatastoreTestCase(base.TestCase):
 
         class Prop(object):
             DatastoreHostMount = [m1, m2, m3, m4]
-        session.invoke_api = mock.Mock()
-        session.invoke_api.return_value = Prop()
+
+        class HostRuntime(object):
+            inMaintenanceMode = in_maintenance_mode
+
+        class HostProp(object):
+            name = 'runtime'
+            val = HostRuntime()
+
+        class Object(object):
+            obj = "m1"
+            propSet = [HostProp()]
+
+        class Runtime(object):
+            objects = [Object()]
+
+        session.invoke_api = mock.Mock(side_effect=[Prop(), Runtime()])
         hosts = ds.get_connected_hosts(session)
+        calls = [mock.call(vim_util, 'get_object_property',
+                           session.vim, ds_ref, 'host')]
+        if m1_accessible:
+            calls.append(
+                mock.call(vim_util,
+                          'get_properties_for_a_collection_of_objects',
+                          session.vim, 'HostSystem', ["m1"], ['runtime']))
+        self.assertEqual(calls, session.invoke_api.mock_calls)
+        return hosts
+
+    def test_get_connected_hosts(self):
+        hosts = self._test_get_connected_hosts(False)
         self.assertEqual(1, len(hosts))
         self.assertEqual("m1", hosts.pop())
+
+    def test_get_connected_hosts_in_maintenance(self):
+        hosts = self._test_get_connected_hosts(True)
+        self.assertEqual(0, len(hosts))
+
+    def test_get_connected_hosts_ho_hosts(self):
+        hosts = self._test_get_connected_hosts(False, False)
+        self.assertEqual(0, len(hosts))
 
     def test_is_datastore_mount_usable(self):
         m = MountInfo('readWrite', True, True)

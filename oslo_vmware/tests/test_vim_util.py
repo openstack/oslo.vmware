@@ -430,3 +430,105 @@ class VimUtilTest(base.TestCase):
         entity = mock.Mock()
         inv_path = vim_util.get_inventory_path(session.vim, entity, 100)
         self.assertEqual('dc-1', inv_path)
+
+    def test_get_prop_spec(self):
+        client_factory = mock.Mock()
+        prop_spec = vim_util.get_prop_spec(
+            client_factory, "VirtualMachine", ["test_path"])
+        self.assertEqual(["test_path"], prop_spec.pathSet)
+        self.assertEqual("VirtualMachine", prop_spec.type)
+
+    def test_get_obj_spec(self):
+        client_factory = mock.Mock()
+        mock_obj = mock.Mock()
+        obj_spec = vim_util.get_obj_spec(
+            client_factory, mock_obj, select_set=["abc"])
+        self.assertEqual(mock_obj, obj_spec.obj)
+        self.assertFalse(obj_spec.skip)
+        self.assertEqual(["abc"], obj_spec.selectSet)
+
+    def test_get_prop_filter_spec(self):
+        client_factory = mock.Mock()
+        mock_obj = mock.Mock()
+        filter_spec = vim_util.get_prop_filter_spec(
+            client_factory, [mock_obj], ["test_prop"])
+        self.assertEqual([mock_obj], filter_spec.objectSet)
+        self.assertEqual(["test_prop"], filter_spec.propSet)
+
+    @mock.patch('oslo_vmware.vim_util.get_prop_spec')
+    @mock.patch('oslo_vmware.vim_util.get_obj_spec')
+    @mock.patch('oslo_vmware.vim_util.get_prop_filter_spec')
+    def _test_get_properties_for_a_collection_of_objects(
+            self, objs, max_objects,
+            mock_get_prop_filter_spec,
+            mock_get_obj_spec,
+            mock_get_prop_spec):
+        vim = mock.Mock()
+        if len(objs) == 0:
+            self.assertEqual(
+                [], vim_util.get_properties_for_a_collection_of_objects(
+                    vim, 'VirtualMachine', [], {}))
+            return
+
+        mock_prop_spec = mock.Mock()
+        mock_get_prop_spec.return_value = mock_prop_spec
+
+        mock_get_obj_spec.side_effect = [mock.Mock()
+                                         for obj in objs]
+        get_obj_spec_calls = [mock.call(vim.client.factory, obj)
+                              for obj in objs]
+
+        mock_prop_spec = mock.Mock()
+        mock_get_prop_spec.return_value = mock_prop_spec
+
+        mock_prop_filter_spec = mock.Mock()
+        mock_get_prop_filter_spec.return_value = mock_prop_filter_spec
+        mock_options = mock.Mock()
+        vim.client.factory.create.return_value = mock_options
+
+        mock_return_value = mock.Mock()
+        vim.RetrievePropertiesEx.return_value = mock_return_value
+        res = vim_util.get_properties_for_a_collection_of_objects(
+            vim, 'VirtualMachine', objs, ['runtime'], max_objects)
+        self.assertEqual(mock_return_value, res)
+
+        mock_get_prop_spec.assert_called_once_with(vim.client.factory,
+                                                   'VirtualMachine',
+                                                   ['runtime'])
+        self.assertEqual(get_obj_spec_calls, mock_get_obj_spec.mock_calls)
+        vim.client.factory.create.assert_called_once_with(
+            'ns0:RetrieveOptions')
+        self.assertEqual(max_objects if max_objects else len(objs),
+                         mock_options.maxObjects)
+        vim.RetrievePropertiesEx.assert_called_once_with(
+            vim.service_content.propertyCollector,
+            specSet=[mock_prop_filter_spec],
+            options=mock_options)
+
+    def test_get_properties_for_a_collection_of_objects(
+            self):
+        objects = ["m1", "m2"]
+        self._test_get_properties_for_a_collection_of_objects(objects, None)
+
+    def test_get_properties_for_a_collection_of_objects_max_objects_1(
+            self):
+        objects = ["m1", "m2"]
+        self._test_get_properties_for_a_collection_of_objects(objects, 1)
+
+    def test_get_properties_for_a_collection_of_objects_no_objects(
+            self):
+        self._test_get_properties_for_a_collection_of_objects([], None)
+
+    def test_propset_dict(self):
+        self.assertEqual({}, vim_util.propset_dict(None))
+
+        mock_propset = []
+        for i in range(2):
+            mock_obj = mock.Mock()
+            mock_obj.name = "test_name_%d" % i
+            mock_obj.val = "test_val_%d" % i
+            mock_propset.append(mock_obj)
+
+        self.assertEqual({"test_name_0": "test_val_0",
+                          "test_name_1": "test_val_1"},
+                         vim_util.propset_dict(mock_propset))

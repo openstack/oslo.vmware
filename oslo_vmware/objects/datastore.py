@@ -142,7 +142,19 @@ class Datastore(object):
         for host_mount in host_mounts.DatastoreHostMount:
             if self.is_datastore_mount_usable(host_mount.mountInfo):
                 hosts.append(host_mount.key)
-        return hosts
+        connectables = []
+        if hosts:
+            host_runtimes = session.invoke_api(
+                vim_util,
+                'get_properties_for_a_collection_of_objects',
+                session.vim, 'HostSystem', hosts, ['runtime'])
+            for host_object in host_runtimes.objects:
+                host_props = vim_util.propset_dict(host_object.propSet)
+                host_runtime = host_props.get('runtime')
+                if hasattr(host_runtime, 'inMaintenanceMode') and (
+                        not host_runtime.inMaintenanceMode):
+                    connectables.append(host_object.obj)
+        return connectables
 
     @staticmethod
     def is_datastore_mount_usable(mount_info):
@@ -162,6 +174,9 @@ class Datastore(object):
 
     @staticmethod
     def choose_host(hosts):
+        if not hosts:
+            return None
+
         i = random.SystemRandom().randrange(0, len(hosts))
         return hosts[i]
 

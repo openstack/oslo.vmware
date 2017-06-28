@@ -553,3 +553,71 @@ def get_http_service_request_spec(client_factory, method, uri):
     http_service_request_spec.method = method
     http_service_request_spec.url = uri
     return http_service_request_spec
+
+
+def get_prop_spec(client_factory, spec_type, properties):
+    """Builds the Property Spec Object."""
+    prop_spec = client_factory.create('ns0:PropertySpec')
+    prop_spec.type = spec_type
+    prop_spec.pathSet = properties
+    return prop_spec
+
+
+def get_obj_spec(client_factory, obj, select_set=None):
+    """Builds the Object Spec object."""
+    obj_spec = client_factory.create('ns0:ObjectSpec')
+    obj_spec.obj = obj
+    obj_spec.skip = False
+    if select_set is not None:
+        obj_spec.selectSet = select_set
+    return obj_spec
+
+
+def get_prop_filter_spec(client_factory, obj_spec, prop_spec):
+    """Builds the Property Filter Spec Object."""
+    prop_filter_spec = client_factory.create('ns0:PropertyFilterSpec')
+    prop_filter_spec.propSet = prop_spec
+    prop_filter_spec.objectSet = obj_spec
+    return prop_filter_spec
+
+
+def get_properties_for_a_collection_of_objects(vim, type_,
+                                               obj_list, properties,
+                                               max_objects=None):
+    """Gets the list of properties for the collection of
+    objects of the type specified.
+    """
+    client_factory = vim.client.factory
+    if len(obj_list) == 0:
+        return []
+    prop_spec = get_prop_spec(client_factory, type_, properties)
+    lst_obj_specs = []
+    for obj in obj_list:
+        lst_obj_specs.append(get_obj_spec(client_factory, obj))
+    prop_filter_spec = get_prop_filter_spec(client_factory,
+                                            lst_obj_specs, [prop_spec])
+    options = client_factory.create('ns0:RetrieveOptions')
+    options.maxObjects = max_objects if max_objects else len(obj_list)
+    return vim.RetrievePropertiesEx(
+        vim.service_content.propertyCollector,
+        specSet=[prop_filter_spec], options=options)
+
+
+def propset_dict(propset):
+    """Turn a propset list into a dictionary
+
+    PropSet is an optional attribute on ObjectContent objects
+    that are returned by the VMware API.
+
+    You can read more about these at:
+    | http://pubs.vmware.com/vsphere-51/index.jsp
+    |    #com.vmware.wssdk.apiref.doc/
+    |        vmodl.query.PropertyCollector.ObjectContent.html
+
+    :param propset: a property "set" from ObjectContent
+    :return: dictionary representing property set
+    """
+    if propset is None:
+        return {}
+
+    return {prop.name: prop.val for prop in propset}
