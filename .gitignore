@@ -50,7 +50,7 @@ ChangeLog
 # Editors
 *~
 .*.swp
-/doc/source/api/
+/doc/source/reference/api/
 
 # reno build
 releasenotes/build

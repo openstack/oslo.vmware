@@ -8,29 +8,12 @@ and APIs.
 .. toctree::
    :maxdepth: 2
 
-   installation
-   usage
-   contributing
+   install/index
+   user/index
+   contributor/index
+   reference/index
 
-Code Documentation
-==================
-
-.. toctree::
-   :maxdepth: 1
-
-   api/autoindex
-
-Release Notes
-=============
-
-.. toctree::
-   :maxdepth: 1
-
-   history
-
-
-Indices and tables
-==================
+.. rubric:: Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
