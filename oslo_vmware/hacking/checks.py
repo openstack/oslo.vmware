@@ -41,8 +41,8 @@ def no_translate_logs(logical_line, filename):
     :param logical_line: The logical line to check.
     :param filename: The file name where the logical line exists.
     :returns: None if the logical line passes the check, otherwise a tuple
-    is yielded that contains the offending index in logical line and a
-    message describe the check validation failure.
+        is yielded that contains the offending index in logical line and a
+        message describe the check validation failure.
     """
     if _log_translation_hint.match(logical_line):
         yield (0, "N537: Log messages should not be translated!")

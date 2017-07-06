@@ -32,7 +32,7 @@ def get_datastore_by_ref(session, ds_ref):
 
     :param session: a vmware api session object
     :param ds_ref: managed object reference of a datastore
-    :rtype : a datastore object
+    :rtype: a datastore object
     """
     lst_properties = ["summary.type",
                       "summary.name",
@@ -195,6 +195,7 @@ class DatastorePath(object):
     file path to a virtual disk.
 
     Note:
+
     - Datastore path representations always uses forward slash as separator
       (hence the use of the posixpath module).
     - Datastore names are enclosed in square brackets.
