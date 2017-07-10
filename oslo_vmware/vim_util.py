@@ -454,7 +454,7 @@ def find_extension(vim, key):
     :returns: the data object Extension or None
     """
     extension_manager = vim.service_content.extensionManager
-    return vim.client.service.FindExtension(extension_manager, key)
+    return vim.FindExtension(extension_manager, extensionKey=key)
 
 
 def register_extension(vim, key, type, label='OpenStack',
@@ -483,7 +483,7 @@ def register_extension(vim, key, type, label='OpenStack',
     desc.summary = summary
     os_ext.description = desc
     os_ext.lastHeartbeatTime = timeutils.utcnow().isoformat()
-    vim.client.service.RegisterExtension(extension_manager, os_ext)
+    vim.RegisterExtension(extension_manager, extension=os_ext)
 
 
 def get_vc_version(session):

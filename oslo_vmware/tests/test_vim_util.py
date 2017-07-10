@@ -369,16 +369,16 @@ class VimUtilTest(base.TestCase):
         ret = vim_util.find_extension(vim, 'fake-key')
         self.assertIsNotNone(ret)
         service_content = vim.service_content
-        vim.client.service.FindExtension.assert_called_once_with(
-            service_content.extensionManager, 'fake-key')
+        vim.FindExtension.assert_called_once_with(
+            service_content.extensionManager, extensionKey='fake-key')
 
     def test_register_extension(self):
         vim = mock.Mock()
         ret = vim_util.register_extension(vim, 'fake-key', 'fake-type')
         self.assertIsNone(ret)
         service_content = vim.service_content
-        vim.client.service.RegisterExtension.assert_called_once_with(
-            service_content.extensionManager, mock.ANY)
+        vim.RegisterExtension.assert_called_once_with(
+            service_content.extensionManager, extension=mock.ANY)
 
     def test_get_vc_version(self):
         session = mock.Mock()
