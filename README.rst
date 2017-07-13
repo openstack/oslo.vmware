@@ -23,6 +23,6 @@ The Oslo VMware library provides support for common VMware operations
 and APIs.
 
 * License: Apache License, Version 2.0
-* Documentation: https://docs.openstack.org/developer/oslo.vmware
+* Documentation: https://docs.openstack.org/oslo.vmware/latest/
 * Source: https://git.openstack.org/cgit/openstack/oslo.vmware
 * Bugs: https://bugs.launchpad.net/oslo.vmware
