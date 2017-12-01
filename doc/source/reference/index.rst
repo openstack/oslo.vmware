@@ -6,4 +6,4 @@ API Reference
    :maxdepth: 1
    :glob:
 
-   api/*
+   api/autoindex
