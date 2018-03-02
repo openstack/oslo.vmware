@@ -57,3 +57,5 @@ ChangeLog
 # reno build
 releasenotes/build
 /doc/source/reference/api/
+releasenotes/notes/reno.cache
+RELEASENOTES.rst
