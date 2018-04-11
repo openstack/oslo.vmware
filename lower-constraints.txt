@@ -1,6 +1,6 @@
 alabaster==0.7.10
 Babel==2.3.4
-bandit==1.4.0
+bandit==1.1.0
 coverage==4.0
 ddt==1.0.1
 debtcollector==1.2.0
@@ -27,7 +27,7 @@ monotonic==0.6
 netaddr==0.7.18
 netifaces==0.10.4
 openstackdocstheme==1.18.1
-oslo.concurrency==3.25.0
+oslo.concurrency==3.26.0
 oslo.config==5.2.0
 oslo.i18n==3.15.3
 oslo.utils==3.33.0
@@ -46,7 +46,7 @@ rfc3986==0.3.1
 six==1.10.0
 smmap==0.9.0
 snowballstemmer==1.2.1
-Sphinx==1.6.5
+Sphinx==1.6.2
 sphinxcontrib-websupport==1.0.1
 stevedore==1.20.0
 suds-jurko==0.6
