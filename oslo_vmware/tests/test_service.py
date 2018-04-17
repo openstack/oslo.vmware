@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import io
+
 import mock
 import requests
 import six
@@ -500,16 +502,12 @@ class RequestsTransportTest(base.TestCase):
 
         if six.PY3:
             builtin_open = 'builtins.open'
-            open_mock = mock.MagicMock(name='file_handle',
-                                       spec=open)
-            import _io
-            file_spec = list(set(dir(_io.TextIOWrapper)).union(
-                set(dir(_io.BytesIO))))
         else:
             builtin_open = '__builtin__.open'
-            open_mock = mock.MagicMock(name='file_handle',
-                                       spec=file)
-            file_spec = file
+        open_mock = mock.MagicMock(name='file_handle',
+                                   spec=open)
+        file_spec = list(set(dir(io.TextIOWrapper)).union(
+            set(dir(io.BytesIO))))
 
         file_handle = mock.MagicMock(spec=file_spec)
         file_handle.write.return_value = None
