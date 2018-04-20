@@ -12,11 +12,11 @@ Team and repository tags
 ===================================================
 
 .. image:: https://img.shields.io/pypi/v/oslo.vmware.svg
-    :target: https://pypi.python.org/pypi/oslo.vmware/
+    :target: https://pypi.org/project/oslo.vmware/
     :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/oslo.vmware.svg
-    :target: https://pypi.python.org/pypi/oslo.vmware/
+    :target: https://pypi.org/project/oslo.vmware/
     :alt: Downloads
 
 The Oslo VMware library provides support for common VMware operations
