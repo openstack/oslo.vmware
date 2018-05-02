@@ -459,7 +459,7 @@ def find_extension(vim, key):
 
 def register_extension(vim, key, type, label='OpenStack',
                        summary='OpenStack services', version='1.0'):
-    """Create a new extention.
+    """Create a new extension.
 
     :param vim: Vim object
     :param key: the key for the extension
