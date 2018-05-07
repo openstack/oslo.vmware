@@ -380,7 +380,12 @@ class Service(object):
                 if detail:
                     for fault in detail.getChildren():
                         fault_type = fault.get('type')
-                        if fault_type.endswith(exceptions.SECURITY_ERROR):
+                        # NOTE(vbala): PBM faults use vim25 namespace. Also,
+                        # PBM APIs throw NotAuthenticated in vSphere 6.5 for
+                        # session expiry.
+                        if (fault_type.endswith(exceptions.SECURITY_ERROR) or
+                                fault_type.endswith(
+                                    exceptions.NOT_AUTHENTICATED)):
                             fault_type = exceptions.NOT_AUTHENTICATED
                         fault_list.append(fault_type)
                         for child in fault.getChildren():
