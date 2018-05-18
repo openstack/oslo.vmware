@@ -78,7 +78,7 @@ class FileHandle(object):
                     cert_reqs = ssl.CERT_REQUIRED
                 else:
                     cert_reqs = ssl.CERT_NONE
-                cacerts = None
+                cacerts = requests.certs.where()
             conn.set_cert(ca_certs=cacerts, cert_reqs=cert_reqs,
                           assert_fingerprint=ssl_thumbprint)
         else:

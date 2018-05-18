@@ -20,6 +20,7 @@ Unit tests for read and write handles for image transfer.
 import ssl
 
 import mock
+import requests
 import six
 
 from oslo_vmware import exceptions
@@ -57,8 +58,10 @@ class FileHandleTest(base.TestCase):
         ret = handle._create_connection('https://localhost/foo?q=bar', 'GET')
 
         self.assertEqual(conn, ret)
+        ca_store = requests.certs.where()
         conn.set_cert.assert_called_once_with(
-            ca_certs=None, cert_reqs=ssl.CERT_NONE, assert_fingerprint=None)
+            ca_certs=ca_store, cert_reqs=ssl.CERT_NONE,
+            assert_fingerprint=None)
         conn.putrequest.assert_called_once_with('GET', '/foo?q=bar')
 
     @mock.patch('urllib3.connection.HTTPSConnection')
@@ -71,8 +74,9 @@ class FileHandleTest(base.TestCase):
                                         cacerts=True)
 
         self.assertEqual(conn, ret)
+        ca_store = requests.certs.where()
         conn.set_cert.assert_called_once_with(
-            ca_certs=None, cert_reqs=ssl.CERT_REQUIRED,
+            ca_certs=ca_store, cert_reqs=ssl.CERT_REQUIRED,
             assert_fingerprint=None)
 
     @mock.patch('urllib3.connection.HTTPSConnection')
