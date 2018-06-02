@@ -40,14 +40,21 @@ NFC_LEASE_UPDATE_PERIOD = 60  # update NFC lease every 60sec.
 CHUNK_SIZE = 64 * units.Ki  # default chunk size for image transfer
 
 
+def _create_progress_updater(handle):
+    if isinstance(handle, rw_handles.VmdkHandle):
+        updater = loopingcall.FixedIntervalLoopingCall(handle.update_progress)
+        updater.start(interval=NFC_LEASE_UPDATE_PERIOD)
+        return updater
+
+
 def _start_transfer(read_handle, write_handle, timeout_secs):
-    # write_handle could be an NFC lease, so we need to periodically
-    # update its progress
-    update_cb = getattr(write_handle, 'update_progress', lambda: None)
-    updater = loopingcall.FixedIntervalLoopingCall(update_cb)
+    # read_handle/write_handle could be an NFC lease, so we need to
+    # periodically update its progress
+    read_updater = _create_progress_updater(read_handle)
+    write_updater = _create_progress_updater(write_handle)
+
     timer = timeout.Timeout(timeout_secs)
     try:
-        updater.start(interval=NFC_LEASE_UPDATE_PERIOD)
         while True:
             data = read_handle.read(CHUNK_SIZE)
             if not data:
@@ -67,7 +74,10 @@ def _start_transfer(read_handle, write_handle, timeout_secs):
         raise exceptions.ImageTransferException(msg, excep)
     finally:
         timer.cancel()
-        updater.stop()
+        if read_updater:
+            read_updater.stop()
+        if write_updater:
+            write_updater.stop()
         read_handle.close()
         write_handle.close()
 
