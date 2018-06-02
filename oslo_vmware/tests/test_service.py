@@ -15,13 +15,13 @@
 
 import io
 
+import ddt
 import mock
 import requests
 import six
 import six.moves.http_client as httplib
 import suds
 
-import ddt
 from oslo_vmware import exceptions
 from oslo_vmware import service
 from oslo_vmware.tests import base
@@ -56,6 +56,7 @@ class ServiceMessagePluginTest(base.TestCase):
             self.plugin.add_attribute_for_value)
 
 
+@ddt.ddt
 class ServiceTest(base.TestCase):
 
     def setUp(self):
@@ -209,8 +210,9 @@ class ServiceTest(base.TestCase):
                      mock.call('/Envelope/Body/Fault/detail')]
         self.assertEqual(exp_calls, doc.childAtPath.call_args_list)
 
-    def test_request_handler_with_security_error(self):
-        managed_object = 'VirtualMachine'
+    @ddt.data('vim25:SecurityError', 'vim25:NotAuthenticated')
+    def test_request_handler_with_pbm_session_error(self, fault_name):
+        managed_object = 'ProfileManager'
         doc = mock.Mock()
 
         def side_effect(mo, **kwargs):
@@ -222,7 +224,7 @@ class ServiceTest(base.TestCase):
             fault_children.name = "name"
             fault_children.getText.return_value = "value"
             child = mock.Mock()
-            child.get.return_value = 'vim25:SecurityError'
+            child.get.return_value = fault_name
             child.getChildren.return_value = [fault_children]
             detail = mock.Mock()
             detail.getChildren.return_value = [child]
@@ -231,9 +233,10 @@ class ServiceTest(base.TestCase):
 
         svc_obj = service.Service()
         service_mock = svc_obj.client.service
-        setattr(service_mock, 'powerOn', side_effect)
+        setattr(service_mock, 'get_profile_id_by_name', side_effect)
 
-        ex = self.assertRaises(exceptions.VimFaultException, svc_obj.powerOn,
+        ex = self.assertRaises(exceptions.VimFaultException,
+                               svc_obj.get_profile_id_by_name,
                                managed_object)
 
         self.assertEqual([exceptions.NOT_AUTHENTICATED], ex.fault_list)
