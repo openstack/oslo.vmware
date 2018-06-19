@@ -152,6 +152,7 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
 
     def send(self, request, stream=False, timeout=None,
              verify=True, cert=None, proxies=None):
+        """Sends request for a local file."""
         return self._build_response_from_file(request)
 
 
