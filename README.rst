@@ -26,3 +26,4 @@ and APIs.
 * Documentation: https://docs.openstack.org/oslo.vmware/latest/
 * Source: https://git.openstack.org/cgit/openstack/oslo.vmware
 * Bugs: https://bugs.launchpad.net/oslo.vmware
+* Release notes: https://docs.openstack.org/releasenotes/oslo.vmware/
