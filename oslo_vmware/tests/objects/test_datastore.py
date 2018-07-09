@@ -169,6 +169,45 @@ class DatastoreTestCase(base.TestCase):
         self.assertFalse(datastore.Datastore.is_datastore_mount_usable(m))
 
 
+class DatastoreClusterTestCase(base.TestCase):
+
+    def test_get_dsc_with_moid(self):
+        session = mock.Mock()
+        session.invoke_api = mock.Mock()
+        session.invoke_api.return_value = 'ds-cluster'
+        dsc_moid = 'group-p123'
+        dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, dsc_moid)
+        self.assertEqual((dsc_moid, 'StoragePod'),
+                         (dsc_ref.value, dsc_ref._type))
+        self.assertEqual('ds-cluster', dsc_name)
+        session.invoke_api.assert_called_once_with(vim_util,
+                                                   'get_object_property',
+                                                   session.vim,
+                                                   mock.ANY,
+                                                   'name')
+
+    @mock.patch('oslo_vmware.vim_util.continue_retrieval')
+    @mock.patch('oslo_vmware.vim_util.cancel_retrieval')
+    def test_get_dsc_by_name(self, cancel_retrieval, continue_retrieval):
+        pod_prop = mock.Mock()
+        pod_prop.val = 'ds-cluster'
+        pod_ref = vim_util.get_moref('group-p456', 'StoragePod')
+        pod = mock.Mock()
+        pod.propSet = [pod_prop]
+        pod.obj = pod_ref
+
+        retrieve_result = mock.Mock()
+        retrieve_result.objects = [pod]
+
+        session = mock.Mock()
+        session.invoke_api = mock.Mock()
+        session.invoke_api.return_value = retrieve_result
+        name = 'ds-cluster'
+        dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, name)
+        self.assertEqual((pod_ref.value, pod_ref._type),
+                         (dsc_ref.value, dsc_ref._type))
+
+
 class DatastorePathTestCase(base.TestCase):
 
     """Test the DatastorePath object."""
