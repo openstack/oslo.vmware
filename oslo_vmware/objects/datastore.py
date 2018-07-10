@@ -55,6 +55,34 @@ def get_datastore_by_ref(session, ds_ref):
                      type=props.get("summary.type"))
 
 
+def get_recommended_datastore_clone(session,
+                                    dsc_ref,
+                                    clone_spec,
+                                    vm_ref,
+                                    folder,
+                                    name,
+                                    resource_pool=None,
+                                    host_ref=None):
+    """Returns a key which identifies the most recommended datastore from the
+    specified datastore cluster where the specified VM can be cloned to.
+    """
+    sp_spec = vim_util.storage_placement_spec(session.vim.client.factory,
+                                              dsc_ref,
+                                              'clone',
+                                              clone_spec=clone_spec,
+                                              vm_ref=vm_ref,
+                                              folder=folder,
+                                              clone_name=name,
+                                              res_pool_ref=resource_pool,
+                                              host_ref=host_ref)
+    spr = session.invoke_api(
+        session.vim,
+        "RecommendDatastores",
+        session.vim.service_content.storageResourceManager,
+        storageSpec=sp_spec)
+    return spr.recommendations[0].key
+
+
 def get_dsc_ref_and_name(session, dsc_val):
     """Return reference and name of the specified datastore cluster.
 
