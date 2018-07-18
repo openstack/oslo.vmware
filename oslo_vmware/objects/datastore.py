@@ -111,6 +111,20 @@ def get_dsc_ref_and_name(session, dsc_val):
     return None, None
 
 
+def sdrs_enabled(session, dsc_ref):
+    """Check if Storage DRS is enabled for the given datastore cluster.
+
+    :param session: VMwareAPISession object
+    :param dsc_ref: datastore cluster moref
+    """
+    pod_sdrs_entry = session.invoke_api(vim_util,
+                                        'get_object_property',
+                                        session.vim,
+                                        dsc_ref,
+                                        'podStorageDrsEntry')
+    return pod_sdrs_entry.storageDrsConfig.podConfig.enabled
+
+
 class Datastore(object):
 
     def __init__(self, ref, name, capacity=None, freespace=None,
