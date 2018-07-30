@@ -43,7 +43,8 @@ class ExceptionsTest(base.TestCase):
     def test_vim_fault_exception(self):
         vfe = exceptions.VimFaultException([ValueError("example")], _("cause"))
         string = str(vfe)
-        self.assertEqual("cause\nFaults: [ValueError('example',)]", string)
+        self.assertIn(string, ["cause\nFaults: [ValueError('example',)]",
+                               "cause\nFaults: [ValueError('example')]"])
 
     def test_vim_fault_exception_with_cause_and_details(self):
         vfe = exceptions.VimFaultException([ValueError("example")],
@@ -51,11 +52,14 @@ class ExceptionsTest(base.TestCase):
                                            "FooBar",
                                            {'foo': 'bar'})
         string = str(vfe)
-        self.assertEqual("MyMessage\n"
-                         "Cause: FooBar\n"
-                         "Faults: [ValueError('example',)]\n"
-                         "Details: {'foo': 'bar'}",
-                         string)
+        self.assertIn(string, ["MyMessage\n"
+                               "Cause: FooBar\n"
+                               "Faults: [ValueError('example',)]\n"
+                               "Details: {'foo': 'bar'}",
+                               "MyMessage\n"
+                               "Cause: FooBar\n"
+                               "Faults: [ValueError('example')]\n"
+                               "Details: {'foo': 'bar'}"])
 
     def _create_subclass_exception(self):
         class VimSubClass(exceptions.VimException):
