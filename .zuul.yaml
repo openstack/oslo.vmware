@@ -12,3 +12,4 @@
       - check-requirements
       - lib-forward-testing
       - release-notes-jobs-python3
+      - openstack-python36-jobs
