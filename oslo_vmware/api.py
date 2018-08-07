@@ -24,6 +24,7 @@ in case of connection problems or server API call overload.
 import logging
 
 from oslo_concurrency import lockutils
+from oslo_context import context
 from oslo_utils import excutils
 from oslo_utils import reflection
 import six
@@ -390,12 +391,13 @@ class VMwareAPISession(object):
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
-        loop = loopingcall.FixedIntervalLoopingCall(self._poll_task, task)
+        ctx = context.get_current()
+        loop = loopingcall.FixedIntervalLoopingCall(self._poll_task, task, ctx)
         evt = loop.start(self._task_poll_interval)
         LOG.debug("Waiting for the task: %s to complete.", task)
         return evt.wait()
 
-    def _poll_task(self, task):
+    def _poll_task(self, task, ctx):
         """Poll the given task until completion.
 
         If the task completes successfully, the method returns the task info
@@ -403,7 +405,9 @@ class VMwareAPISession(object):
         exception is set in the event.
 
         :param task: managed object reference of the task
+        :param ctx: request context for the corresponding task
         """
+        ctx.update_store()
         try:
             # we poll tasks too often, so skip logging the opID as it generates
             # too much noise in the logs
