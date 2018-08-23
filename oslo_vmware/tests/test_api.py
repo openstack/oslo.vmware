@@ -24,6 +24,7 @@ import mock
 import six
 import suds
 
+from oslo_context import context
 from oslo_vmware import api
 from oslo_vmware import exceptions
 from oslo_vmware import pbm
@@ -393,7 +394,10 @@ class VMwareAPISessionTest(base.TestCase):
                                'api')
         self.assertEqual(fault_list, ex.fault_list)
 
-    def test_wait_for_task(self):
+    @mock.patch.object(context, 'get_current')
+    def test_wait_for_task(self, mock_curr_ctx):
+        ctx = mock.Mock()
+        mock_curr_ctx.return_value = ctx
         api_session = self._create_api_session(True)
         task_info_list = [('queued', 0), ('running', 40), ('success', 100)]
         task_info_list_size = len(task_info_list)
@@ -420,8 +424,11 @@ class VMwareAPISessionTest(base.TestCase):
                                                   skip_op_id=True)
         self.assertEqual(task_info_list_size,
                          api_session.invoke_api.call_count)
+        mock_curr_ctx.assert_called_once()
+        self.assertEqual(3, ctx.update_store.call_count)
 
-    def test_wait_for_task_with_error_state(self):
+    @mock.patch.object(context, 'get_current')
+    def test_wait_for_task_with_error_state(self, mock_curr_ctx):
         api_session = self._create_api_session(True)
         task_info_list = [('queued', 0), ('running', 40), ('error', -1)]
         task_info_list_size = len(task_info_list)
@@ -446,8 +453,10 @@ class VMwareAPISessionTest(base.TestCase):
                                                   skip_op_id=True)
         self.assertEqual(task_info_list_size,
                          api_session.invoke_api.call_count)
+        mock_curr_ctx.assert_called_once()
 
-    def test_wait_for_task_with_invoke_api_exception(self):
+    @mock.patch.object(context, 'get_current')
+    def test_wait_for_task_with_invoke_api_exception(self, mock_curr_ctx):
         api_session = self._create_api_session(True)
         api_session.invoke_api = mock.Mock(
             side_effect=exceptions.VimException(None))
@@ -461,6 +470,7 @@ class VMwareAPISessionTest(base.TestCase):
                                                        api_session.vim, task,
                                                        'info',
                                                        skip_op_id=True)
+        mock_curr_ctx.assert_called_once()
 
     def test_wait_for_lease_ready(self):
         api_session = self._create_api_session(True)
@@ -551,9 +561,11 @@ class VMwareAPISessionTest(base.TestCase):
         ):
             fake_task = mock.Mock()
             fake_task.value = 'task-1'
+            ctx = mock.Mock()
             self.assertRaises(expected_exception,
                               api_session._poll_task,
-                              fake_task)
+                              fake_task,
+                              ctx)
 
     def test_poll_task_well_known_exceptions(self):
         for k, v in six.iteritems(exceptions._fault_classes_registry):
