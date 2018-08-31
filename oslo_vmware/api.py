@@ -407,7 +407,8 @@ class VMwareAPISession(object):
         :param task: managed object reference of the task
         :param ctx: request context for the corresponding task
         """
-        ctx.update_store()
+        if ctx is not None:
+            ctx.update_store()
         try:
             # we poll tasks too often, so skip logging the opID as it generates
             # too much noise in the logs
