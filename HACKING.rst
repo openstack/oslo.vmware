@@ -1,5 +1,5 @@
- Style Commandments
-====================
+Style Commandments
+==================
 
 Read the OpenStack Style Commandments in the following link
 
