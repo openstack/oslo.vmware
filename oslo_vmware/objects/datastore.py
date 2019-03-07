@@ -55,6 +55,15 @@ def get_datastore_by_ref(session, ds_ref):
                      type=props.get("summary.type"))
 
 
+def get_recommended_datastore(session, sp_spec):
+    spr = session.invoke_api(
+        session.vim,
+        "RecommendDatastores",
+        session.vim.service_content.storageResourceManager,
+        storageSpec=sp_spec)
+    return spr.recommendations[0].key
+
+
 def get_recommended_datastore_clone(session,
                                     dsc_ref,
                                     clone_spec,
@@ -75,12 +84,24 @@ def get_recommended_datastore_clone(session,
                                               clone_name=name,
                                               res_pool_ref=resource_pool,
                                               host_ref=host_ref)
-    spr = session.invoke_api(
-        session.vim,
-        "RecommendDatastores",
-        session.vim.service_content.storageResourceManager,
-        storageSpec=sp_spec)
-    return spr.recommendations[0].key
+    return get_recommended_datastore(session, sp_spec)
+
+
+def get_recommended_datastore_create(session,
+                                     dsc_ref,
+                                     config_spec,
+                                     resource_pool,
+                                     folder,
+                                     host_ref=None):
+    """Returns SDRS recommendation key for creating a VM."""
+    sp_spec = vim_util.storage_placement_spec(session.vim.client.factory,
+                                              dsc_ref,
+                                              'create',
+                                              config_spec=config_spec,
+                                              folder=folder,
+                                              res_pool_ref=resource_pool,
+                                              host_ref=host_ref)
+    return get_recommended_datastore(session, sp_spec)
 
 
 def get_dsc_ref_and_name(session, dsc_val):
