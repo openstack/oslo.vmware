@@ -61,6 +61,9 @@ def get_recommended_datastore(session, sp_spec):
         "RecommendDatastores",
         session.vim.service_content.storageResourceManager,
         storageSpec=sp_spec)
+    if not hasattr(spr, 'recommendations'):
+        LOG.error("Unable to find suitable datastore")
+        return
     return spr.recommendations[0].key
 
 
