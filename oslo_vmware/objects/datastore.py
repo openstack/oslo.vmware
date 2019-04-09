@@ -113,7 +113,7 @@ def get_dsc_ref_and_name(session, dsc_val):
     :param ds_val: datastore cluster name or datastore cluster moid
     :return: tuple of dastastore cluster moref and datastore cluster name
     """
-    if re.match("group-p\d+", dsc_val):
+    if re.match(r"group-p\d+", dsc_val):
         # the configured value is moid
         dsc_ref = vim_util.get_moref(dsc_val, 'StoragePod')
         try:
