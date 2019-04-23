@@ -7,9 +7,9 @@ Team and repository tags
 
 .. Change things from this point on
 
-===================================================
- oslo.vmware --- VMware support code for OpenStack
-===================================================
+=================================================
+oslo.vmware --- VMware support code for OpenStack
+=================================================
 
 .. image:: https://img.shields.io/pypi/v/oslo.vmware.svg
     :target: https://pypi.org/project/oslo.vmware/
@@ -24,6 +24,6 @@ and APIs.
 
 * License: Apache License, Version 2.0
 * Documentation: https://docs.openstack.org/oslo.vmware/latest/
-* Source: https://git.openstack.org/cgit/openstack/oslo.vmware
+* Source: https://opendev.org/openstack/oslo.vmware
 * Bugs: https://bugs.launchpad.net/oslo.vmware
 * Release notes: https://docs.openstack.org/releasenotes/oslo.vmware/
