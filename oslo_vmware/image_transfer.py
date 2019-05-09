@@ -286,7 +286,13 @@ def copy_stream_optimized_disk(
                                             kwargs.get('vm'),
                                             kwargs.get('vmdk_file_path'),
                                             file_size)
-    _start_transfer(read_handle, write_handle, timeout_secs)
+
+    updater = loopingcall.FixedIntervalLoopingCall(read_handle.update_progress)
+    try:
+        updater.start(interval=NFC_LEASE_UPDATE_PERIOD)
+        _start_transfer(read_handle, write_handle, timeout_secs)
+    finally:
+        updater.stop()
     LOG.debug("Downloaded virtual disk: %s.", vmdk_file_path)
 
 
