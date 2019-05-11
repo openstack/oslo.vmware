@@ -103,7 +103,7 @@ class VMwareAPISessionTest(base.TestCase):
     SERVER_IP = '10.1.2.3'
     PORT = 443
     USERNAME = 'admin'
-    PASSWORD = 'password'
+    PASSWORD = 'password'  # nosec
     POOL_SIZE = 15
 
     def setUp(self):
