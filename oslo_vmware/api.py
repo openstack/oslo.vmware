@@ -243,7 +243,8 @@ class VMwareAPISession(object):
         LOG.debug("Logging into host: %s.", self._host)
         session = self.vim.Login(session_manager,
                                  userName=self._server_username,
-                                 password=self._server_password)
+                                 password=self._server_password,
+                                 locale='en')
         self._session_id = session.key
         # We need to save the username in the session since we may need it
         # later to check active session. The SessionIsActive method requires

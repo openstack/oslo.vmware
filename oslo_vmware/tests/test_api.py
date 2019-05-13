@@ -173,7 +173,7 @@ class VMwareAPISessionTest(base.TestCase):
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.Login.assert_called_once_with(
             session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD)
+            password=VMwareAPISessionTest.PASSWORD, locale='en')
         self.assertFalse(vim_obj.TerminateSession.called)
         self.assertEqual(session.key, api_session._session_id)
         pbm.set_soap_cookie.assert_called_once_with(cookie)
@@ -197,7 +197,7 @@ class VMwareAPISessionTest(base.TestCase):
             userName=VMwareAPISessionTest.USERNAME)
         vim_obj.Login.assert_called_once_with(
             session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD)
+            password=VMwareAPISessionTest.PASSWORD, locale='en')
         self.assertEqual(new_session_key, api_session._session_id)
 
     def test_create_session_with_existing_active_session(self):
@@ -257,7 +257,7 @@ class VMwareAPISessionTest(base.TestCase):
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.Login.assert_called_once_with(
             session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD)
+            password=VMwareAPISessionTest.PASSWORD, locale='en')
         api_session.logout()
         vim_obj.Logout.assert_called_once_with(
             session_manager)
