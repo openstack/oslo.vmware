@@ -315,11 +315,15 @@ class ImageTransferUtilityTest(base.TestCase):
 
     @mock.patch.object(image_transfer, '_start_transfer')
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
+    @mock.patch('oslo_vmware.common.loopingcall.FixedIntervalLoopingCall')
     def test_copy_stream_optimized_disk(
-            self, vmdk_read_handle, start_transfer):
+            self, loopingcall, vmdk_read_handle, start_transfer):
 
-        read_handle = mock.sentinel.read_handle
+        read_handle = mock.Mock()
         vmdk_read_handle.return_value = read_handle
+
+        updater = mock.Mock()
+        loopingcall.return_value = updater
 
         context = mock.sentinel.context
         timeout = mock.sentinel.timeout
@@ -338,8 +342,12 @@ class ImageTransferUtilityTest(base.TestCase):
 
         vmdk_read_handle.assert_called_once_with(
             session, host, port, vm, vmdk_file_path, vmdk_size)
+        loopingcall.assert_called_once_with(read_handle.update_progress)
+        updater.start.assert_called_once_with(
+            interval=image_transfer.NFC_LEASE_UPDATE_PERIOD)
         start_transfer.assert_called_once_with(read_handle, write_handle,
                                                timeout)
+        updater.stop.assert_called_once_with()
 
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
     @mock.patch.object(image_transfer, '_start_transfer')
