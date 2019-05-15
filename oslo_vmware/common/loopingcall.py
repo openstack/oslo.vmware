@@ -85,9 +85,7 @@ class FixedIntervalLoopingCall(LoopingCallBase):
             except LoopingCallDone as e:
                 self.stop()
                 done.send(e.retvalue)
-            except Exception as e:
-                LOG.error('in fixed duration looping call. Error: %s',
-                          str(e))
+            except Exception:
                 done.send_exception(*sys.exc_info())
                 return
             else:
