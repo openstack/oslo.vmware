@@ -338,10 +338,11 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
                                      'owner_id': owner_id}}
 
     updater = loopingcall.FixedIntervalLoopingCall(read_handle.update_progress)
+    store_id = kwargs.get('store_id')
     try:
         updater.start(interval=NFC_LEASE_UPDATE_PERIOD)
         image_service.update(context, image_id, image_metadata,
-                             data=read_handle)
+                             data=read_handle, store_id=store_id)
     finally:
         updater.stop()
         read_handle.close()

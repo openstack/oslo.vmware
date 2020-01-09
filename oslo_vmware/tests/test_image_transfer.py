@@ -372,6 +372,7 @@ class ImageTransferUtilityTest(base.TestCase):
 
         image_name = 'fake_image'
         image_version = 1
+        store_id = 'fake_store'
 
         fake_VmdkReadHandle = mock.Mock()
         fake_rw_handles_VmdkReadHandle.return_value = fake_VmdkReadHandle
@@ -389,7 +390,8 @@ class ImageTransferUtilityTest(base.TestCase):
                                     vmdk_size=image_size,
                                     is_public=is_public,
                                     image_name=image_name,
-                                    image_version=image_version)
+                                    image_version=image_version,
+                                    store_id=store_id)
 
         fake_rw_handles_VmdkReadHandle.assert_called_once_with(session,
                                                                host,
@@ -408,4 +410,5 @@ class ImageTransferUtilityTest(base.TestCase):
         image_service.update.assert_called_once_with(context,
                                                      image_id,
                                                      image_metadata,
-                                                     data=fake_VmdkReadHandle)
+                                                     data=fake_VmdkReadHandle,
+                                                     store_id=store_id)
