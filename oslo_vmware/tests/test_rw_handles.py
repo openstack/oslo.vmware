@@ -168,6 +168,12 @@ class VmdkHandleTest(base.TestCase):
 
         self.assertRaises(exceptions.VimException, handle.update_progress)
 
+    def test_fileno(self):
+        session = mock.Mock()
+        handle = rw_handles.VmdkHandle(session, None, 'fake-url', None)
+
+        self.assertRaises(IOError, handle.fileno)
+
 
 class VmdkWriteHandleTest(base.TestCase):
     """Tests for VmdkWriteHandle."""
@@ -227,6 +233,16 @@ class VmdkWriteHandleTest(base.TestCase):
         self.assertEqual(len(data), handle._bytes_written)
         self._conn.putrequest.assert_called_once_with('PUT', '/ds/disk1.vmdk')
         self._conn.send.assert_called_once_with(data)
+
+    def test_tell(self):
+        session = self._create_mock_session()
+        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
+                                            'rp-1', 'folder-1', None,
+                                            100)
+        data = [1] * 10
+        handle.write(data)
+        self.assertEqual(len(data), handle._bytes_written)
+        self.assertEqual(len(data), handle.tell())
 
     def test_write_post(self):
         session = self._create_mock_session()
@@ -325,6 +341,15 @@ class VmdkReadHandleTest(base.TestCase):
                                            chunk_size * 10)
         data = handle.read(chunk_size)
         self.assertEqual('fake-data', data)
+
+    def test_tell(self):
+        chunk_size = rw_handles.READ_CHUNKSIZE
+        session = self._create_mock_session()
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
+                                           'vm-1', '[ds] disk1.vmdk',
+                                           chunk_size * 10)
+        data = handle.read(chunk_size)
+        self.assertEqual(len(data), handle.tell())
 
     def test_update_progress(self):
         chunk_size = len('fake-data')

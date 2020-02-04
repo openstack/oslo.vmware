@@ -177,6 +177,32 @@ class FileHandle(object):
         """
         raise NotImplementedError()
 
+    def tell(self):
+        """Get the position of File Handle
+
+        :return: position
+        """
+        raise NotImplementedError()
+
+    def fileno(self):
+        """returns the integer file descriptor
+        by default this is not supported and raises IOError
+        """
+        raise IOError()
+
+    def seek(self, offset):
+        """sets the file's current position at the offset
+
+        :param offset: offset
+        """
+        pass
+
+    def flush(self):
+        """flushes the internal buffer
+
+        """
+        pass
+
     def get_size(self):
         """Get size of the file to be read.
 
@@ -484,6 +510,9 @@ class VmdkWriteHandle(VmdkHandle):
         """"Get managed object reference of the VM created for import."""
         return self._vm_ref
 
+    def tell(self):
+        return self._bytes_written
+
     def write(self, data):
         """Write data to the file.
 
@@ -584,6 +613,9 @@ class VmdkReadHandle(VmdkHandle):
                           " %s.") % self._url
             LOG.exception(excep_msg)
             raise exceptions.VimException(excep_msg, excep)
+
+    def tell(self):
+        return self._bytes_read
 
     def close(self):
         """Releases the lease and close the connection.
