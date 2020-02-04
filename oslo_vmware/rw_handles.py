@@ -565,7 +565,7 @@ class VmdkReadHandle(VmdkHandle):
                                                   ssl_thumbprint=thumbprint)
         super(VmdkReadHandle, self).__init__(session, lease, url, self._conn)
 
-    def read(self, chunk_size):
+    def read(self, chunk_size=READ_CHUNKSIZE):
         """Read a chunk of data from the VMDK file.
 
         :param chunk_size: size of read chunk
@@ -573,7 +573,7 @@ class VmdkReadHandle(VmdkHandle):
         :raises: VimException
         """
         try:
-            data = self._file_handle.read(READ_CHUNKSIZE)
+            data = self._file_handle.read(chunk_size)
             self._bytes_read += len(data)
             return data
         except Exception as excep:

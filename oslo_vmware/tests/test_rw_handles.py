@@ -272,8 +272,10 @@ class VmdkReadHandleTest(base.TestCase):
 
     def setUp(self):
         super(VmdkReadHandleTest, self).setUp()
+
+    def _mock_connection(self, read_data='fake-data'):
         self._resp = mock.Mock()
-        self._resp.read.return_value = 'fake-data'
+        self._resp.read.return_value = read_data
         self._conn = mock.Mock()
         self._conn.getresponse.return_value = self._resp
         patcher = mock.patch(
@@ -282,7 +284,9 @@ class VmdkReadHandleTest(base.TestCase):
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
 
-    def _create_mock_session(self, disk=True, progress=-1):
+    def _create_mock_session(self, disk=True, progress=-1,
+                             read_data='fake-data'):
+        self._mock_connection(read_data=read_data)
         device_url = mock.Mock()
         device_url.disk = disk
         device_url.url = 'http://*/ds/disk1.vmdk'
@@ -323,8 +327,21 @@ class VmdkReadHandleTest(base.TestCase):
         handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
                                            'vm-1', '[ds] disk1.vmdk',
                                            chunk_size * 10)
+        fake_data = 'fake-data'
         data = handle.read(chunk_size)
-        self.assertEqual('fake-data', data)
+        self.assertEqual(fake_data, data)
+        self.assertEqual(len(fake_data), handle._bytes_read)
+
+    def test_read_small(self):
+        read_data = 'fake'
+        session = self._create_mock_session(read_data=read_data)
+
+        read_size = len(read_data)
+        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
+                                           'vm-1', '[ds] disk1.vmdk',
+                                           read_size * 10)
+        handle.read(read_size)
+        self.assertEqual(read_size, handle._bytes_read)
 
     def test_update_progress(self):
         chunk_size = len('fake-data')
