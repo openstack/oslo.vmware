@@ -446,16 +446,7 @@ class VMwareAPISession(object):
                           get_completed_task())
                 raise loopingcall.LoopingCallDone(task_info)
             else:
-                error_msg = six.text_type(task_info.error.localizedMessage)
-                error = task_info.error
-                name = error.fault.__class__.__name__
-                fault_class = exceptions.get_fault_class(name)
-                if fault_class:
-                    task_ex = fault_class(error_msg)
-                else:
-                    task_ex = exceptions.VimFaultException([name],
-                                                           error_msg)
-                raise task_ex
+                raise exceptions.translate_fault(task_info.error)
 
     def wait_for_lease_ready(self, lease):
         """Waits for the given lease to be ready.
@@ -506,7 +497,7 @@ class VMwareAPISession(object):
                               "%(error_msg)s.") % {'lease': lease,
                                                    'error_msg': error_msg}
                 LOG.error(excep_msg)
-                raise exceptions.VimException(excep_msg)
+                raise exceptions.translate_fault(error_msg, excep_msg)
             else:
                 # unknown state
                 excep_msg = _("Unknown state: %(state)s for lease: "
