@@ -14,7 +14,7 @@
 
 import mock
 from oslo_utils import units
-import six.moves.urllib.parse as urlparse
+import urllib.parse as urlparse
 
 from oslo_vmware import constants
 from oslo_vmware.objects import datastore
@@ -429,7 +429,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(path, ds_url.path)
 
-    @mock.patch('six.moves.http_client.HTTPSConnection')
+    @mock.patch('http.client.HTTPSConnection')
     def test_connect(self, mock_conn):
         dc_path = 'datacenter-1'
         ds_name = 'datastore-1'

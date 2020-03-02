@@ -21,7 +21,6 @@ Unit tests for session management and API invocation classes.
 from datetime import datetime
 from eventlet import greenthread
 import mock
-import six
 import suds
 
 from oslo_context import context
@@ -334,7 +333,7 @@ class VMwareAPISessionTest(base.TestCase):
         expected_str = "%s\nFaults: %s\nDetails: %s" % (fault_string,
                                                         fault_list,
                                                         details_str)
-        self.assertEqual(expected_str, six.text_type(e))
+        self.assertEqual(expected_str, str(e))
         self.assertEqual(details, e.details)
 
     def test_invoke_api_with_empty_response(self):
@@ -598,7 +597,7 @@ class VMwareAPISessionTest(base.TestCase):
                               ctx)
 
     def test_poll_task_well_known_exceptions(self):
-        for k, v in six.iteritems(exceptions._fault_classes_registry):
+        for k, v in exceptions._fault_classes_registry.items():
             self._poll_task_well_known_exceptions(k, v)
 
     def test_poll_task_unknown_exception(self):
@@ -607,7 +606,7 @@ class VMwareAPISessionTest(base.TestCase):
             'RuntimeFault': exceptions.VimFaultException
         }
 
-        for k, v in six.iteritems(_unknown_exceptions):
+        for k, v in _unknown_exceptions.items():
             self._poll_task_well_known_exceptions(k, v)
 
     def test_update_pbm_wsdl_loc(self):

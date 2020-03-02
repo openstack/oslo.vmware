@@ -21,7 +21,6 @@ import logging
 import tarfile
 
 from eventlet import timeout
-import six
 
 from oslo_utils import units
 from oslo_vmware._i18n import _
@@ -330,7 +329,7 @@ def upload_image(context, timeout_secs, image_service, image_id, owner_id,
         LOG.warning("The keyword argument 'image_version' is deprecated "
                     "and will be ignored in the next release.")
 
-    image_ver = six.text_type(kwargs.get('image_version'))
+    image_ver = str(kwargs.get('image_version'))
     image_metadata = {'disk_format': 'vmdk',
                       'name': kwargs.get('image_name'),
                       'properties': {'vmware_image_version': image_ver,

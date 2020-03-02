@@ -17,6 +17,8 @@
 Common classes that provide access to vSphere services.
 """
 
+import http.client as httplib
+import io
 import logging
 import os
 
@@ -24,8 +26,6 @@ import netaddr
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import requests
-import six
-import six.moves.http_client as httplib
 import suds
 from suds import cache
 from suds import client
@@ -96,7 +96,7 @@ class ServiceMessagePlugin(plugin.MessagePlugin):
         context.envelope.walk(self.add_attribute_for_value)
 
 
-class Response(six.BytesIO):
+class Response(io.BytesIO):
     """Response with an input stream as source."""
 
     def __init__(self, stream, status=200, headers=None):
@@ -104,7 +104,7 @@ class Response(six.BytesIO):
         self.headers = headers or {}
         self.reason = requests.status_codes._codes.get(
             status, [''])[0].upper().replace('_', ' ')
-        six.BytesIO.__init__(self, stream)
+        io.BytesIO.__init__(self, stream)
 
     @property
     def _original_response(self):
@@ -115,7 +115,7 @@ class Response(six.BytesIO):
         return self
 
     def read(self, chunk_size, **kwargs):
-        return six.BytesIO.read(self, chunk_size)
+        return io.BytesIO.read(self, chunk_size)
 
     def info(self):
         return self
@@ -173,7 +173,7 @@ class RequestsTransport(transport.Transport):
 
     def open(self, request):
         resp = self.session.get(request.url, verify=self.verify)
-        return six.BytesIO(resp.content)
+        return io.BytesIO(resp.content)
 
     def send(self, request):
         resp = self.session.post(request.url,
@@ -414,13 +414,13 @@ class Service(object):
 
                 # Socket errors which need special handling; some of these
                 # might be caused by server API call overload.
-                if (six.text_type(excep).find(ADDRESS_IN_USE_ERROR) != -1 or
-                        six.text_type(excep).find(CONN_ABORT_ERROR)) != -1:
+                if (str(excep).find(ADDRESS_IN_USE_ERROR) != -1 or
+                        str(excep).find(CONN_ABORT_ERROR)) != -1:
                     raise exceptions.VimSessionOverLoadException(
                         _("Socket error in %s.") % attr_name, excep)
                 # Type error which needs special handling; it might be caused
                 # by server API call overload.
-                elif six.text_type(excep).find(RESP_NOT_XML_ERROR) != -1:
+                elif str(excep).find(RESP_NOT_XML_ERROR) != -1:
                     raise exceptions.VimSessionOverLoadException(
                         _("Type error in %s.") % attr_name, excep)
                 else:

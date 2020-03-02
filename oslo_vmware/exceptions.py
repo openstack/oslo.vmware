@@ -19,8 +19,6 @@ Exception definitions.
 
 import logging
 
-import six
-
 from oslo_vmware._i18n import _
 
 LOG = logging.getLogger(__name__)
@@ -53,11 +51,7 @@ class VMwareDriverException(Exception):
     """
     msg_fmt = _("An unknown exception occurred.")
 
-    if six.PY2:
-        __str__ = lambda self: six.text_type(self).encode('utf8')
-        __unicode__ = lambda self: self.description
-    else:
-        __str__ = lambda self: self.description
+    __str__ = lambda self: self.description
 
     def __init__(self, message=None, details=None, **kwargs):
 
@@ -80,7 +74,7 @@ class VMwareDriverException(Exception):
                 # kwargs doesn't match a variable in the message
                 # log the issue and the kwargs
                 LOG.exception('Exception in string format operation')
-                for name, value in six.iteritems(kwargs):
+                for name, value in kwargs.items():
                     LOG.error("%(name)s: %(value)s",
                               {'name': name, 'value': value})
                 # at least get the core message out if something happened
@@ -98,9 +92,9 @@ class VMwareDriverException(Exception):
         # NOTE(jecarey): self.msg and self.cause may be i18n objects
         # that do not support str or concatenation, but can be used
         # as replacement text.
-        descr = six.text_type(self.msg)
+        descr = str(self.msg)
         if self.cause:
-            descr += '\nCause: ' + six.text_type(self.cause)
+            descr += '\nCause: ' + str(self.cause)
         return descr
 
 
@@ -154,7 +148,7 @@ class VimFaultException(VimException):
         if self.details:
             # details may contain non-ASCII values
             details = '{%s}' % ', '.join(["'%s': '%s'" % (k, v) for k, v in
-                                          six.iteritems(self.details)])
+                                          self.details.items()])
             descr += '\nDetails: ' + details
         return descr
 
@@ -306,7 +300,7 @@ def translate_fault(localized_method_fault, excep_msg=None):
     """
     try:
         if not excep_msg:
-            excep_msg = six.text_type(localized_method_fault.localizedMessage)
+            excep_msg = str(localized_method_fault.localizedMessage)
         name = localized_method_fault.fault.__class__.__name__
         fault_class = get_fault_class(name)
         if fault_class:

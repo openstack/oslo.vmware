@@ -27,7 +27,6 @@ from oslo_concurrency import lockutils
 from oslo_context import context
 from oslo_utils import excutils
 from oslo_utils import reflection
-import six
 
 from oslo_vmware._i18n import _
 from oslo_vmware.common import loopingcall
@@ -339,7 +338,7 @@ class VMwareAPISession(object):
                         fault = excep.fault_list[0]
                         clazz = exceptions.get_fault_class(fault)
                         if clazz:
-                            raise clazz(six.text_type(excep),
+                            raise clazz(str(excep),
                                         details=excep.details)
                     raise
 
@@ -375,7 +374,7 @@ class VMwareAPISession(object):
         except exceptions.VimException as ex:
             LOG.debug("Error: %(error)s occurred while checking whether the "
                       "current session: %(session)s is active.",
-                      {'error': six.text_type(ex),
+                      {'error': str(ex),
                        'session': _trunc_id(self._session_id)})
 
         return is_active

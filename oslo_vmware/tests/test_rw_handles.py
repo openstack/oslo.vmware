@@ -21,7 +21,6 @@ import ssl
 
 import mock
 import requests
-import six
 
 from oslo_vmware import exceptions
 from oslo_vmware import rw_handles
@@ -414,7 +413,7 @@ class ImageReadHandleTest(base.TestCase):
         max_items = 10
         item = [1] * 10
 
-        class ImageReadIterator(six.Iterator):
+        class ImageReadIterator(object):
 
             def __init__(self):
                 self.num_items = 0

@@ -28,8 +28,7 @@ import time
 from oslo_utils import excutils
 from oslo_utils import netutils
 import requests
-import six
-import six.moves.urllib.parse as urlparse
+import urllib.parse as urlparse
 from urllib3 import connection as httplib
 
 from oslo_vmware._i18n import _
@@ -135,7 +134,7 @@ class FileHandle(object):
                                self._build_vim_cookie_header(cookies)})
             if content_type:
                 headers.update({'Content-Type': content_type})
-            for key, value in six.iteritems(headers):
+            for key, value in headers.items():
                 conn.putheader(key, value)
             conn.endheaders()
             return conn

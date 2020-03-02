@@ -13,13 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import http.client as httplib
 import io
 
 import ddt
 import mock
 import requests
-import six
-import six.moves.http_client as httplib
 import suds
 
 from oslo_vmware import exceptions
@@ -503,10 +502,7 @@ class RequestsTransportTest(base.TestCase):
         def readinto_mock(buf):
             buf[0:] = data
 
-        if six.PY3:
-            builtin_open = 'builtins.open'
-        else:
-            builtin_open = '__builtin__.open'
+        builtin_open = 'builtins.open'
         open_mock = mock.MagicMock(name='file_handle',
                                    spec=open)
         file_spec = list(set(dir(io.TextIOWrapper)).union(

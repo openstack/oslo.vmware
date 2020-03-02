@@ -17,8 +17,9 @@
 Unit tests for functions and classes for image transfer.
 """
 
+import io
+
 import mock
-import six
 
 from oslo_vmware import exceptions
 from oslo_vmware import image_transfer
@@ -30,7 +31,7 @@ class ImageTransferUtilityTest(base.TestCase):
 
     def test_start_transfer(self):
         data = b'image-data-here'
-        read_handle = six.BytesIO(data)
+        read_handle = io.BytesIO(data)
         write_handle = mock.Mock()
         image_transfer._start_transfer(read_handle, write_handle, None)
         write_handle.write.assert_called_once_with(data)
@@ -400,7 +401,7 @@ class ImageTransferUtilityTest(base.TestCase):
                                                                file_path,
                                                                image_size)
 
-        ver_str = six.text_type(image_version)
+        ver_str = str(image_version)
         image_metadata = {'disk_format': 'vmdk',
                           'name': image_name,
                           'properties': {'vmware_image_version': ver_str,
