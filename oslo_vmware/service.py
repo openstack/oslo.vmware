@@ -1,4 +1,4 @@
-# Copyright (c) 2014 VMware, Inc.
+# Copyright (c) 2014-2020 VMware, Inc.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -18,7 +18,6 @@ Common classes that provide access to vSphere services.
 """
 
 import logging
-import os
 
 import netaddr
 from oslo_utils import timeutils
@@ -144,9 +143,9 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
 
     def _build_response_from_file(self, request):
         file_path = request.url[7:]
-        with open(file_path, 'r') as f:
-            buff = bytearray(os.path.getsize(file_path))
-            f.readinto(buff)
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+            buff = bytearray(file_content.decode(), "utf-8")
             resp = Response(buff)
             return self.build_response(request, resp)
 

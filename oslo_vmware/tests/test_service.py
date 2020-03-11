@@ -1,4 +1,4 @@
-# Copyright (c) 2014 VMware, Inc.
+# Copyright (c) 2014-2020 VMware, Inc.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -500,8 +500,8 @@ class RequestsTransportTest(base.TestCase):
         data = b"Hello World"
         get_size_mock.return_value = len(data)
 
-        def readinto_mock(buf):
-            buf[0:] = data
+        def read_mock():
+            return data
 
         if six.PY3:
             builtin_open = 'builtins.open'
@@ -515,7 +515,7 @@ class RequestsTransportTest(base.TestCase):
         file_handle = mock.MagicMock(spec=file_spec)
         file_handle.write.return_value = None
         file_handle.__enter__.return_value = file_handle
-        file_handle.readinto.side_effect = readinto_mock
+        file_handle.read.side_effect = read_mock
         open_mock.return_value = file_handle
 
         with mock.patch(builtin_open, open_mock, create=True):
