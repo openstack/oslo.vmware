@@ -17,8 +17,8 @@ import posixpath
 import random
 import re
 
-import six.moves.http_client as httplib
-import six.moves.urllib.parse as urlparse
+import http.client as httplib
+import urllib.parse as urlparse
 
 from oslo_vmware._i18n import _
 from oslo_vmware import constants

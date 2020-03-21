@@ -23,8 +23,8 @@ Refer http://goo.gl/GR2o6U for more details.
 import logging
 import os
 
-import six.moves.urllib.parse as urlparse
-import six.moves.urllib.request as urllib
+import urllib.parse as urlparse
+import urllib.request as urllib
 
 from oslo_vmware import service
 from oslo_vmware import vim_util

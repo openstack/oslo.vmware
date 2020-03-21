@@ -20,8 +20,8 @@ Unit tests for PBM utility methods.
 import os
 
 import mock
-import six.moves.urllib.parse as urlparse
-import six.moves.urllib.request as urllib
+import urllib.parse as urlparse
+import urllib.request as urllib
 
 from oslo_vmware import pbm
 from oslo_vmware.tests import base
