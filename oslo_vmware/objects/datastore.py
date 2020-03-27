@@ -445,8 +445,8 @@ class DatastoreURL(object):
                 httplib.CannotSendHeader) as excep:
             excep_msg = _("Error occurred while creating HTTP connection "
                           "to write to file with URL = %s.") % str(self)
-        LOG.exception(excep_msg)
-        raise exceptions.VimConnectionException(excep_msg, excep)
+            LOG.exception(excep_msg)
+            raise exceptions.VimConnectionException(excep_msg, excep)
 
     def get_transfer_ticket(self, session, method):
         client_factory = session.vim.client.factory

@@ -459,5 +459,6 @@ class SudsLogFilter(logging.Filter):
 
         return True
 
+
 # Set log filter to mask/truncate vCenter credentials in suds logs.
 suds.client.log.addFilter(SudsLogFilter())
