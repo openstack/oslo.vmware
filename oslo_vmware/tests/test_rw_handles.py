@@ -13,13 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for read and write handles for image transfer.
-"""
+"""Unit tests for read and write handles for image transfer."""
 
 import ssl
+from unittest import mock
 
-import mock
 import requests
 
 from oslo_vmware import exceptions

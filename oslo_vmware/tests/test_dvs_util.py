@@ -13,13 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for VMware DVS utility module.
-"""
+"""Unit tests for VMware DVS utility module."""
 
 import collections
-
-import mock
+from unittest import mock
 
 from oslo_vmware import dvs_util
 from oslo_vmware.tests import base

@@ -14,16 +14,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for session management and API invocation classes.
-"""
+"""Unit tests for session management and API invocation classes."""
 
 from datetime import datetime
+from unittest import mock
+
 from eventlet import greenthread
-import mock
+from oslo_context import context
 import suds
 
-from oslo_context import context
 from oslo_vmware import api
 from oslo_vmware import exceptions
 from oslo_vmware import pbm

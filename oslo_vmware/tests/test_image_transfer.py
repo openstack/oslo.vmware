@@ -13,13 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for functions and classes for image transfer.
-"""
+"""Unit tests for functions and classes for image transfer."""
 
 import io
-
-import mock
+from unittest import mock
 
 from oslo_vmware import exceptions
 from oslo_vmware import image_transfer

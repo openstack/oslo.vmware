@@ -13,10 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for exceptions module.
-"""
-import mock
+"""Unit tests for exceptions module."""
+from unittest import mock
 
 from oslo_vmware._i18n import _
 from oslo_vmware import exceptions

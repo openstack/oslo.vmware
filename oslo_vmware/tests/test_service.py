@@ -15,9 +15,9 @@
 
 import http.client as httplib
 import io
+from unittest import mock
 
 import ddt
-import mock
 import requests
 import suds
 

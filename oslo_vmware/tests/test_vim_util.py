@@ -13,13 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for VMware API utility module.
-"""
+"""Unit tests for VMware API utility module."""
 
 import collections
-
-import mock
+from unittest import mock
 
 from oslo_vmware.tests import base
 from oslo_vmware import vim_util

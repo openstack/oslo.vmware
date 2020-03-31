@@ -13,13 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for PBM utility methods.
-"""
+"""Unit tests for PBM utility methods."""
 
 import os
+from unittest import mock
 
-import mock
 import urllib.parse as urlparse
 import urllib.request as urllib
 

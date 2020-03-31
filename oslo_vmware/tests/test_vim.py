@@ -13,13 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-Unit tests for classes to invoke VMware VI SOAP calls.
-"""
+"""Unit tests for classes to invoke VMware VI SOAP calls."""
 
 import copy
+from unittest import mock
 
-import mock
 from oslo_i18n import fixture as i18n_fixture
 import suds
 
