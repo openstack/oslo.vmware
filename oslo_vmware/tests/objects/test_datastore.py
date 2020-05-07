@@ -179,7 +179,8 @@ class DatastoreClusterTestCase(base.TestCase):
         dsc_moid = 'group-p123'
         dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, dsc_moid)
         self.assertEqual((dsc_moid, 'StoragePod'),
-                         (dsc_ref.value, dsc_ref._type))
+                         (vim_util.get_moref_value(dsc_ref),
+                          vim_util.get_moref_type(dsc_ref)))
         self.assertEqual('ds-cluster', dsc_name)
         session.invoke_api.assert_called_once_with(vim_util,
                                                    'get_object_property',
@@ -205,8 +206,10 @@ class DatastoreClusterTestCase(base.TestCase):
         session.invoke_api.return_value = retrieve_result
         name = 'ds-cluster'
         dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, name)
-        self.assertEqual((pod_ref.value, pod_ref._type),
-                         (dsc_ref.value, dsc_ref._type))
+        self.assertEqual((vim_util.get_moref_value(pod_ref),
+                          vim_util.get_moref_type(pod_ref)),
+                         (vim_util.get_moref_value(dsc_ref),
+                          vim_util.get_moref_type(dsc_ref)))
 
 
 class DatastorePathTestCase(base.TestCase):

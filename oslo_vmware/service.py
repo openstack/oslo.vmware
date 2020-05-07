@@ -274,7 +274,8 @@ class Service(object):
                         f_name = f_type.__class__.__name__
                         fault_list.append(f_name)
                         if f_name == exceptions.NO_PERMISSION:
-                            details['object'] = f_type.object.value
+                            details['object'] = \
+                                vim_util.get_moref_value(f_type.object)
                             details['privilegeId'] = f_type.privilegeId
 
         if fault_list:
@@ -349,7 +350,7 @@ class Service(object):
                     op_id = '%s-%s' % (self.op_id_prefix,
                                        uuidutils.generate_uuid())
                     LOG.debug('Invoking %s.%s with opID=%s',
-                              managed_object._type,
+                              vim_util.get_moref_type(managed_object),
                               attr_name,
                               op_id)
                 self._set_soap_headers(op_id)

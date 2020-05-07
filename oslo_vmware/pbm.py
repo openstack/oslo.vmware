@@ -161,7 +161,7 @@ def convert_datastores_to_hubs(pbm_client_factory, datastores):
     hubs = []
     for ds in datastores:
         hub = pbm_client_factory.create('ns0:PbmPlacementHub')
-        hub.hubId = ds.value
+        hub.hubId = vim_util.get_moref_value(ds)
         hub.hubType = 'Datastore'
         hubs.append(hub)
     return hubs
@@ -177,7 +177,7 @@ def filter_datastores_by_hubs(hubs, datastores):
     filtered_dss = []
     hub_ids = [hub.hubId for hub in hubs]
     for ds in datastores:
-        if ds.value in hub_ids:
+        if vim_util.get_moref_value(ds) in hub_ids:
             filtered_dss.append(ds)
     return filtered_dss
 
@@ -216,7 +216,7 @@ def get_profiles(session, vm):
     profile_manager = pbm.service_content.profileManager
 
     object_ref = pbm.client.factory.create('ns0:PbmServerObjectRef')
-    object_ref.key = vm.value
+    object_ref.key = vim_util.get_moref_value(vm)
     object_ref.objectType = 'virtualMachine'
 
     return session.invoke_api(pbm, 'PbmQueryAssociatedProfile',

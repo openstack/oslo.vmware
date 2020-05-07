@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    ``ManagedObjectReference``'s ``value`` and ``_type`` attributes must not be
+    used anymore in depending projects. Instead, ``vim_util.get_moref_value()``
+    and ``vim_util.get_moref_type()`` have to be used, because with
+    `this spec <https://specs.openstack.org/openstack/oslo-specs/specs/victoria/oslo-vmware-soap-library-switch.html>`_
+    we switch the backing SOAP library and different libraries have different
+    representations of those attributes.

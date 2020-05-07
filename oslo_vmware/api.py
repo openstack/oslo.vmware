@@ -424,7 +424,7 @@ class VMwareAPISession(object):
                               "task: %s.",
                               task)
         else:
-            task_detail = {'id': task.value}
+            task_detail = {'id': vim_util.get_moref_value(task)}
             # some internal tasks do not have 'name' set
             if getattr(task_info, 'name', None):
                 task_detail['name'] = task_info.name

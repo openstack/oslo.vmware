@@ -37,6 +37,44 @@ def get_moref(value, type_):
     return moref
 
 
+def get_moref_value(moref):
+    """Get the value/id of a managed object reference
+
+    This function accepts a string representation of a ManagedObjectReference
+    like `VirtualMachine:vm-123` or only `vm-123`, but is also able to extract
+    it from the actual object as returned by the API.
+    """
+    if isinstance(moref, str):
+        # handle strings like VirtualMachine:vm-12312, but also vm-123123
+        if ':' in moref:
+            splits = moref.split(':')
+            return splits[1]
+        return moref
+
+    # assume it's a ManagedObjectReference object as created by `get_moref()`
+    # or returned by a request
+    return moref.value
+
+
+def get_moref_type(moref):
+    """Get the type of a managed object reference
+
+    This function accepts a string representation of a ManagedObjectReference
+    like `VirtualMachine:vm-123`, but is also able to extract it from the
+    actual object as returned by the API.
+    """
+    if isinstance(moref, str):
+        # handle strings like VirtualMachine:vm-12312
+        if ':' in moref:
+            splits = moref.split(':')
+            return splits[0]
+        return None
+
+    # assume it's a ManagedObjectReference object as created by `get_moref()`
+    # or returned by a request
+    return moref._type
+
+
 def build_selection_spec(client_factory, name):
     """Builds the selection spec.
 
@@ -309,7 +347,7 @@ def get_object_properties(vim, moref, properties_to_collect, skip_op_id=False):
                       len(properties_to_collect) == 0)
     property_spec = build_property_spec(
         client_factory,
-        type_=moref._type,
+        type_=get_moref_type(moref),
         properties_to_collect=properties_to_collect,
         all_properties=all_properties)
     object_spec = build_object_spec(client_factory, moref, [])

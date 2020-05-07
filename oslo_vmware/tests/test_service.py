@@ -95,8 +95,8 @@ class ServiceTest(base.TestCase):
         resp = mock.Mock()
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             return resp
 
         svc_obj = service.Service()
@@ -110,8 +110,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'Datacenter'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             return None
 
         svc_obj = service.Service()
@@ -129,8 +129,8 @@ class ServiceTest(base.TestCase):
         doc = mock.Mock()
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             fault = mock.Mock(faultstring="MyFault")
 
             fault_children = mock.Mock()
@@ -180,8 +180,8 @@ class ServiceTest(base.TestCase):
         doc = mock.Mock()
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             fault = mock.Mock(faultstring="MyFault")
 
             fault_children = mock.Mock()
@@ -215,8 +215,8 @@ class ServiceTest(base.TestCase):
         doc = mock.Mock()
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             fault = mock.Mock(faultstring="MyFault")
 
             fault_children = mock.Mock()
@@ -257,8 +257,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise httplib.CannotSendRequest()
 
         svc_obj = service.Service()
@@ -273,8 +273,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise httplib.ResponseNotReady()
 
         svc_obj = service.Service()
@@ -289,8 +289,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise httplib.CannotSendHeader()
 
         svc_obj = service.Service()
@@ -305,8 +305,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise requests.ConnectionError()
 
         svc_obj = service.Service()
@@ -321,8 +321,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise requests.HTTPError()
 
         svc_obj = service.Service()
@@ -344,8 +344,8 @@ class ServiceTest(base.TestCase):
         managed_object = 'VirtualMachine'
 
         def side_effect(mo, **kwargs):
-            self.assertEqual(managed_object, mo._type)
-            self.assertEqual(managed_object, mo.value)
+            self.assertEqual(managed_object, vim_util.get_moref_type(mo))
+            self.assertEqual(managed_object, vim_util.get_moref_value(mo))
             raise Exception(message)
 
         svc_obj = service.Service()

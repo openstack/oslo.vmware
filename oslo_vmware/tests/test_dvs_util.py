@@ -32,8 +32,9 @@ class DvsUtilTest(base.TestCase):
 
     def test_get_dvs_moref(self):
         moref = dvs_util.get_dvs_moref('dvs-123')
-        self.assertEqual('dvs-123', moref.value)
-        self.assertEqual('VmwareDistributedVirtualSwitch', moref._type)
+        self.assertEqual('dvs-123', vim_util.get_moref_value(moref))
+        self.assertEqual('VmwareDistributedVirtualSwitch',
+                         vim_util.get_moref_type(moref))
 
     def test_get_vlan_spec(self):
         session = mock.Mock()

@@ -27,8 +27,8 @@ class VimUtilTest(base.TestCase):
 
     def test_get_moref(self):
         moref = vim_util.get_moref("vm-0", "VirtualMachine")
-        self.assertEqual("vm-0", moref.value)
-        self.assertEqual("VirtualMachine", moref._type)
+        self.assertEqual("vm-0", vim_util.get_moref_value(moref))
+        self.assertEqual("VirtualMachine", vim_util.get_moref_type(moref))
 
     def test_build_selection_spec(self):
         client_factory = mock.Mock()
@@ -214,8 +214,7 @@ class VimUtilTest(base.TestCase):
     @mock.patch('oslo_vmware.vim_util.cancel_retrieval')
     def test_get_object_properties(self, cancel_retrieval):
         vim = mock.Mock()
-        moref = mock.Mock()
-        moref._type = "VirtualMachine"
+        moref = vim_util.get_moref('fake-ref', 'VirtualMachine')
         retrieve_result = mock.Mock()
 
         def vim_RetrievePropertiesEx_side_effect(pc, specSet, options,
@@ -231,7 +230,7 @@ class VimUtilTest(base.TestCase):
             prop_spec = propSet[0]
             self.assertTrue(prop_spec.all)
             self.assertEqual(['name'], prop_spec.pathSet)
-            self.assertEqual(moref._type, prop_spec.type)
+            self.assertEqual(vim_util.get_moref_type(moref), prop_spec.type)
 
             objSet = property_filter_spec.objectSet
             self.assertEqual(1, len(objSet))

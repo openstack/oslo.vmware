@@ -112,7 +112,7 @@ def add_port_group(session, dvs_moref, name, vlan_id=None,
     task_info = session.wait_for_task(task)
     LOG.info("%(name)s create on %(dvs)s with %(value)s.",
              {'name': name,
-              'dvs': dvs_moref.value,
+              'dvs': vim_util.get_moref_value(dvs_moref),
               'value': task_info.result.value})
     return task_info.result
 

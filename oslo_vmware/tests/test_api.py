@@ -587,8 +587,7 @@ class VMwareAPISessionTest(base.TestCase):
         with (
             mock.patch.object(api_session, 'invoke_api', fake_invoke_api)
         ):
-            fake_task = mock.Mock()
-            fake_task.value = 'task-1'
+            fake_task = vim_util.get_moref('Task', 'task-1')
             ctx = mock.Mock()
             self.assertRaises(expected_exception,
                               api_session._poll_task,
