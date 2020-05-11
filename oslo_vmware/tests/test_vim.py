@@ -31,7 +31,7 @@ class VimTest(base.TestCase):
 
     def setUp(self):
         super(VimTest, self).setUp()
-        patcher = mock.patch('suds.client.Client')
+        patcher = mock.patch('oslo_vmware.service.CompatibilitySudsClient')
         self.addCleanup(patcher.stop)
         self.SudsClientMock = patcher.start()
         self.useFixture(i18n_fixture.ToggleLazy(True))

@@ -492,7 +492,7 @@ class VmdkWriteHandle(VmdkHandle):
         url, thumbprint = self._find_vmdk_url(lease_info, host, port)
         self._vm_ref = lease_info.entity
 
-        cookies = session.vim.client.options.transport.cookiejar
+        cookies = session.vim.client.cookiejar
         # Create HTTP connection to write to VMDK URL
         if http_method == 'PUT':
             overwrite = 't'
@@ -600,7 +600,7 @@ class VmdkReadHandle(VmdkHandle):
 
         # find URL of the VMDK file to be read and open connection
         url, thumbprint = self._find_vmdk_url(lease_info, host, port)
-        cookies = session.vim.client.options.transport.cookiejar
+        cookies = session.vim.client.cookiejar
         self._conn = self._create_read_connection(url,
                                                   cookies=cookies,
                                                   ssl_thumbprint=thumbprint)

@@ -60,7 +60,7 @@ class ServiceTest(base.TestCase):
 
     def setUp(self):
         super(ServiceTest, self).setUp()
-        patcher = mock.patch('suds.client.Client')
+        patcher = mock.patch('oslo_vmware.service.CompatibilitySudsClient')
         self.addCleanup(patcher.stop)
         self.SudsClientMock = patcher.start()
 
@@ -377,7 +377,7 @@ class ServiceTest(base.TestCase):
         cookie = mock.Mock()
         cookie.name = 'vmware_soap_session'
         cookie.value = cookie_value
-        svc_obj.client.options.transport.cookiejar = [cookie]
+        svc_obj.client.cookiejar = [cookie]
         self.assertEqual(cookie_value, svc_obj.get_http_cookie())
 
     def test_get_session_cookie_with_no_cookie(self):
@@ -385,7 +385,7 @@ class ServiceTest(base.TestCase):
         cookie = mock.Mock()
         cookie.name = 'cookie'
         cookie.value = 'xyz'
-        svc_obj.client.options.transport.cookiejar = [cookie]
+        svc_obj.client.cookiejar = [cookie]
         self.assertIsNone(svc_obj.get_http_cookie())
 
     def test_set_soap_headers(self):

@@ -1,0 +1,8 @@
+---
+upgrade:
+  - Code accessing the ``cookiejar`` must use ``session.client.cookiejar``
+    instead of the previous ``session.client.options.transport.cookiejar``,
+    because with `this spec
+    <https://specs.openstack.org/openstack/oslo-specs/specs/victoria/oslo-vmware-soap-library-switch.html>`_
+    we switch the backing SOAP library and different libraries have different
+    locations for their transport and cookiejar objects.
