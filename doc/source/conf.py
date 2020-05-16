@@ -22,15 +22,14 @@ extensions = [
 ]
 
 # openstackdocstheme options
-repository_name = 'openstack/oslo.vmware'
-bug_project = 'oslo.vmware'
-bug_tag = ''
+openstackdocs_repo_name = 'openstack/oslo.vmware'
+openstackdocs_bug_project = 'oslo.vmware'
+openstackdocs_bug_tag = ''
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
-project = u'oslo.vmware'
 copyright = u'2014, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
