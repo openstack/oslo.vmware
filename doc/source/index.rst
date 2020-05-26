@@ -5,6 +5,9 @@
 The Oslo VMware library provides support for common VMware operations
 and APIs.
 
+Contents
+========
+
 .. toctree::
    :maxdepth: 2
 
@@ -13,7 +16,14 @@ and APIs.
    contributor/index
    reference/index
 
-.. rubric:: Indices and tables
+Release Notes
+=============
+
+Read also the `oslo.vmware Release Notes
+<https://docs.openstack.org/releasenotes/oslo.vmware/>`_.
+
+Indices and tables
+==================
 
 * :ref:`genindex`
 * :ref:`modindex`
