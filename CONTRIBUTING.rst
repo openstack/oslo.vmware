@@ -2,6 +2,11 @@
 Contributing
 ============
 
+If you would like to contribute to the development of oslo's libraries,
+first you must take a look to this page:
+
+   https://specs.openstack.org/openstack/oslo-specs/specs/policy/contributing.html
+
 If you would like to contribute to the development of OpenStack,
 you must follow the steps in this page:
 
