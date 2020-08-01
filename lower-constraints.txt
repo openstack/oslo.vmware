@@ -12,12 +12,12 @@ fasteners==0.7.0
 fixtures==3.0.0
 gitdb==0.6.4
 GitPython==1.0.1
-greenlet==0.4.10
+greenlet==0.4.15
 imagesize==0.7.1
 iso8601==0.1.11
 Jinja2==2.10
 linecache2==1.0.0
-lxml==3.4.1
+lxml==4.5.0
 MarkupSafe==1.0
 netaddr==0.7.18
 netifaces==0.10.4
@@ -32,7 +32,7 @@ pyparsing==2.1.0
 python-mimeparse==1.6.0
 python-subunit==1.0.0
 pytz==2013.6
-PyYAML==3.12
+PyYAML==3.13
 requests==2.14.2
 rfc3986==0.3.1
 smmap==0.9.0
