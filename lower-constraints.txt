@@ -1,6 +1,6 @@
 alabaster==0.7.10
 Babel==2.3.4
-bandit==1.1.0
+bandit==1.6.0
 coverage==4.0
 ddt==1.0.1
 debtcollector==1.2.0
