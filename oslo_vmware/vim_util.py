@@ -694,3 +694,21 @@ def storage_placement_spec(client_factory,
     spec.resourcePool = res_pool_ref
     spec.host = host_ref
     return spec
+
+
+def serialize_object(obj):
+    """Convert Suds object into serializable format - a dict."""
+    d = {}
+    for k, v in dict(obj).items():
+        if hasattr(v, '__keylist__'):
+            d[k] = serialize_object(v)
+        elif isinstance(v, list):
+            d[k] = []
+            for item in v:
+                if hasattr(item, '__keylist__'):
+                    d[k].append(serialize_object(item))
+                else:
+                    d[k].append(item)
+        else:
+            d[k] = v
+    return d
