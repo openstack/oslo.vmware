@@ -556,6 +556,10 @@ class VmdkWriteHandle(VmdkHandle):
         """
         try:
             self._release_lease()
+        except exceptions.ManagedObjectNotFoundException:
+            LOG.info("Lease for %(url)s not found.  No need to release.",
+                     {'url': self._url})
+            return
         except exceptions.VimException:
             LOG.warning("Error occurred while releasing the lease "
                         "for %s.",
@@ -637,6 +641,10 @@ class VmdkReadHandle(VmdkHandle):
         """
         try:
             self._release_lease()
+        except exceptions.ManagedObjectNotFoundException:
+            LOG.info("Lease for %(url)s not found.  No need to release.",
+                     {'url': self._url})
+            return
         except exceptions.VimException:
             LOG.warning("Error occurred while releasing the lease "
                         "for %s.",
