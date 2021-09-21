@@ -493,8 +493,7 @@ class RequestsTransportTest(base.TestCase):
         transport = service.RequestsTransport()
 
         url = 'file:///foo'
-        request = requests.PreparedRequest()
-        request.url = url
+        request = requests.Request('GET', url).prepare()
 
         data = b"Hello World"
         get_size_mock.return_value = len(data)
@@ -502,7 +501,6 @@ class RequestsTransportTest(base.TestCase):
         def read_mock():
             return data
 
-        builtin_open = 'builtins.open'
         open_mock = mock.MagicMock(name='file_handle',
                                    spec=open)
         file_spec = list(set(dir(io.TextIOWrapper)).union(
@@ -514,7 +512,7 @@ class RequestsTransportTest(base.TestCase):
         file_handle.read.side_effect = read_mock
         open_mock.return_value = file_handle
 
-        with mock.patch(builtin_open, open_mock, create=True):
+        with mock.patch('builtins.open', open_mock, create=True):
             resp = transport.session.send(request)
             self.assertEqual(data, resp.content)
 
