@@ -60,7 +60,7 @@ class FileHandle(object):
         self._file_handle = file_handle
 
     def _create_connection(self, url, method, cacerts=False,
-                           ssl_thumbprint=None):
+                           ssl_thumbprint=None, cookies=None):
         _urlparse = urlparse.urlparse(url)
         scheme, netloc, path, params, query, fragment = _urlparse
         if scheme == 'http':
@@ -88,18 +88,20 @@ class FileHandle(object):
         if query:
             path = path + '?' + query
         conn.putrequest(method, path)
+        conn.putheader('User-Agent', USER_AGENT)
+        if cookies:
+            vim_cookie = self._build_vim_cookie_header(cookies)
+            conn.putheader('Cookie', vim_cookie)
         return conn
 
     def _create_read_connection(self, url, cookies=None, cacerts=False,
                                 ssl_thumbprint=None):
         LOG.debug("Opening URL: %s for reading.", url)
         try:
-            conn = self._create_connection(url, 'GET', cacerts, ssl_thumbprint)
-            vim_cookie = self._build_vim_cookie_header(cookies)
-            conn.putheader('User-Agent', USER_AGENT)
-            conn.putheader('Cookie', vim_cookie)
+            conn = self._create_connection(url, 'GET', cacerts, ssl_thumbprint,
+                                           cookies=cookies)
             conn.endheaders()
-            return conn.getresponse()
+            return conn
         except Exception as excep:
             # TODO(vbala) We need to catch and raise specific exceptions
             # related to connection problems, invalid request and invalid
@@ -123,19 +125,13 @@ class FileHandle(object):
                    'url': url})
         try:
             conn = self._create_connection(url, method, cacerts,
-                                           ssl_thumbprint)
-            headers = {'User-Agent': USER_AGENT}
+                                           ssl_thumbprint, cookies=cookies)
             if file_size:
-                headers.update({'Content-Length': str(file_size)})
+                conn.putheader('Content-Length', str(file_size))
             if overwrite:
-                headers.update({'Overwrite': overwrite})
-            if cookies:
-                headers.update({'Cookie':
-                               self._build_vim_cookie_header(cookies)})
+                conn.putheader('Overwrite', overwrite)
             if content_type:
-                headers.update({'Content-Type': content_type})
-            for key, value in headers.items():
-                conn.putheader(key, value)
+                conn.putheader('Content-Type', content_type)
             conn.endheaders()
             return conn
         except requests.RequestException as excep:
@@ -154,11 +150,12 @@ class FileHandle(object):
 
     def _build_vim_cookie_header(self, vim_cookies):
         """Build ESX host session cookie header."""
-        cookie_header = ""
+        # As returned from DatastoreURL.get_transfer_ticket
+        if isinstance(vim_cookies, str):
+            return vim_cookies
         for vim_cookie in vim_cookies:
-            cookie_header = vim_cookie.name + '=' + vim_cookie.value
-            break
-        return cookie_header
+            return vim_cookie.name + '=' + vim_cookie.value
+        return ""
 
     def write(self, data):
         """Write data to the file.
@@ -219,17 +216,21 @@ class FileHandle(object):
 class FileWriteHandle(FileHandle):
     """Write handle for a file in VMware server."""
 
-    def __init__(self, host, port, data_center_name, datastore_name, cookies,
-                 file_path, file_size, scheme='https', cacerts=False,
+    def __init__(self, host_or_url, port=None, data_center_name=None,
+                 datastore_name=None, cookies=None, file_path=None,
+                 file_size=None, scheme='https', cacerts=False,
                  thumbprint=None):
         """Initializes the write handle with given parameters.
 
-        :param host: ESX/VC server IP address or host name
+        :param host_or_url: ESX/VC server IP address or host name or a complete
+                            DatastoreURL
         :param port: port for connection
         :param data_center_name: name of the data center in the case of a VC
                                  server
         :param datastore_name: name of the datastore where the file is stored
-        :param cookies: cookies to build the vim cookie header
+        :param cookies: cookies to build the vim cookie header, or a string
+                        with the prebuild vim cookie header
+                        (See: DatastoreURL.get_transfer_ticket())
         :param file_path: datastore path where the file is written
         :param file_size: size of the file in bytes
         :param scheme: protocol-- http or https
@@ -237,10 +238,13 @@ class FileWriteHandle(FileHandle):
         :param thumbprint: expected SHA1 thumbprint of server's certificate
         :raises: VimConnectionException, ValueError
         """
-        soap_url = self._get_soap_url(scheme, host, port)
-        param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
-        self._url = '%s/folder/%s' % (soap_url, file_path)
-        self._url = self._url + '?' + urlparse.urlencode(param_list)
+        if not port and not data_center_name and not datastore_name:
+            self._url = host_or_url
+        else:
+            soap_url = self._get_soap_url(scheme, host_or_url, port)
+            param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
+            self._url = '%s/folder/%s' % (soap_url, file_path)
+            self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self._conn = self._create_write_connection('PUT',
                                                    self._url,
@@ -284,6 +288,79 @@ class FileWriteHandle(FileHandle):
 
     def __str__(self):
         return "File write handle for %s" % self._url
+
+
+class FileReadHandle(FileHandle):
+    """Read handle for a file in VMware server."""
+
+    def __init__(self, host_or_url, port=None, data_center_name=None,
+                 datastore_name=None, cookies=None,
+                 file_path=None, scheme='https', cacerts=False,
+                 thumbprint=None):
+        """Initializes the read handle with given parameters.
+
+        :param host_or_url: ESX/VC server IP address or host name or a complete
+                            DatastoreURL
+        :param port: port for connection
+        :param data_center_name: name of the data center in the case of a VC
+                                 server
+        :param datastore_name: name of the datastore where the file is stored
+        :param cookies: cookies to build the vim cookie header, or a string
+                        with the prebuild vim cookie header
+                        (See: DatastoreURL.get_transfer_ticket())
+        :param file_path: datastore path where the file is written
+        :param scheme: protocol-- http or https
+        :param cacerts: CA bundle file to use for SSL verification
+        :param thumbprint: expected SHA1 thumbprint of server's certificate
+        :raises: VimConnectionException, ValueError
+        """
+        if not port and not data_center_name and not datastore_name:
+            self._url = host_or_url
+        else:
+            soap_url = self._get_soap_url(scheme, host_or_url, port)
+            param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
+            self._url = '%s/folder/%s' % (soap_url, file_path)
+            self._url = self._url + '?' + urlparse.urlencode(param_list)
+
+        self._conn = self._create_read_connection(self._url,
+                                                  cookies=cookies,
+                                                  cacerts=cacerts,
+                                                  ssl_thumbprint=thumbprint)
+        FileHandle.__init__(self, self._conn.getresponse())
+
+    def read(self, length):
+        """Read data from the file.
+        :param length: amount of data to be read
+        :raises: VimConnectionException, VimException
+        """
+        try:
+            return self._file_handle.read(length)
+        except requests.RequestException as excep:
+            excep_msg = _("Connection error occurred while reading data from"
+                          " %s.") % self._url
+            LOG.exception(excep_msg)
+            raise exceptions.VimConnectionException(excep_msg, excep)
+        except Exception as excep:
+            # TODO(vbala) We need to catch and raise specific exceptions
+            # related to connection problems, invalid request and invalid
+            # arguments.
+            excep_msg = _("Error occurred while writing data to"
+                          " %s.") % self._url
+            LOG.exception(excep_msg)
+            raise exceptions.VimException(excep_msg, excep)
+
+    def close(self):
+        """Closes the connection.
+        """
+        self._conn.close()
+        super(FileReadHandle, self).close()
+        LOG.debug("Closed File read handle for %s.", self._url)
+
+    def get_size(self):
+        return self._file_handle.getheader('Content-Length')
+
+    def __str__(self):
+        return "File read handle for %s" % self._url
 
 
 class VmdkHandle(FileHandle):
@@ -608,7 +685,8 @@ class VmdkReadHandle(VmdkHandle):
         self._conn = self._create_read_connection(url,
                                                   cookies=cookies,
                                                   ssl_thumbprint=thumbprint)
-        super(VmdkReadHandle, self).__init__(session, lease, url, self._conn)
+        super(VmdkReadHandle, self).__init__(session, lease, url,
+                                             self._conn.getresponse())
 
     def read(self, chunk_size=READ_CHUNKSIZE):
         """Read a chunk of data from the VMDK file.
@@ -639,6 +717,7 @@ class VmdkReadHandle(VmdkHandle):
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
+        self._conn.close()
         try:
             self._release_lease()
         except exceptions.ManagedObjectNotFoundException:
