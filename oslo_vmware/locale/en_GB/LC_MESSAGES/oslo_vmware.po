@@ -2,15 +2,16 @@
 # Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
 # Andi Chandler <andi@gowling.com>, 2017. #zanata
 # Andi Chandler <andi@gowling.com>, 2020. #zanata
+# Andi Chandler <andi@gowling.com>, 2022. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware VERSION\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2020-09-22 12:46+0000\n"
+"POT-Creation-Date: 2022-06-21 16:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2020-10-10 02:29+0000\n"
+"PO-Revision-Date: 2022-07-05 09:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom)\n"
 "Language: en_GB\n"
@@ -25,6 +26,10 @@ msgstr "Cannot delete file."
 
 msgid "Capacity is smaller than free space"
 msgstr "Capacity is smaller than free space"
+
+#, python-format
+msgid "Connection error occurred while reading data from %s."
+msgstr "Connection error occurred while reading data from %s."
 
 #, python-format
 msgid "Connection error occurred while writing data to %s."
