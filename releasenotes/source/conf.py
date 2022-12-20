@@ -60,8 +60,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'oslo.vmware Release Notes'
-copyright = u'2016, oslo.vmware Developers'
+project = 'oslo.vmware Release Notes'
+copyright = '2016, oslo.vmware Developers'
 
 # Release notes do not need a version in the title, they span
 # multiple versions.
@@ -208,8 +208,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     ('index', 'oslo.vmwareReleaseNotes.tex',
-     u'oslo.vmware Release Notes Documentation',
-     u'oslo.vmware Developers', 'manual'),
+     'oslo.vmware Release Notes Documentation',
+     'oslo.vmware Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -239,8 +239,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'oslo.vmwareReleaseNotes',
-     u'oslo.vmware Release Notes Documentation',
-     [u'oslo.vmware Developers'], 1)
+     'oslo.vmware Release Notes Documentation',
+     ['oslo.vmware Developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -254,8 +254,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'oslo.vmwareReleaseNotes',
-     u'oslo.vmware Release Notes Documentation',
-     u'oslo.vmware Developers', 'oslo.vmwareReleaseNotes',
+     'oslo.vmware Release Notes Documentation',
+     'oslo.vmware Developers', 'oslo.vmwareReleaseNotes',
      'The Oslo VMware library provides support for common VMware operations'
      ' and APIs.',
      'Miscellaneous'),
