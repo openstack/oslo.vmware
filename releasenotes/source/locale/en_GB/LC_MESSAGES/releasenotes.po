@@ -3,15 +3,16 @@
 # Andi Chandler <andi@gowling.com>, 2018. #zanata
 # Andi Chandler <andi@gowling.com>, 2020. #zanata
 # Andi Chandler <andi@gowling.com>, 2022. #zanata
+# Andi Chandler <andi@gowling.com>, 2023. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: oslo.vmware Release Notes\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-11 15:56+0000\n"
+"POT-Creation-Date: 2023-05-08 10:45+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2022-06-10 09:18+0000\n"
+"PO-Revision-Date: 2023-05-09 12:06+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom)\n"
 "Language: en_GB\n"
@@ -20,6 +21,9 @@ msgstr ""
 
 msgid "2.8.0"
 msgstr "2.8.0"
+
+msgid "2023.1 Series Release Notes"
+msgstr "2023.1 Series Release Notes"
 
 msgid "3.0.0"
 msgstr "3.0.0"
@@ -112,6 +116,9 @@ msgstr "Xena Series Release Notes"
 
 msgid "Yoga Series Release Notes"
 msgstr "Yoga Series Release Notes"
+
+msgid "Zed Series Release Notes"
+msgstr "Zed Series Release Notes"
 
 msgid ""
 "``ManagedObjectReference``'s ``value`` and ``_type`` attributes must not be "
