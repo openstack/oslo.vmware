@@ -102,7 +102,7 @@ class Response(io.BytesIO):
         self.status = status
         self.headers = headers or {}
         self.reason = requests.status_codes._codes.get(
-            status, [''])[0].upper().replace('_', ' ')
+            status, [''])[0].upper().replace('_', ' ')  # nosec
         io.BytesIO.__init__(self, stream)
 
     @property
