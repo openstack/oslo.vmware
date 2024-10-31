@@ -220,8 +220,8 @@ class Datastore(object):
                                   session.vim, self.ref, 'summary')
 
     def get_connected_hosts(self, session):
-        """Get a list of usable (accessible, mounted, read-writable) hosts where
-        the datastore is mounted.
+        """Get a list of usable (accessible, mounted, read-writable) hosts
+        where the datastore is mounted.
 
         :param: session: session
         :return: list of HostSystem managed object references
@@ -336,7 +336,8 @@ class DatastorePath(object):
         return self._rel_path
 
     def join(self, *paths):
-        """Join one or more path components intelligently into a datastore path.
+        """Join one or more path components intelligently into a datastore
+        path.
 
         If any component is an absolute path, all previous components are
         thrown away, and joining continues. The return value is the
