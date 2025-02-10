@@ -44,9 +44,9 @@ class Vim(service.Service):
         soap_url = base_url + '/sdk'
         if wsdl_url is None:
             wsdl_url = soap_url + '/vimService.wsdl'
-        super(Vim, self).__init__(wsdl_url, soap_url, cacert, insecure,
-                                  pool_maxsize, connection_timeout,
-                                  op_id_prefix)
+        super().__init__(wsdl_url, soap_url, cacert, insecure,
+                         pool_maxsize, connection_timeout,
+                         op_id_prefix)
 
     def retrieve_service_content(self):
         return self.RetrieveServiceContent(service.SERVICE_INSTANCE)

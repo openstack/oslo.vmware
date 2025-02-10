@@ -46,7 +46,7 @@ def _trunc_id(session_id):
 
 
 # TODO(vbala) Move this class to excutils.py.
-class RetryDecorator(object):
+class RetryDecorator:
     """Decorator for retrying a function upon suggested exceptions.
 
     The decorated function is retried for the given number of times, and the
@@ -124,7 +124,7 @@ class RetryDecorator(object):
         return func
 
 
-class VMwareAPISession(object):
+class VMwareAPISession:
     """Setup a session with the server and handles all calls made to it.
 
     Example:

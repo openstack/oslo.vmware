@@ -1,4 +1,3 @@
-# coding=utf-8
 # Copyright (c) 2014 VMware, Inc.
 # All Rights Reserved.
 #
@@ -105,7 +104,7 @@ class VMwareAPISessionTest(base.TestCase):
     POOL_SIZE = 15
 
     def setUp(self):
-        super(VMwareAPISessionTest, self).setUp()
+        super().setUp()
         patcher = mock.patch('oslo_vmware.vim.Vim')
         self.addCleanup(patcher.stop)
         self.VimMock = patcher.start()
@@ -318,7 +317,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session = self._create_api_session(True)
         fault_string = 'Invalid property.'
         fault_list = [exceptions.INVALID_PROPERTY]
-        details = {u'name': suds.sax.text.Text(u'фира')}
+        details = {'name': suds.sax.text.Text('фира')}
 
         module = mock.Mock()
         module.api.side_effect = exceptions.VimFaultException(fault_list,
@@ -328,10 +327,10 @@ class VMwareAPISessionTest(base.TestCase):
                               api_session.invoke_api,
                               module,
                               'api')
-        details_str = u"{'name': 'фира'}"
-        expected_str = "%s\nFaults: %s\nDetails: %s" % (fault_string,
-                                                        fault_list,
-                                                        details_str)
+        details_str = "{'name': 'фира'}"
+        expected_str = "{}\nFaults: {}\nDetails: {}".format(fault_string,
+                                                            fault_list,
+                                                            details_str)
         self.assertEqual(expected_str, str(e))
         self.assertEqual(details, e.details)
 

@@ -44,7 +44,7 @@ READ_CHUNKSIZE = 65536
 USER_AGENT = 'OpenStack-ESX-Adapter'
 
 
-class FileHandle(object):
+class FileHandle:
     """Base class for VMware server file (including VMDK) access over HTTP.
 
     This class wraps a backing file handle and provides utility methods
@@ -184,7 +184,7 @@ class FileHandle(object):
         """returns the integer file descriptor
         by default this is not supported and raises IOError
         """
-        raise IOError()
+        raise OSError()
 
     def seek(self, offset):
         """sets the file's current position at the offset
@@ -243,7 +243,7 @@ class FileWriteHandle(FileHandle):
         else:
             soap_url = self._get_soap_url(scheme, host_or_url, port)
             param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
-            self._url = '%s/folder/%s' % (soap_url, file_path)
+            self._url = '{}/folder/{}'.format(soap_url, file_path)
             self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self._conn = self._create_write_connection('PUT',
@@ -284,7 +284,7 @@ class FileWriteHandle(FileHandle):
         except Exception:
             LOG.warning("Error occurred while reading the HTTP response.",
                         exc_info=True)
-        super(FileWriteHandle, self).close()
+        super().close()
 
     def __str__(self):
         return "File write handle for %s" % self._url
@@ -319,7 +319,7 @@ class FileReadHandle(FileHandle):
         else:
             soap_url = self._get_soap_url(scheme, host_or_url, port)
             param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
-            self._url = '%s/folder/%s' % (soap_url, file_path)
+            self._url = '{}/folder/{}'.format(soap_url, file_path)
             self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self._conn = self._create_read_connection(self._url,
@@ -353,7 +353,7 @@ class FileReadHandle(FileHandle):
         """Closes the connection.
         """
         self._conn.close()
-        super(FileReadHandle, self).close()
+        super().close()
         LOG.debug("Closed File read handle for %s.", self._url)
 
     def get_size(self):
@@ -373,7 +373,7 @@ class VmdkHandle(FileHandle):
         self._last_logged_progress = 0
         self._last_progress_udpate = 0
 
-        super(VmdkHandle, self).__init__(file_handle)
+        super().__init__(file_handle)
 
     def _log_progress(self, progress):
         """Log data transfer progress."""
@@ -586,7 +586,7 @@ class VmdkWriteHandle(VmdkHandle):
                                                    overwrite=overwrite,
                                                    content_type=content_type,
                                                    ssl_thumbprint=thumbprint)
-        super(VmdkWriteHandle, self).__init__(session, lease, url, self._conn)
+        super().__init__(session, lease, url, self._conn)
 
     def get_imported_vm(self):
         """"Get managed object reference of the VM created for import.
@@ -642,7 +642,7 @@ class VmdkWriteHandle(VmdkHandle):
                         "for %s.",
                         self._url,
                         exc_info=True)
-        super(VmdkWriteHandle, self).close()
+        super().close()
         LOG.debug("Closed VMDK write handle for %s.", self._url)
 
     def _get_progress(self):
@@ -685,8 +685,8 @@ class VmdkReadHandle(VmdkHandle):
         self._conn = self._create_read_connection(url,
                                                   cookies=cookies,
                                                   ssl_thumbprint=thumbprint)
-        super(VmdkReadHandle, self).__init__(session, lease, url,
-                                             self._conn.getresponse())
+        super().__init__(session, lease, url,
+                         self._conn.getresponse())
 
     def read(self, chunk_size=READ_CHUNKSIZE):
         """Read a chunk of data from the VMDK file.
@@ -731,7 +731,7 @@ class VmdkReadHandle(VmdkHandle):
                         exc_info=True)
             raise
         finally:
-            super(VmdkReadHandle, self).close()
+            super().close()
         LOG.debug("Closed VMDK read handle for %s.", self._url)
 
     def _get_progress(self):
@@ -741,7 +741,7 @@ class VmdkReadHandle(VmdkHandle):
         return "VMDK read handle for %s" % self._url
 
 
-class ImageReadHandle(object):
+class ImageReadHandle:
     """Read handle for glance images."""
 
     def __init__(self, glance_read_iter):
@@ -767,8 +767,7 @@ class ImageReadHandle(object):
 
     def get_next(self):
         """Get the next item from the image iterator."""
-        for data in self._glance_read_iter:
-            yield data
+        yield from self._glance_read_iter
 
     def close(self):
         """Close the read handle.

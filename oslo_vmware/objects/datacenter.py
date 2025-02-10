@@ -15,7 +15,7 @@
 from oslo_vmware._i18n import _
 
 
-class Datacenter(object):
+class Datacenter:
 
     def __init__(self, ref, name):
         """Datacenter object holds ref and name together for convenience."""

@@ -138,8 +138,8 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
     See http://stackoverflow.com/a/22989322
     """
     def __init__(self, pool_maxsize=10):
-        super(LocalFileAdapter, self).__init__(pool_connections=pool_maxsize,
-                                               pool_maxsize=pool_maxsize)
+        super().__init__(pool_connections=pool_maxsize,
+                         pool_maxsize=pool_maxsize)
 
     def _build_response_from_file(self, request):
         file_path = request.url[7:]
@@ -216,7 +216,7 @@ class CompatibilitySudsClient(client.Client):
     underlying transport.
     """
     def __init__(self, *args, **kwargs):
-        super(CompatibilitySudsClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def cookiejar(self):
@@ -228,7 +228,7 @@ class CompatibilitySudsClient(client.Client):
         self.options.transport.cookiejar = cookies
 
 
-class Service(object):
+class Service:
     """Base class containing common functionality for invoking vSphere
     services
     """
@@ -366,8 +366,8 @@ class Service(object):
                 if not skip_op_id:
                     # Generate opID. It will appear in vCenter and ESX logs for
                     # this particular remote call.
-                    op_id = '%s-%s' % (self.op_id_prefix,
-                                       uuidutils.generate_uuid())
+                    op_id = '{}-{}'.format(self.op_id_prefix,
+                                           uuidutils.generate_uuid())
                     LOG.debug('Invoking %s.%s with opID=%s',
                               vim_util.get_moref_type(managed_object),
                               attr_name,

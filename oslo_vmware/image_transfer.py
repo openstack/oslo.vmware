@@ -106,8 +106,8 @@ def download_image(image, image_meta, session, datastore, rel_path,
         conn = ds_url.connect(method, image_size, cookie)
     else:
         ds_url = datastore.build_url(session._scheme, session._host, rel_path)
-        cookie = '%s=%s' % (constants.SOAP_COOKIE_KEY,
-                            session.vim.get_http_cookie().strip("\""))
+        cookie = '{}={}'.format(constants.SOAP_COOKIE_KEY,
+                                session.vim.get_http_cookie().strip("\""))
         conn = ds_url.connect(method, image_size, cookie)
         conn.write = conn.send
 

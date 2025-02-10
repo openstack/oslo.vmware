@@ -30,7 +30,7 @@ class VimTest(base.TestCase):
     """Test class for Vim."""
 
     def setUp(self):
-        super(VimTest, self).setUp()
+        super().setUp()
         patcher = mock.patch('oslo_vmware.service.CompatibilitySudsClient')
         self.addCleanup(patcher.stop)
         self.SudsClientMock = patcher.start()
@@ -78,7 +78,7 @@ class VimTest(base.TestCase):
 
 class VMwareSudsTest(base.TestCase):
     def setUp(self):
-        super(VMwareSudsTest, self).setUp()
+        super().setUp()
 
         def new_client_init(self, url, **kwargs):
             return
@@ -89,7 +89,7 @@ class VMwareSudsTest(base.TestCase):
         self.vim = self._vim_create()
 
     def _mock_getattr(self, attr_name):
-        class fake_service_content(object):
+        class fake_service_content:
             def __init__(self):
                 self.ServiceContent = {}
                 self.ServiceContent.fake = 'fake'

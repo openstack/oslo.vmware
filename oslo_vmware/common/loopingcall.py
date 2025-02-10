@@ -43,7 +43,7 @@ class LoopingCallDone(Exception):
         self.retvalue = retvalue
 
 
-class LoopingCallBase(object):
+class LoopingCallBase:
     def __init__(self, f=None, *args, **kw):
         self.args = args
         self.kw = kw
