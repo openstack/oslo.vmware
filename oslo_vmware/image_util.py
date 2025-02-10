@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from defusedxml.lxml import parse
+from lxml import etree  # nosec: B410
 
 
 def _get_vmdk_name_from_ovf(root):
@@ -27,4 +27,6 @@ def _get_vmdk_name_from_ovf(root):
 
 def get_vmdk_name_from_ovf(ovf_handle):
     """Get the vmdk name from the given ovf descriptor."""
-    return _get_vmdk_name_from_ovf(parse(ovf_handle).getroot())
+    parser = etree.XMLParser(resolve_entities=False)
+    return _get_vmdk_name_from_ovf(
+        etree.parse(ovf_handle, parser=parser).getroot())  # nosec: B320
