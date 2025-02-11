@@ -97,7 +97,7 @@ class FileWriteHandleTest(base.TestCase):
     """Tests for FileWriteHandle."""
 
     def setUp(self):
-        super(FileWriteHandleTest, self).setUp()
+        super().setUp()
 
         vim_cookie = mock.Mock()
         vim_cookie.name = 'name'
@@ -188,7 +188,7 @@ class VmdkWriteHandleTest(base.TestCase):
     """Tests for VmdkWriteHandle."""
 
     def setUp(self):
-        super(VmdkWriteHandleTest, self).setUp()
+        super().setUp()
         self._conn = mock.Mock()
         patcher = mock.patch(
             'urllib3.connection.HTTPConnection')
@@ -308,7 +308,7 @@ class VmdkReadHandleTest(base.TestCase):
     """Tests for VmdkReadHandle."""
 
     def setUp(self):
-        super(VmdkReadHandleTest, self).setUp()
+        super().setUp()
 
     def _mock_connection(self, read_data='fake-data'):
         self._resp = mock.Mock()
@@ -436,7 +436,7 @@ class ImageReadHandleTest(base.TestCase):
         max_items = 10
         item = [1] * 10
 
-        class ImageReadIterator(object):
+        class ImageReadIterator:
 
             def __init__(self):
                 self.num_items = 0

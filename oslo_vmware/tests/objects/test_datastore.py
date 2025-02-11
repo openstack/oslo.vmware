@@ -23,14 +23,14 @@ from oslo_vmware.tests import base
 from oslo_vmware import vim_util
 
 
-class HostMount(object):
+class HostMount:
 
     def __init__(self, key, mountInfo):
         self.key = key
         self.mountInfo = mountInfo
 
 
-class MountInfo(object):
+class MountInfo:
 
     def __init__(self, accessMode, mounted, accessible):
         self.accessMode = accessMode
@@ -111,21 +111,21 @@ class DatastoreTestCase(base.TestCase):
         m4 = HostMount("m4", MountInfo('readWrite', True, False))
         ds.get_summary.assert_called_once_with(session)
 
-        class Prop(object):
+        class Prop:
             DatastoreHostMount = [m1, m2, m3, m4]
 
-        class HostRuntime(object):
+        class HostRuntime:
             inMaintenanceMode = in_maintenance_mode
 
-        class HostProp(object):
+        class HostProp:
             name = 'runtime'
             val = HostRuntime()
 
-        class Object(object):
+        class Object:
             obj = "m1"
             propSet = [HostProp()]
 
-        class Runtime(object):
+        class Runtime:
             objects = [Object()]
 
         session.invoke_api = mock.Mock(side_effect=[Prop(), Runtime()])
@@ -366,7 +366,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
-        expected_url = '%s://%s/folder/%s?%s' % (
+        expected_url = '{}://{}/folder/{}?{}'.format(
             scheme, server, path, query)
         self.assertEqual(expected_url, str(url))
 
@@ -379,7 +379,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
-        expected_url = '%s://%s/folder/%s?%s' % (
+        expected_url = '{}://{}/folder/{}?{}'.format(
             scheme, server, path.lstrip('/'), query)
         self.assertEqual(expected_url, str(url))
 
@@ -392,7 +392,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
-        expected_url = '%s://%s/folder/%s?%s' % (
+        expected_url = '{}://{}/folder/{}?{}'.format(
             scheme, server, path.rstrip('/'), query)
         self.assertEqual(expected_url, str(url))
 
@@ -429,7 +429,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         path = 'images/aa.vmdk'
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/%s?%s' % (path, query)
+        url = 'https://13.37.73.31/folder/{}?{}'.format(path, query)
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(path, ds_url.path)
 
@@ -454,12 +454,12 @@ class DatastoreURLTestCase(base.TestCase):
         session = mock.Mock()
         session.invoke_api = mock.Mock()
 
-        class Ticket(object):
+        class Ticket:
             id = 'fake_id'
         session.invoke_api.return_value = Ticket()
         ds_url = datastore.DatastoreURL.urlparse(url)
         ticket = ds_url.get_transfer_ticket(session, 'PUT')
-        self.assertEqual('%s="%s"' % (constants.CGI_COOKIE_KEY, 'fake_id'),
+        self.assertEqual('{}="{}"'.format(constants.CGI_COOKIE_KEY, 'fake_id'),
                          ticket)
 
     def test_get_datastore_by_ref(self):

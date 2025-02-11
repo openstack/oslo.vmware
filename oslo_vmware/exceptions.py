@@ -82,7 +82,7 @@ class VMwareDriverException(Exception):
                 message = self.msg_fmt
 
         self.message = message
-        super(VMwareDriverException, self).__init__(message)
+        super().__init__(message)
 
     @property
     def msg(self):
@@ -103,7 +103,7 @@ class VimException(VMwareDriverException):
     """The base exception class for all VIM related exceptions."""
 
     def __init__(self, message=None, cause=None, details=None, **kwargs):
-        super(VimException, self).__init__(message, details, **kwargs)
+        super().__init__(message, details, **kwargs)
         self.cause = cause
 
 
@@ -111,7 +111,7 @@ class VimSessionOverLoadException(VMwareDriverException):
     """Thrown when there is an API call overload at the VMware server."""
 
     def __init__(self, message, cause=None):
-        super(VimSessionOverLoadException, self).__init__(message)
+        super().__init__(message)
         self.cause = cause
 
 
@@ -119,7 +119,7 @@ class VimConnectionException(VMwareDriverException):
     """Thrown when there is a connection problem."""
 
     def __init__(self, message, cause=None):
-        super(VimConnectionException, self).__init__(message)
+        super().__init__(message)
         self.cause = cause
 
 
@@ -127,7 +127,7 @@ class VimAttributeException(VMwareDriverException):
     """Thrown when a particular attribute cannot be found."""
 
     def __init__(self, message, cause=None):
-        super(VimAttributeException, self).__init__(message)
+        super().__init__(message)
         self.cause = cause
 
 
@@ -135,7 +135,7 @@ class VimFaultException(VimException):
     """Exception thrown when there are unrecognized VIM faults."""
 
     def __init__(self, fault_list, message, cause=None, details=None):
-        super(VimFaultException, self).__init__(message, cause, details)
+        super().__init__(message, cause, details)
         if not isinstance(fault_list, list):
             raise ValueError(_("fault_list must be a list"))
         self.fault_list = fault_list
@@ -148,7 +148,7 @@ class VimFaultException(VimException):
             descr += '\nFaults: ' + str(self.fault_list)
         if self.details:
             # details may contain non-ASCII values
-            details = '{%s}' % ', '.join(["'%s': '%s'" % (k, v) for k, v in
+            details = '{%s}' % ', '.join(["'{}': '{}'".format(k, v) for k, v in
                                           self.details.items()])
             descr += '\nDetails: ' + details
         return descr
@@ -158,7 +158,7 @@ class ImageTransferException(VMwareDriverException):
     """Thrown when there is an error during image transfer."""
 
     def __init__(self, message, cause=None):
-        super(ImageTransferException, self).__init__(message)
+        super().__init__(message)
         self.cause = cause
 
 
@@ -173,7 +173,7 @@ class VMwareDriverConfigurationException(VMwareDriverException):
     msg_fmt = _("VMware Driver configuration fault.")
 
     def __init__(self, message=None, details=None, **kwargs):
-        super(VMwareDriverConfigurationException, self).__init__(
+        super().__init__(
             message, details, **kwargs)
         _print_deprecation_warning(self.__class__)
 
@@ -186,7 +186,7 @@ class MissingParameter(VMwareDriverException):
     msg_fmt = _("Missing parameter : %(param)s")
 
     def __init__(self, message=None, details=None, **kwargs):
-        super(MissingParameter, self).__init__(message, details, **kwargs)
+        super().__init__(message, details, **kwargs)
         _print_deprecation_warning(self.__class__)
 
 

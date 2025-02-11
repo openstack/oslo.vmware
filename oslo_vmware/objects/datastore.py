@@ -149,7 +149,7 @@ def sdrs_enabled(session, dsc_ref):
     return pod_sdrs_entry.storageDrsConfig.podConfig.enabled
 
 
-class Datastore(object):
+class Datastore:
 
     def __init__(self, ref, name, capacity=None, freespace=None,
                  uncommitted=None, type=None, datacenter=None):
@@ -276,7 +276,7 @@ class Datastore(object):
         return hosts[i]
 
 
-class DatastorePath(object):
+class DatastorePath:
 
     """Class for representing a directory or file path in a vSphere datatore.
 
@@ -312,7 +312,7 @@ class DatastorePath(object):
     def __str__(self):
         """Full datastore path to the file or directory."""
         if self._rel_path != '':
-            return "[%s] %s" % (self._datastore_name, self.rel_path)
+            return "[{}] {}".format(self._datastore_name, self.rel_path)
         return "[%s]" % self._datastore_name
 
     @property
@@ -372,7 +372,7 @@ class DatastorePath(object):
         return cls(datastore_name, path.strip())
 
 
-class DatastoreURL(object):
+class DatastoreURL:
 
     """Class for representing a URL to HTTP access a file in a datastore.
 
@@ -420,8 +420,8 @@ class DatastoreURL(object):
         return self._datastore_name
 
     def __str__(self):
-        return '%s://%s/folder/%s?%s' % (self._scheme, self._server,
-                                         self.path, self._query)
+        return '{}://{}/folder/{}?{}'.format(self._scheme, self._server,
+                                             self.path, self._query)
 
     def connect(self, method, content_length, cookie):
         try:
@@ -434,7 +434,8 @@ class DatastoreURL(object):
                 excep_msg = _("Invalid scheme: %s.") % self._scheme
                 LOG.error(excep_msg)
                 raise ValueError(excep_msg)
-            conn.putrequest(method, '/folder/%s?%s' % (self.path, self._query))
+            conn.putrequest(
+                method, '/folder/{}?{}'.format(self.path, self._query))
             conn.putheader('User-Agent', constants.USER_AGENT)
             conn.putheader('Content-Length', content_length)
             conn.putheader('Cookie', cookie)
@@ -458,4 +459,4 @@ class DatastoreURL(object):
             'AcquireGenericServiceTicket',
             session.vim.service_content.sessionManager,
             spec=spec)
-        return '%s="%s"' % (constants.CGI_COOKIE_KEY, ticket.id)
+        return '{}="{}"'.format(constants.CGI_COOKIE_KEY, ticket.id)

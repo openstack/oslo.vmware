@@ -32,7 +32,7 @@ class ServiceMessagePluginTest(base.TestCase):
     """Test class for ServiceMessagePlugin."""
 
     def setUp(self):
-        super(ServiceMessagePluginTest, self).setUp()
+        super().setUp()
         self.plugin = service.ServiceMessagePlugin()
 
     @ddt.data(('value', 'foo', 'string'), ('removeKey', '1', 'int'),
@@ -59,7 +59,7 @@ class ServiceMessagePluginTest(base.TestCase):
 class ServiceTest(base.TestCase):
 
     def setUp(self):
-        super(ServiceTest, self).setUp()
+        super().setUp()
         patcher = mock.patch('oslo_vmware.service.CompatibilitySudsClient')
         self.addCleanup(patcher.stop)
         self.SudsClientMock = patcher.start()
@@ -536,7 +536,7 @@ class SudsLogFilterTest(base.TestCase):
     """Tests for SudsLogFilter."""
 
     def setUp(self):
-        super(SudsLogFilterTest, self).setUp()
+        super().setUp()
         self.log_filter = service.SudsLogFilter()
 
         self.login = mock.Mock(spec=suds.sax.element.Element)

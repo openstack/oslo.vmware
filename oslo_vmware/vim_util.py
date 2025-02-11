@@ -433,7 +433,7 @@ def continue_retrieval(vim, retrieve_result):
         return vim.ContinueRetrievePropertiesEx(collector, token=token)
 
 
-class WithRetrieval(object):
+class WithRetrieval:
     """Context to retrieve results.
 
     This context provides an iterator to retrieve results and cancel (when
@@ -447,7 +447,7 @@ class WithRetrieval(object):
     """
 
     def __init__(self, vim, retrieve_result):
-        super(WithRetrieval, self).__init__()
+        super().__init__()
         self.vim = vim
         self.retrieve_result = retrieve_result
 
@@ -460,8 +460,7 @@ class WithRetrieval(object):
 
     def __iter__(self):
         while self.retrieve_result:
-            for obj in self.retrieve_result.objects:
-                yield obj
+            yield from self.retrieve_result.objects
             self.retrieve_result = continue_retrieval(
                 self.vim, self.retrieve_result)
 
@@ -577,13 +576,13 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
                 if len(propSet) >= 1 and not entity_name:
                     entity_name = propSet[0].val
                 elif len(propSet) >= 1:
-                    path = '%s/%s' % (propSet[0].val, path)
+                    path = '{}/{}'.format(propSet[0].val, path)
     # NOTE(arnaud): slice to exclude the root folder from the result.
     if propSet is not None and len(propSet) > 0:
         path = path[len(propSet[0].val):]
     if entity_name is None:
         entity_name = ""
-    return '%s%s' % (path, entity_name)
+    return '{}{}'.format(path, entity_name)
 
 
 def get_http_service_request_spec(client_factory, method, uri):

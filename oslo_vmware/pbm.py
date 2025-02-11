@@ -59,9 +59,9 @@ class Pbm(service.Service):
         """
         base_url = service.Service.build_base_url(protocol, host, port)
         soap_url = base_url + '/pbm'
-        super(Pbm, self).__init__(wsdl_url, soap_url, cacert, insecure,
-                                  pool_maxsize, connection_timeout,
-                                  op_id_prefix)
+        super().__init__(wsdl_url, soap_url, cacert, insecure,
+                         pool_maxsize, connection_timeout,
+                         op_id_prefix)
 
     def set_soap_cookie(self, cookie):
         """Set the specified vCenter session cookie in the SOAP header
@@ -193,7 +193,7 @@ def get_pbm_wsdl_location(vc_version):
     ver = vc_version.split('.')
     major_minor = ver[0]
     if len(ver) >= 2:
-        major_minor = '%s.%s' % (major_minor, ver[1])
+        major_minor = '{}.{}'.format(major_minor, ver[1])
     curr_dir = os.path.abspath(os.path.dirname(__file__))
     pbm_service_wsdl = os.path.join(curr_dir, 'wsdl', major_minor,
                                     'pbmService.wsdl')
