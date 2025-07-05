@@ -21,7 +21,7 @@ import http.client as httplib
 import io
 import logging
 
-import netaddr
+from oslo_utils import netutils
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import requests
@@ -256,7 +256,7 @@ class Service:
     @staticmethod
     def build_base_url(protocol, host, port):
         proto_str = '%s://' % protocol
-        host_str = '[%s]' % host if netaddr.valid_ipv6(host) else host
+        host_str = netutils.escape_ipv6(host)
         port_str = '' if port is None else ':%d' % port
         return proto_str + host_str + port_str
 
