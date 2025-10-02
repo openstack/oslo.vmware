@@ -34,3 +34,6 @@ Repository = "https://opendev.org/openstack/oslo.vmware"
 packages = [
     "oslo_vmware"
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
