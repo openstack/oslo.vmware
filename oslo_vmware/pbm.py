@@ -193,7 +193,7 @@ def get_pbm_wsdl_location(vc_version):
     ver = vc_version.split('.')
     major_minor = ver[0]
     if len(ver) >= 2:
-        major_minor = '{}.{}'.format(major_minor, ver[1])
+        major_minor = f'{major_minor}.{ver[1]}'
     curr_dir = os.path.abspath(os.path.dirname(__file__))
     pbm_service_wsdl = os.path.join(curr_dir, 'wsdl', major_minor,
                                     'pbmService.wsdl')

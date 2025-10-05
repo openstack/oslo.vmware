@@ -148,7 +148,7 @@ class VimFaultException(VimException):
             descr += '\nFaults: ' + str(self.fault_list)
         if self.details:
             # details may contain non-ASCII values
-            details = '{%s}' % ', '.join(["'{}': '{}'".format(k, v) for k, v in
+            details = '{%s}' % ', '.join([f"'{k}': '{v}'" for k, v in
                                           self.details.items()])
             descr += '\nDetails: ' + details
         return descr

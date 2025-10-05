@@ -243,7 +243,7 @@ class FileWriteHandle(FileHandle):
         else:
             soap_url = self._get_soap_url(scheme, host_or_url, port)
             param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
-            self._url = '{}/folder/{}'.format(soap_url, file_path)
+            self._url = f'{soap_url}/folder/{file_path}'
             self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self._conn = self._create_write_connection('PUT',
@@ -319,7 +319,7 @@ class FileReadHandle(FileHandle):
         else:
             soap_url = self._get_soap_url(scheme, host_or_url, port)
             param_list = {'dcPath': data_center_name, 'dsName': datastore_name}
-            self._url = '{}/folder/{}'.format(soap_url, file_path)
+            self._url = f'{soap_url}/folder/{file_path}'
             self._url = self._url + '?' + urlparse.urlencode(param_list)
 
         self._conn = self._create_read_connection(self._url,

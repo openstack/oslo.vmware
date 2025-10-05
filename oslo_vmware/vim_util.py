@@ -576,13 +576,13 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
                 if len(propSet) >= 1 and not entity_name:
                     entity_name = propSet[0].val
                 elif len(propSet) >= 1:
-                    path = '{}/{}'.format(propSet[0].val, path)
+                    path = f'{propSet[0].val}/{path}'
     # NOTE(arnaud): slice to exclude the root folder from the result.
     if propSet is not None and len(propSet) > 0:
         path = path[len(propSet[0].val):]
     if entity_name is None:
         entity_name = ""
-    return '{}{}'.format(path, entity_name)
+    return f'{path}{entity_name}'
 
 
 def get_http_service_request_spec(client_factory, method, uri):

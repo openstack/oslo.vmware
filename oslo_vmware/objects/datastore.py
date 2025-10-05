@@ -312,7 +312,7 @@ class DatastorePath:
     def __str__(self):
         """Full datastore path to the file or directory."""
         if self._rel_path != '':
-            return "[{}] {}".format(self._datastore_name, self.rel_path)
+            return f"[{self._datastore_name}] {self.rel_path}"
         return "[%s]" % self._datastore_name
 
     @property
@@ -435,7 +435,7 @@ class DatastoreURL:
                 LOG.error(excep_msg)
                 raise ValueError(excep_msg)
             conn.putrequest(
-                method, '/folder/{}?{}'.format(self.path, self._query))
+                method, f'/folder/{self.path}?{self._query}')
             conn.putheader('User-Agent', constants.USER_AGENT)
             conn.putheader('Content-Length', content_length)
             conn.putheader('Cookie', cookie)
@@ -459,4 +459,4 @@ class DatastoreURL:
             'AcquireGenericServiceTicket',
             session.vim.service_content.sessionManager,
             spec=spec)
-        return '{}="{}"'.format(constants.CGI_COOKIE_KEY, ticket.id)
+        return f'{constants.CGI_COOKIE_KEY}="{ticket.id}"'

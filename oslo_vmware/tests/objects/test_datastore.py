@@ -429,7 +429,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         path = 'images/aa.vmdk'
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/{}?{}'.format(path, query)
+        url = f'https://13.37.73.31/folder/{path}?{query}'
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(path, ds_url.path)
 
