@@ -19,8 +19,7 @@ Functions and classes for image transfer between ESX/VC & image service.
 
 import logging
 import tarfile
-
-from eventlet import timeout
+import time
 
 from oslo_service import loopingcall
 from oslo_utils import units
@@ -39,6 +38,18 @@ NFC_LEASE_UPDATE_PERIOD = 60  # update NFC lease every 60sec.
 CHUNK_SIZE = 64 * units.Ki  # default chunk size for image transfer
 
 
+class Timer:
+    class Timeout(Exception):
+        pass
+
+    def __init__(self, timeout_secs):
+        self._deadline = time.monotonic() + timeout_secs
+
+    def check_deadline(self):
+        if (self._deadline - time.monotonic()) <= 0:
+            raise self.Timeout()
+
+
 def _create_progress_updater(handle):
     if isinstance(handle, rw_handles.VmdkHandle):
         updater = loopingcall.FixedIntervalLoopingCall(handle.update_progress)
@@ -52,14 +63,15 @@ def _start_transfer(read_handle, write_handle, timeout_secs):
     read_updater = _create_progress_updater(read_handle)
     write_updater = _create_progress_updater(write_handle)
 
-    timer = timeout.Timeout(timeout_secs)
+    timer = Timer(timeout_secs)
     try:
         while True:
+            timer.check_deadline()
             data = read_handle.read(CHUNK_SIZE)
             if not data:
                 break
             write_handle.write(data)
-    except timeout.Timeout as excep:
+    except Timer.Timeout as excep:
         msg = (_('Timeout, read_handle: "%(src)s", write_handle: "%(dest)s"') %
                {'src': read_handle,
                 'dest': write_handle})
@@ -72,7 +84,6 @@ def _start_transfer(read_handle, write_handle, timeout_secs):
         LOG.exception(msg)
         raise exceptions.ImageTransferException(msg, excep)
     finally:
-        timer.cancel()
         if read_updater:
             read_updater.stop()
         if write_updater:
