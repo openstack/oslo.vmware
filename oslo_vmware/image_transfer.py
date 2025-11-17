@@ -22,9 +22,9 @@ import tarfile
 
 from eventlet import timeout
 
+from oslo_service import loopingcall
 from oslo_utils import units
 from oslo_vmware._i18n import _
-from oslo_vmware.common import loopingcall
 from oslo_vmware import constants
 from oslo_vmware import exceptions
 from oslo_vmware import image_util
