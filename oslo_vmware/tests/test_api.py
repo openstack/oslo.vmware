@@ -18,7 +18,6 @@
 from datetime import datetime
 from unittest import mock
 
-from eventlet import greenthread
 from oslo_context import context
 import suds
 
@@ -211,7 +210,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         module = mock.Mock()
         module.api = api
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             self.assertEqual(ret, api_session.invoke_api(module, 'api'))
         api_session._create_session.assert_called_once_with()
 
@@ -231,7 +230,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         module = mock.Mock()
         module.api = api
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             self.assertEqual(ret, api_session.invoke_api(module, 'api'))
         self.assertFalse(api_session._create_session.called)
 
@@ -304,7 +303,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         module = mock.Mock()
         module.api = api
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             ret = api_session.invoke_api(module, 'api')
         self.assertEqual(result, ret)
         vim_obj.SessionIsActive.assert_called_once_with(
@@ -345,7 +344,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             ret = api_session.wait_for_task(task)
             self.assertEqual('success', ret.state)
             self.assertEqual(100, ret.progress)
@@ -376,7 +375,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             ret = api_session.wait_for_task(task)
             self.assertEqual('success', ret.state)
             self.assertEqual(100, ret.progress)
@@ -404,7 +403,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             self.assertRaises(exceptions.VimFaultException,
                               api_session.wait_for_task,
                               task)
@@ -423,7 +422,7 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(
             side_effect=exceptions.VimException(None))
         task = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             self.assertRaises(exceptions.VimException,
                               api_session.wait_for_task,
                               task)
@@ -444,7 +443,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             api_session.wait_for_lease_ready(lease)
         api_session.invoke_api.assert_called_with(vim_util,
                                                   'get_object_property',
@@ -462,7 +461,7 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
-        with mock.patch.object(greenthread, 'sleep'):
+        with mock.patch('time.sleep'):
             self.assertRaises(exceptions.VimException,
                               api_session.wait_for_lease_ready,
                               lease)
