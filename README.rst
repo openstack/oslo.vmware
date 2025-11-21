@@ -1,15 +1,10 @@
-========================
-Team and repository tags
-========================
-
-.. image:: https://governance.openstack.org/tc/badges/oslo.vmware.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
-
-.. Change things from this point on
-
 =================================================
 oslo.vmware --- VMware support code for OpenStack
 =================================================
+
+.. image:: https://governance.openstack.org/tc/badges/oslo.vmware.svg
+
+.. Change things from this point on
 
 .. image:: https://img.shields.io/pypi/v/oslo.vmware.svg
     :target: https://pypi.org/project/oslo.vmware/
