@@ -30,7 +30,7 @@ class ImageTransferUtilityTest(base.TestCase):
         data = b'image-data-here'
         read_handle = io.BytesIO(data)
         write_handle = mock.Mock()
-        image_transfer._start_transfer(read_handle, write_handle, None)
+        image_transfer._start_transfer(read_handle, write_handle, 10)
         write_handle.write.assert_called_once_with(data)
 
     @mock.patch('oslo_vmware.rw_handles.FileWriteHandle')
