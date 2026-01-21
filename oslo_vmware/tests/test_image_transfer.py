@@ -313,7 +313,7 @@ class ImageTransferUtilityTest(base.TestCase):
 
     @mock.patch.object(image_transfer, '_start_transfer')
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
-    @mock.patch('oslo_vmware.common.loopingcall.FixedIntervalLoopingCall')
+    @mock.patch('oslo_service.loopingcall.FixedIntervalLoopingCall')
     def test_copy_stream_optimized_disk(
             self, loopingcall, vmdk_read_handle, start_transfer):
 
