@@ -44,7 +44,10 @@ class FileHandleTest(base.TestCase):
         ret = handle._create_connection('http://localhost/foo?q=bar', 'GET')
 
         self.assertEqual(conn, ret)
-        conn.putrequest.assert_called_once_with('GET', '/foo?q=bar')
+        conn.request.assert_called_once_with(
+            'GET', '/foo?q=bar',
+            headers={'User-Agent': rw_handles.USER_AGENT},
+            preload_content=False)
 
     @mock.patch('urllib3.connection.HTTPSConnection')
     def test_create_connection_https(self, https_conn):
@@ -59,7 +62,10 @@ class FileHandleTest(base.TestCase):
         conn.set_cert.assert_called_once_with(
             ca_certs=ca_store, cert_reqs=ssl.CERT_NONE,
             assert_fingerprint=None)
-        conn.putrequest.assert_called_once_with('GET', '/foo?q=bar')
+        conn.request.assert_called_once_with(
+            'GET', '/foo?q=bar',
+            headers={'User-Agent': rw_handles.USER_AGENT},
+            preload_content=False)
 
     @mock.patch('urllib3.connection.HTTPSConnection')
     def test_create_connection_https_with_cacerts(self, https_conn):
@@ -240,7 +246,16 @@ class VmdkWriteHandleTest(base.TestCase):
         data = [1] * 10
         handle.write(data)
         self.assertEqual(len(data), handle._bytes_written)
-        self._conn.putrequest.assert_called_once_with('PUT', '/ds/disk1.vmdk')
+        self._conn.request.assert_called_once_with(
+            'PUT', '/ds/disk1.vmdk',
+            headers={
+                'User-Agent': rw_handles.USER_AGENT,
+                'Cookie': 'name=value',
+                'Content-Length': '100',
+                'Overwrite': 't',
+                'Content-Type': 'binary/octet-stream',
+            },
+            preload_content=False)
         self._conn.send.assert_called_once_with(data)
 
     def test_tell(self):
@@ -261,7 +276,15 @@ class VmdkWriteHandleTest(base.TestCase):
         data = [1] * 10
         handle.write(data)
         self.assertEqual(len(data), handle._bytes_written)
-        self._conn.putrequest.assert_called_once_with('POST', '/ds/disk1.vmdk')
+        self._conn.request.assert_called_once_with(
+            'POST', '/ds/disk1.vmdk',
+            headers={
+                'User-Agent': rw_handles.USER_AGENT,
+                'Cookie': 'name=value',
+                'Content-Length': '100',
+                'Content-Type': 'application/x-vnd.vmware-streamVmdk',
+            },
+            preload_content=False)
         self._conn.send.assert_called_once_with(data)
 
     def test_update_progress(self):

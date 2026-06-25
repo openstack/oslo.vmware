@@ -60,7 +60,8 @@ class FileHandle:
         self._file_handle = file_handle
 
     def _create_connection(self, url, method, cacerts=False,
-                           ssl_thumbprint=None, cookies=None):
+                           ssl_thumbprint=None, cookies=None,
+                           extra_headers=None):
         _urlparse = urlparse.urlparse(url)
         scheme, netloc, path, params, query, fragment = _urlparse
         if scheme == 'http':
@@ -87,11 +88,13 @@ class FileHandle:
 
         if query:
             path = path + '?' + query
-        conn.putrequest(method, path)
-        conn.putheader('User-Agent', USER_AGENT)
+        headers = {'User-Agent': USER_AGENT}
         if cookies:
-            vim_cookie = self._build_vim_cookie_header(cookies)
-            conn.putheader('Cookie', vim_cookie)
+            headers['Cookie'] = self._build_vim_cookie_header(cookies)
+        if extra_headers:
+            headers.update(extra_headers)
+        # preload_content=False, as we want to stream the content
+        conn.request(method, path, headers=headers, preload_content=False)
         return conn
 
     def _create_read_connection(self, url, cookies=None, cacerts=False,
@@ -100,7 +103,6 @@ class FileHandle:
         try:
             conn = self._create_connection(url, 'GET', cacerts, ssl_thumbprint,
                                            cookies=cookies)
-            conn.endheaders()
             return conn
         except Exception as excep:
             # TODO(vbala) We need to catch and raise specific exceptions
@@ -124,15 +126,16 @@ class FileHandle:
                   {'file_size': file_size,
                    'url': url})
         try:
-            conn = self._create_connection(url, method, cacerts,
-                                           ssl_thumbprint, cookies=cookies)
+            extra_headers = {}
             if file_size:
-                conn.putheader('Content-Length', str(file_size))
+                extra_headers['Content-Length'] = str(file_size)
             if overwrite:
-                conn.putheader('Overwrite', overwrite)
+                extra_headers['Overwrite'] = overwrite
             if content_type:
-                conn.putheader('Content-Type', content_type)
-            conn.endheaders()
+                extra_headers['Content-Type'] = content_type
+            conn = self._create_connection(url, method, cacerts,
+                                           ssl_thumbprint, cookies=cookies,
+                                           extra_headers=extra_headers)
             return conn
         except requests.RequestException as excep:
             excep_msg = _("Error occurred while creating HTTP connection "
