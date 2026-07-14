@@ -147,6 +147,22 @@ class VMwareAPISessionTest(base.TestCase):
         self.assertFalse(vim_obj.Login.called)
         self.assertEqual(old_session_key, api_session._session_id)
 
+    def test_create_session_retries_on_connection_exception(self):
+        """Verify _create_session retries on VimConnectionException."""
+        api_session = self._create_api_session(False)
+        vim_obj = api_session.vim
+        session = mock.Mock()
+        session.key = "12345"
+        vim_obj.Login.side_effect = [
+            exceptions.VimConnectionException(None),
+            exceptions.VimConnectionException(None),
+            session,
+        ]
+        with mock.patch('time.sleep'):
+            api_session._create_session()
+        self.assertEqual(3, vim_obj.Login.call_count)
+        self.assertEqual("12345", api_session._session_id)
+
     def test_invoke_api(self):
         api_session = self._create_api_session(True)
         response = mock.Mock()
@@ -233,6 +249,62 @@ class VMwareAPISessionTest(base.TestCase):
         with mock.patch('time.sleep'):
             self.assertEqual(ret, api_session.invoke_api(module, 'api'))
         self.assertFalse(api_session._create_session.called)
+
+    def test_invoke_api_retry_count_semantics(self):
+        """Verify retry count matches original RetryDecorator semantics.
+
+        With retry_count=3, the function should be called 4 times total
+        (1 initial attempt + 3 retries) before the exception propagates.
+        """
+        retry_count = 3
+        api_session = self._create_api_session(True, retry_count=retry_count)
+        api_session._create_session = mock.Mock()
+        vim_obj = api_session.vim
+        vim_obj.SessionIsActive.return_value = False
+
+        call_count = [0]
+
+        def api(*args, **kwargs):
+            call_count[0] += 1
+            raise exceptions.VimConnectionException(None)
+
+        module = mock.Mock()
+        module.api = api
+        with mock.patch('time.sleep'):
+            self.assertRaises(exceptions.VimConnectionException,
+                              api_session.invoke_api,
+                              module,
+                              'api')
+        # 1 initial attempt + 3 retries = 4 total calls
+        self.assertEqual(retry_count + 1, call_count[0])
+
+    def test_invoke_api_retry_wait_times(self):
+        """Verify wait times match original RetryDecorator semantics.
+
+        The wait sequence should be 10, 20, 30, ..., capped at 60.
+        """
+        retry_count = 7
+        api_session = self._create_api_session(True, retry_count=retry_count)
+        api_session._create_session = mock.Mock()
+        vim_obj = api_session.vim
+        vim_obj.SessionIsActive.return_value = False
+
+        def api(*args, **kwargs):
+            raise exceptions.VimConnectionException(None)
+
+        module = mock.Mock()
+        module.api = api
+        sleep_times = []
+        with mock.patch('time.sleep',
+                        side_effect=lambda t: sleep_times.append(t)):
+            self.assertRaises(exceptions.VimConnectionException,
+                              api_session.invoke_api,
+                              module,
+                              'api')
+        # Original RetryDecorator: sleep_time starts at 0, incremented by
+        # inc_sleep_time (10) before each sleep, capped at max_sleep_time (60).
+        # Sequence: 10, 20, 30, 40, 50, 60, 60
+        self.assertEqual([10, 20, 30, 40, 50, 60, 60], sleep_times)
 
     def test_invoke_api_with_vim_fault_exception(self):
         api_session = self._create_api_session(True)
