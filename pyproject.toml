@@ -9,14 +9,13 @@ authors = [
     {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
 dynamic = ["version", "dependencies"]
 requires-python = ">=3.11"
 classifiers = [
     "Environment :: OpenStack",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -30,10 +29,8 @@ classifiers = [
 Homepage = "https://docs.openstack.org/oslo.vmware"
 Repository = "https://opendev.org/openstack/oslo.vmware"
 
-[tool.setuptools]
-packages = [
-    "oslo_vmware"
-]
+[tool.setuptools.packages.find]
+include = ["oslo_vmware*"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
