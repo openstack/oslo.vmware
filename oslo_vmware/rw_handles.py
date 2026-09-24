@@ -237,9 +237,7 @@ class FileHandle:
 
     def _get_soap_url(self, scheme, host, port):
         """Returns the IPv4/v6 compatible SOAP URL for the given host."""
-        if netutils.is_valid_ipv6(host):
-            return '%s://[%s]:%d' % (scheme, host, port)
-        return '%s://%s:%d' % (scheme, host, port)
+        return f'{scheme}://{netutils.escape_ipv6(host)}:{port}'
 
 
 class FileWriteHandle(FileHandle):
@@ -570,10 +568,7 @@ class VmdkHandle(FileHandle):
         urlp = urlparse.urlparse(url)
         if urlp.netloc == '*':
             scheme, netloc, path, params, query, fragment = urlp
-            if netutils.is_valid_ipv6(host):
-                netloc = '[%s]:%d' % (host, port)
-            else:
-                netloc = "%s:%d" % (host, port)
+            netloc = f"{netutils.escape_ipv6(host)}:{port}"
             url = urlparse.urlunparse(
                 (scheme, netloc, path, params, query, fragment)
             )

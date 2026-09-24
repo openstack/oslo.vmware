@@ -575,8 +575,8 @@ class VimUtilTest(base.TestCase):
         mock_propset = []
         for i in range(2):
             mock_obj = mock.Mock()
-            mock_obj.name = "test_name_%d" % i
-            mock_obj.val = "test_val_%d" % i
+            mock_obj.name = f"test_name_{i}"
+            mock_obj.val = f"test_val_{i}"
             mock_propset.append(mock_obj)
 
         self.assertEqual(

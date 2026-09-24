@@ -161,7 +161,7 @@ class VmdkHandleTest(base.TestCase):
         lease_info.deviceUrl = [device_url_0, device_url_1]
         host = '10.1.2.3'
         port = 443
-        exp_url = 'https://%s:%d/ds1/vm1.vmdk' % (host, port)
+        exp_url = f'https://{host}:{port}/ds1/vm1.vmdk'
         vmw_http_file = rw_handles.VmdkHandle(None, None, None, None)
         url, thumbprint = vmw_http_file._find_vmdk_url(lease_info, host, port)
         self.assertEqual(exp_url, url)

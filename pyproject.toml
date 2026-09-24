@@ -47,7 +47,6 @@ select = ["E", "F", "G", "LOG", "S", "UP"]
 external = ["H"]
 ignore = [
     "S101",  # asserts are only used for type narrowing
-    "UP031",  # TODO(tkajinam): Remove this
 ]
 
 [tool.ruff.lint.per-file-ignores]
