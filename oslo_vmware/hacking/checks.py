@@ -17,8 +17,14 @@ import re
 from hacking import core
 
 
-_all_log_levels = {'critical', 'error', 'exception', 'info',
-                   'warning', 'debug'}
+_all_log_levels = {
+    'critical',
+    'error',
+    'exception',
+    'info',
+    'warning',
+    'debug',
+}
 
 # Since _Lx() have been removed, we just need to check _()
 _all_hints = {'_'}
@@ -27,7 +33,8 @@ _log_translation_hint = re.compile(
     r".*LOG\.({levels})\(\s*({hints})\(".format(
         levels='|'.join(_all_log_levels),
         hints='|'.join(_all_hints),
-    ))
+    )
+)
 
 
 @core.flake8ext

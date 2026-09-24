@@ -24,7 +24,6 @@ from oslo_vmware.tests import base
 
 
 class ImageUtilTest(base.TestCase):
-
     def test_get_vmdk_name_from_ovf(self):
         ovf_descriptor = os.path.join(os.path.dirname(__file__), 'test.ovf')
         with open(ovf_descriptor) as f:

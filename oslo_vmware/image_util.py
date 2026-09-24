@@ -17,11 +17,12 @@ from lxml import etree  # nosec: B410
 
 
 def _get_vmdk_name_from_ovf(root):
-    ns_ovf = "{{{0}}}".format(root.nsmap["ovf"])
-    disk = root.find("./{0}DiskSection/{0}Disk".format(ns_ovf))
+    ns_ovf = "{{{}}}".format(root.nsmap["ovf"])
+    disk = root.find(f"./{ns_ovf}DiskSection/{ns_ovf}Disk")
     file_id = disk.get(f"{ns_ovf}fileRef")
-    f = root.find('./{0}References/{0}File[@{0}id="{1}"]'.format(ns_ovf,
-                                                                 file_id))
+    f = root.find(
+        f'./{ns_ovf}References/{ns_ovf}File[@{ns_ovf}id="{file_id}"]'
+    )
     return f.get(f"{ns_ovf}href")
 
 
@@ -29,4 +30,5 @@ def get_vmdk_name_from_ovf(ovf_handle):
     """Get the vmdk name from the given ovf descriptor."""
     parser = etree.XMLParser(resolve_entities=False)
     return _get_vmdk_name_from_ovf(
-        etree.parse(ovf_handle, parser=parser).getroot())  # nosec: B320
+        etree.parse(ovf_handle, parser=parser).getroot()
+    )  # nosec: B320

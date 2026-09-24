@@ -45,9 +45,11 @@ class FileHandleTest(base.TestCase):
 
         self.assertEqual(conn, ret)
         conn.request.assert_called_once_with(
-            'GET', '/foo?q=bar',
+            'GET',
+            '/foo?q=bar',
             headers={'User-Agent': rw_handles.USER_AGENT},
-            preload_content=False)
+            preload_content=False,
+        )
 
     @mock.patch('urllib3.connection.HTTPSConnection')
     def test_create_connection_https(self, https_conn):
@@ -60,12 +62,14 @@ class FileHandleTest(base.TestCase):
         self.assertEqual(conn, ret)
         ca_store = requests.certs.where()
         conn.set_cert.assert_called_once_with(
-            ca_certs=ca_store, cert_reqs=ssl.CERT_NONE,
-            assert_fingerprint=None)
+            ca_certs=ca_store, cert_reqs=ssl.CERT_NONE, assert_fingerprint=None
+        )
         conn.request.assert_called_once_with(
-            'GET', '/foo?q=bar',
+            'GET',
+            '/foo?q=bar',
             headers={'User-Agent': rw_handles.USER_AGENT},
-            preload_content=False)
+            preload_content=False,
+        )
 
     @mock.patch('urllib3.connection.HTTPSConnection')
     def test_create_connection_https_with_cacerts(self, https_conn):
@@ -73,14 +77,17 @@ class FileHandleTest(base.TestCase):
         https_conn.return_value = conn
 
         handle = rw_handles.FileHandle(None)
-        ret = handle._create_connection('https://localhost/foo?q=bar', 'GET',
-                                        cacerts=True)
+        ret = handle._create_connection(
+            'https://localhost/foo?q=bar', 'GET', cacerts=True
+        )
 
         self.assertEqual(conn, ret)
         ca_store = requests.certs.where()
         conn.set_cert.assert_called_once_with(
-            ca_certs=ca_store, cert_reqs=ssl.CERT_REQUIRED,
-            assert_fingerprint=None)
+            ca_certs=ca_store,
+            cert_reqs=ssl.CERT_REQUIRED,
+            assert_fingerprint=None,
+        )
 
     @mock.patch('urllib3.connection.HTTPSConnection')
     def test_create_connection_https_with_ssl_thumbprint(self, https_conn):
@@ -90,13 +97,17 @@ class FileHandleTest(base.TestCase):
         handle = rw_handles.FileHandle(None)
         cacerts = mock.sentinel.cacerts
         thumbprint = mock.sentinel.thumbprint
-        ret = handle._create_connection('https://localhost/foo?q=bar', 'GET',
-                                        cacerts=cacerts,
-                                        ssl_thumbprint=thumbprint)
+        ret = handle._create_connection(
+            'https://localhost/foo?q=bar',
+            'GET',
+            cacerts=cacerts,
+            ssl_thumbprint=thumbprint,
+        )
 
         self.assertEqual(conn, ret)
         conn.set_cert.assert_called_once_with(
-            ca_certs=cacerts, cert_reqs=None, assert_fingerprint=thumbprint)
+            ca_certs=cacerts, cert_reqs=None, assert_fingerprint=thumbprint
+        )
 
 
 class FileWriteHandleTest(base.TestCase):
@@ -110,15 +121,21 @@ class FileWriteHandleTest(base.TestCase):
         vim_cookie.value = 'value'
 
         self._conn = mock.Mock()
-        patcher = mock.patch(
-            'urllib3.connection.HTTPConnection')
+        patcher = mock.patch('urllib3.connection.HTTPConnection')
         self.addCleanup(patcher.stop)
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
 
         self.vmw_http_write_file = rw_handles.FileWriteHandle(
-            '10.1.2.3', 443, 'dc-0', 'ds-0', [vim_cookie], '1.vmdk', 100,
-            'http')
+            '10.1.2.3',
+            443,
+            'dc-0',
+            'ds-0',
+            [vim_cookie],
+            '1.vmdk',
+            100,
+            'http',
+        )
 
     def test_write(self):
         self.vmw_http_write_file.write(None)
@@ -158,9 +175,9 @@ class VmdkHandleTest(base.TestCase):
 
         handle.update_progress()
 
-        session.invoke_api.assert_called_once_with(session.vim,
-                                                   'HttpNfcLeaseProgress',
-                                                   lease, percent=50)
+        session.invoke_api.assert_called_once_with(
+            session.vim, 'HttpNfcLeaseProgress', lease, percent=50
+        )
 
     def test_update_progress_with_error(self):
         session = mock.Mock()
@@ -185,9 +202,9 @@ class VmdkHandleTest(base.TestCase):
         session.invoke_api = mock.Mock()
         handle._release_lease()
 
-        session.invoke_api.assert_called_with(handle._session.vim,
-                                              'HttpNfcLeaseAbort',
-                                              handle._lease)
+        session.invoke_api.assert_called_with(
+            handle._session.vim, 'HttpNfcLeaseAbort', handle._lease
+        )
 
 
 class VmdkWriteHandleTest(base.TestCase):
@@ -196,8 +213,7 @@ class VmdkWriteHandleTest(base.TestCase):
     def setUp(self):
         super().setUp()
         self._conn = mock.Mock()
-        patcher = mock.patch(
-            'urllib3.connection.HTTPConnection')
+        patcher = mock.patch('urllib3.connection.HTTPConnection')
         self.addCleanup(patcher.stop)
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
@@ -228,26 +244,29 @@ class VmdkWriteHandleTest(base.TestCase):
 
     def test_init_failure(self):
         session = self._create_mock_session(False)
-        self.assertRaises(exceptions.VimException,
-                          rw_handles.VmdkWriteHandle,
-                          session,
-                          '10.1.2.3',
-                          443,
-                          'rp-1',
-                          'folder-1',
-                          None,
-                          100)
+        self.assertRaises(
+            exceptions.VimException,
+            rw_handles.VmdkWriteHandle,
+            session,
+            '10.1.2.3',
+            443,
+            'rp-1',
+            'folder-1',
+            None,
+            100,
+        )
 
     def test_write(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            100)
+        handle = rw_handles.VmdkWriteHandle(
+            session, '10.1.2.3', 443, 'rp-1', 'folder-1', None, 100
+        )
         data = [1] * 10
         handle.write(data)
         self.assertEqual(len(data), handle._bytes_written)
         self._conn.request.assert_called_once_with(
-            'PUT', '/ds/disk1.vmdk',
+            'PUT',
+            '/ds/disk1.vmdk',
             headers={
                 'User-Agent': rw_handles.USER_AGENT,
                 'Cookie': 'name=value',
@@ -255,14 +274,15 @@ class VmdkWriteHandleTest(base.TestCase):
                 'Overwrite': 't',
                 'Content-Type': 'binary/octet-stream',
             },
-            preload_content=False)
+            preload_content=False,
+        )
         self._conn.send.assert_called_once_with(data)
 
     def test_tell(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            100)
+        handle = rw_handles.VmdkWriteHandle(
+            session, '10.1.2.3', 443, 'rp-1', 'folder-1', None, 100
+        )
         data = [1] * 10
         handle.write(data)
         self.assertEqual(len(data), handle._bytes_written)
@@ -270,38 +290,47 @@ class VmdkWriteHandleTest(base.TestCase):
 
     def test_write_post(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            100, http_method='POST')
+        handle = rw_handles.VmdkWriteHandle(
+            session,
+            '10.1.2.3',
+            443,
+            'rp-1',
+            'folder-1',
+            None,
+            100,
+            http_method='POST',
+        )
         data = [1] * 10
         handle.write(data)
         self.assertEqual(len(data), handle._bytes_written)
         self._conn.request.assert_called_once_with(
-            'POST', '/ds/disk1.vmdk',
+            'POST',
+            '/ds/disk1.vmdk',
             headers={
                 'User-Agent': rw_handles.USER_AGENT,
                 'Cookie': 'name=value',
                 'Content-Length': '100',
                 'Content-Type': 'application/x-vnd.vmware-streamVmdk',
             },
-            preload_content=False)
+            preload_content=False,
+        )
         self._conn.send.assert_called_once_with(data)
 
     def test_update_progress(self):
         vmdk_size = 100
         data_size = 10
         session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            vmdk_size)
+        handle = rw_handles.VmdkWriteHandle(
+            session, '10.1.2.3', 443, 'rp-1', 'folder-1', None, vmdk_size
+        )
         handle.write([1] * data_size)
         handle.update_progress()
 
     def test_close(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443,
-                                            'rp-1', 'folder-1', None,
-                                            100)
+        handle = rw_handles.VmdkWriteHandle(
+            session, '10.1.2.3', 443, 'rp-1', 'folder-1', None, 100
+        )
 
         def session_invoke_api_side_effect(module, method, *args, **kwargs):
             if module == vim_util and method == 'get_object_property':
@@ -310,21 +339,24 @@ class VmdkWriteHandleTest(base.TestCase):
             self.assertEqual('HttpNfcLeaseComplete', method)
 
         session.invoke_api = mock.Mock(
-            side_effect=session_invoke_api_side_effect)
+            side_effect=session_invoke_api_side_effect
+        )
         handle._get_progress = mock.Mock(return_value=100)
         handle.close()
         self.assertEqual(2, session.invoke_api.call_count)
 
     def test_get_vm_incomplete_transfer(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkWriteHandle(session, '10.1.2.3', 443, 'rp-1',
-                                            'folder-1', None, 100)
+        handle = rw_handles.VmdkWriteHandle(
+            session, '10.1.2.3', 443, 'rp-1', 'folder-1', None, 100
+        )
 
         handle._get_progress = mock.Mock(return_value=99)
         session.invoke_api = mock.Mock()
 
-        self.assertRaises(exceptions.ImageTransferException,
-                          handle.get_imported_vm)
+        self.assertRaises(
+            exceptions.ImageTransferException, handle.get_imported_vm
+        )
 
 
 class VmdkReadHandleTest(base.TestCase):
@@ -338,14 +370,14 @@ class VmdkReadHandleTest(base.TestCase):
         self._resp.read.return_value = read_data
         self._conn = mock.Mock()
         self._conn.getresponse.return_value = self._resp
-        patcher = mock.patch(
-            'urllib3.connection.HTTPConnection')
+        patcher = mock.patch('urllib3.connection.HTTPConnection')
         self.addCleanup(patcher.stop)
         HTTPConnectionMock = patcher.start()
         HTTPConnectionMock.return_value = self._conn
 
-    def _create_mock_session(self, disk=True, progress=-1,
-                             read_data='fake-data'):
+    def _create_mock_session(
+        self, disk=True, progress=-1, read_data='fake-data'
+    ):
         self._mock_connection(read_data=read_data)
         device_url = mock.Mock()
         device_url.disk = disk
@@ -372,21 +404,28 @@ class VmdkReadHandleTest(base.TestCase):
 
     def test_init_failure(self):
         session = self._create_mock_session(False)
-        self.assertRaises(exceptions.VimException,
-                          rw_handles.VmdkReadHandle,
-                          session,
-                          '10.1.2.3',
-                          443,
-                          'vm-1',
-                          '[ds] disk1.vmdk',
-                          100)
+        self.assertRaises(
+            exceptions.VimException,
+            rw_handles.VmdkReadHandle,
+            session,
+            '10.1.2.3',
+            443,
+            'vm-1',
+            '[ds] disk1.vmdk',
+            100,
+        )
 
     def test_read(self):
         chunk_size = rw_handles.READ_CHUNKSIZE
         session = self._create_mock_session()
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           chunk_size * 10)
+        handle = rw_handles.VmdkReadHandle(
+            session,
+            '10.1.2.3',
+            443,
+            'vm-1',
+            '[ds] disk1.vmdk',
+            chunk_size * 10,
+        )
         fake_data = 'fake-data'
         data = handle.read(chunk_size)
         self.assertEqual(fake_data, data)
@@ -397,18 +436,23 @@ class VmdkReadHandleTest(base.TestCase):
         session = self._create_mock_session(read_data=read_data)
 
         read_size = len(read_data)
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           read_size * 10)
+        handle = rw_handles.VmdkReadHandle(
+            session, '10.1.2.3', 443, 'vm-1', '[ds] disk1.vmdk', read_size * 10
+        )
         handle.read(read_size)
         self.assertEqual(read_size, handle._bytes_read)
 
     def test_tell(self):
         chunk_size = rw_handles.READ_CHUNKSIZE
         session = self._create_mock_session()
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           chunk_size * 10)
+        handle = rw_handles.VmdkReadHandle(
+            session,
+            '10.1.2.3',
+            443,
+            'vm-1',
+            '[ds] disk1.vmdk',
+            chunk_size * 10,
+        )
         data = handle.read(chunk_size)
         self.assertEqual(len(data), handle.tell())
 
@@ -416,18 +460,18 @@ class VmdkReadHandleTest(base.TestCase):
         chunk_size = len('fake-data')
         vmdk_size = chunk_size * 10
         session = self._create_mock_session(True, 10)
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           vmdk_size)
+        handle = rw_handles.VmdkReadHandle(
+            session, '10.1.2.3', 443, 'vm-1', '[ds] disk1.vmdk', vmdk_size
+        )
         data = handle.read(chunk_size)
         handle.update_progress()
         self.assertEqual('fake-data', data)
 
     def test_close(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           100)
+        handle = rw_handles.VmdkReadHandle(
+            session, '10.1.2.3', 443, 'vm-1', '[ds] disk1.vmdk', 100
+        )
 
         def session_invoke_api_side_effect(module, method, *args, **kwargs):
             if module == vim_util and method == 'get_object_property':
@@ -436,16 +480,17 @@ class VmdkReadHandleTest(base.TestCase):
             self.assertEqual('HttpNfcLeaseComplete', method)
 
         session.invoke_api = mock.Mock(
-            side_effect=session_invoke_api_side_effect)
+            side_effect=session_invoke_api_side_effect
+        )
         handle._get_progress = mock.Mock(return_value=100)
         handle.close()
         self.assertEqual(2, session.invoke_api.call_count)
 
     def test_close_with_error(self):
         session = self._create_mock_session()
-        handle = rw_handles.VmdkReadHandle(session, '10.1.2.3', 443,
-                                           'vm-1', '[ds] disk1.vmdk',
-                                           100)
+        handle = rw_handles.VmdkReadHandle(
+            session, '10.1.2.3', 443, 'vm-1', '[ds] disk1.vmdk', 100
+        )
         session.invoke_api.side_effect = exceptions.VimException(None)
 
         self.assertRaises(exceptions.VimException, handle.close)
@@ -460,7 +505,6 @@ class ImageReadHandleTest(base.TestCase):
         item = [1] * 10
 
         class ImageReadIterator:
-
             def __init__(self):
                 self.num_items = 0
 
@@ -468,7 +512,7 @@ class ImageReadHandleTest(base.TestCase):
                 return self
 
             def __next__(self):
-                if (self.num_items < max_items):
+                if self.num_items < max_items:
                     self.num_items += 1
                     return item
                 raise StopIteration

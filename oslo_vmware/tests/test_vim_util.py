@@ -38,11 +38,14 @@ class VimUtilTest(base.TestCase):
     def test_build_traversal_spec(self):
         client_factory = mock.Mock()
         sel_spec = mock.Mock()
-        traversal_spec = vim_util.build_traversal_spec(client_factory,
-                                                       'dc_to_hf',
-                                                       'Datacenter',
-                                                       'hostFolder', False,
-                                                       [sel_spec])
+        traversal_spec = vim_util.build_traversal_spec(
+            client_factory,
+            'dc_to_hf',
+            'Datacenter',
+            'hostFolder',
+            False,
+            [sel_spec],
+        )
         self.assertEqual("dc_to_hf", traversal_spec.name)
         self.assertEqual("hostFolder", traversal_spec.path)
         self.assertEqual([sel_spec], traversal_spec.selectSet)
@@ -66,63 +69,86 @@ class VimUtilTest(base.TestCase):
                 return None
 
         build_selection_spec_mock.side_effect = build_sel_spec_side_effect
-        traversal_spec_dict = {'dc_to_hf': {'type': 'Datacenter',
-                                            'path': 'hostFolder',
-                                            'skip': False,
-                                            'selectSet': [sel_spec]},
-                               'dc_to_vmf': {'type': 'Datacenter',
-                                             'path': 'vmFolder',
-                                             'skip': False,
-                                             'selectSet': [sel_spec]},
-                               'dc_to_netf': {'type': 'Datacenter',
-                                              'path': 'networkFolder',
-                                              'skip': False,
-                                              'selectSet': [sel_spec]},
-                               'dc_to_df': {'type': 'Datacenter',
-                                            'path': 'datastoreFolder',
-                                            'skip': False,
-                                            'selectSet': [sel_spec]},
-                               'h_to_vm': {'type': 'HostSystem',
-                                           'path': 'vm',
-                                           'skip': False,
-                                           'selectSet': [sel_spec]},
-                               'cr_to_h': {'type': 'ComputeResource',
-                                           'path': 'host',
-                                           'skip': False,
-                                           'selectSet': []},
-                               'cr_to_ds': {'type': 'ComputeResource',
-                                            'path': 'datastore',
-                                            'skip': False,
-                                            'selectSet': []},
-                               'cr_to_rp': {'type': 'ComputeResource',
-                                            'path': 'resourcePool',
-                                            'skip': False,
-                                            'selectSet': [rp_to_rp_sel_spec,
-                                                          rp_to_vm_sel_spec]},
-                               'ccr_to_h': {'type': 'ClusterComputeResource',
-                                            'path': 'host',
-                                            'skip': False,
-                                            'selectSet': []},
-                               'ccr_to_ds': {'type': 'ClusterComputeResource',
-                                             'path': 'datastore',
-                                             'skip': False,
-                                             'selectSet': []},
-                               'ccr_to_rp': {'type': 'ClusterComputeResource',
-                                             'path': 'resourcePool',
-                                             'skip': False,
-                                             'selectSet': [rp_to_rp_sel_spec,
-                                                           rp_to_vm_sel_spec]},
-                               'rp_to_rp': {'type': 'ResourcePool',
-                                            'path': 'resourcePool',
-                                            'skip': False,
-                                            'selectSet': [rp_to_rp_sel_spec,
-                                                          rp_to_vm_sel_spec]},
-                               'rp_to_vm': {'type': 'ResourcePool',
-                                            'path': 'vm',
-                                            'skip': False,
-                                            'selectSet': [rp_to_rp_sel_spec,
-                                                          rp_to_vm_sel_spec]},
-                               }
+        traversal_spec_dict = {
+            'dc_to_hf': {
+                'type': 'Datacenter',
+                'path': 'hostFolder',
+                'skip': False,
+                'selectSet': [sel_spec],
+            },
+            'dc_to_vmf': {
+                'type': 'Datacenter',
+                'path': 'vmFolder',
+                'skip': False,
+                'selectSet': [sel_spec],
+            },
+            'dc_to_netf': {
+                'type': 'Datacenter',
+                'path': 'networkFolder',
+                'skip': False,
+                'selectSet': [sel_spec],
+            },
+            'dc_to_df': {
+                'type': 'Datacenter',
+                'path': 'datastoreFolder',
+                'skip': False,
+                'selectSet': [sel_spec],
+            },
+            'h_to_vm': {
+                'type': 'HostSystem',
+                'path': 'vm',
+                'skip': False,
+                'selectSet': [sel_spec],
+            },
+            'cr_to_h': {
+                'type': 'ComputeResource',
+                'path': 'host',
+                'skip': False,
+                'selectSet': [],
+            },
+            'cr_to_ds': {
+                'type': 'ComputeResource',
+                'path': 'datastore',
+                'skip': False,
+                'selectSet': [],
+            },
+            'cr_to_rp': {
+                'type': 'ComputeResource',
+                'path': 'resourcePool',
+                'skip': False,
+                'selectSet': [rp_to_rp_sel_spec, rp_to_vm_sel_spec],
+            },
+            'ccr_to_h': {
+                'type': 'ClusterComputeResource',
+                'path': 'host',
+                'skip': False,
+                'selectSet': [],
+            },
+            'ccr_to_ds': {
+                'type': 'ClusterComputeResource',
+                'path': 'datastore',
+                'skip': False,
+                'selectSet': [],
+            },
+            'ccr_to_rp': {
+                'type': 'ClusterComputeResource',
+                'path': 'resourcePool',
+                'skip': False,
+                'selectSet': [rp_to_rp_sel_spec, rp_to_vm_sel_spec],
+            },
+            'rp_to_rp': {
+                'type': 'ResourcePool',
+                'path': 'resourcePool',
+                'skip': False,
+                'selectSet': [rp_to_rp_sel_spec, rp_to_vm_sel_spec],
+            },
+            'rp_to_vm': {
+                'type': 'ResourcePool',
+                'path': 'vm',
+                'skip': False,
+                'selectSet': [rp_to_rp_sel_spec, rp_to_vm_sel_spec],
+            },
+        }
 
         client_factory = mock.Mock()
         client_factory.create.side_effect = lambda ns: mock.Mock()
@@ -132,8 +158,9 @@ class VimUtilTest(base.TestCase):
         self.assertFalse(trav_spec.skip)
         self.assertEqual("Folder", trav_spec.type)
 
-        self.assertEqual(len(traversal_spec_dict) + 1,
-                         len(trav_spec.selectSet))
+        self.assertEqual(
+            len(traversal_spec_dict) + 1, len(trav_spec.selectSet)
+        )
         for spec in trav_spec.selectSet:
             if spec.name not in traversal_spec_dict:
                 self.assertEqual(sel_spec, spec)
@@ -155,8 +182,9 @@ class VimUtilTest(base.TestCase):
         client_factory = mock.Mock()
         root_folder = mock.Mock()
         specs = [mock.Mock()]
-        obj_spec = vim_util.build_object_spec(client_factory,
-                                              root_folder, specs)
+        obj_spec = vim_util.build_object_spec(
+            client_factory, root_folder, specs
+        )
         self.assertEqual(root_folder, obj_spec.obj)
         self.assertEqual(specs, obj_spec.selectSet)
         self.assertFalse(obj_spec.skip)
@@ -165,14 +193,13 @@ class VimUtilTest(base.TestCase):
         client_factory = mock.Mock()
         prop_specs = [mock.Mock()]
         obj_specs = [mock.Mock()]
-        filter_spec = vim_util.build_property_filter_spec(client_factory,
-                                                          prop_specs,
-                                                          obj_specs)
+        filter_spec = vim_util.build_property_filter_spec(
+            client_factory, prop_specs, obj_specs
+        )
         self.assertEqual(obj_specs, filter_spec.objectSet)
         self.assertEqual(prop_specs, filter_spec.propSet)
 
-    @mock.patch(
-        'oslo_vmware.vim_util.build_recursive_traversal_spec')
+    @mock.patch('oslo_vmware.vim_util.build_recursive_traversal_spec')
     def test_get_objects(self, build_recursive_traversal_spec):
         vim = mock.Mock()
         trav_spec = mock.Mock()
@@ -202,7 +229,8 @@ class VimUtilTest(base.TestCase):
             self.assertFalse(obj_spec.skip)
 
         vim.RetrievePropertiesEx.side_effect = (
-            vim_RetrievePropertiesEx_side_effect)
+            vim_RetrievePropertiesEx_side_effect
+        )
         vim_util.get_objects(vim, _type, max_objects)
         self.assertEqual(1, vim.RetrievePropertiesEx.call_count)
 
@@ -217,8 +245,9 @@ class VimUtilTest(base.TestCase):
         moref = vim_util.get_moref('fake-ref', 'VirtualMachine')
         retrieve_result = mock.Mock()
 
-        def vim_RetrievePropertiesEx_side_effect(pc, specSet, options,
-                                                 skip_op_id=False):
+        def vim_RetrievePropertiesEx_side_effect(
+            pc, specSet, options, skip_op_id=False
+        ):
             self.assertTrue(pc is vim.service_content.propertyCollector)
             self.assertEqual(1, options.maxObjects)
 
@@ -242,7 +271,8 @@ class VimUtilTest(base.TestCase):
             return retrieve_result
 
         vim.RetrievePropertiesEx.side_effect = (
-            vim_RetrievePropertiesEx_side_effect)
+            vim_RetrievePropertiesEx_side_effect
+        )
 
         res = vim_util.get_object_properties(vim, moref, None)
         self.assertEqual(1, vim.RetrievePropertiesEx.call_count)
@@ -299,7 +329,8 @@ class VimUtilTest(base.TestCase):
         vim_util.cancel_retrieval(vim, retrieve_result)
         get_token.assert_called_once_with(retrieve_result)
         vim.CancelRetrievePropertiesEx.assert_called_once_with(
-            vim.service_content.propertyCollector, token=token)
+            vim.service_content.propertyCollector, token=token
+        )
 
     @mock.patch('oslo_vmware.vim_util._get_token')
     def test_continue_retrieval(self, get_token):
@@ -310,7 +341,8 @@ class VimUtilTest(base.TestCase):
         vim_util.continue_retrieval(vim, retrieve_result)
         get_token.assert_called_once_with(retrieve_result)
         vim.ContinueRetrievePropertiesEx.assert_called_once_with(
-            vim.service_content.propertyCollector, token=token)
+            vim.service_content.propertyCollector, token=token
+        )
 
     @mock.patch('oslo_vmware.vim_util.continue_retrieval')
     @mock.patch('oslo_vmware.vim_util.cancel_retrieval')
@@ -328,14 +360,16 @@ class VimUtilTest(base.TestCase):
 
         calls = [
             mock.call(vim, retrieve_result0),
-            mock.call(vim, retrieve_result1)]
+            mock.call(vim, retrieve_result1),
+        ]
         continue_retrieval.assert_has_calls(calls)
         self.assertFalse(cancel_retrieval.called)
 
     @mock.patch('oslo_vmware.vim_util.continue_retrieval')
     @mock.patch('oslo_vmware.vim_util.cancel_retrieval')
-    def test_with_retrieval_early_exit(self, cancel_retrieval,
-                                       continue_retrieval):
+    def test_with_retrieval_early_exit(
+        self, cancel_retrieval, continue_retrieval
+    ):
         vim = mock.Mock()
         retrieve_result = mock.Mock()
         with vim_util.WithRetrieval(vim, retrieve_result):
@@ -357,7 +391,8 @@ class VimUtilTest(base.TestCase):
         val = vim_util.get_object_property(vim, moref, property_name)
         self.assertEqual(prop.val, val)
         get_object_properties.assert_called_once_with(
-            vim, moref, [property_name], skip_op_id=False)
+            vim, moref, [property_name], skip_op_id=False
+        )
 
     def test_find_extension(self):
         vim = mock.Mock()
@@ -365,7 +400,8 @@ class VimUtilTest(base.TestCase):
         self.assertIsNotNone(ret)
         service_content = vim.service_content
         vim.FindExtension.assert_called_once_with(
-            service_content.extensionManager, extensionKey='fake-key')
+            service_content.extensionManager, extensionKey='fake-key'
+        )
 
     def test_register_extension(self):
         vim = mock.Mock()
@@ -373,7 +409,8 @@ class VimUtilTest(base.TestCase):
         self.assertIsNone(ret)
         service_content = vim.service_content
         vim.RegisterExtension.assert_called_once_with(
-            service_content.extensionManager, extension=mock.ANY)
+            service_content.extensionManager, extension=mock.ANY
+        )
 
     def test_get_vc_version(self):
         session = mock.Mock()
@@ -390,15 +427,21 @@ class VimUtilTest(base.TestCase):
         ObjectContent = collections.namedtuple('ObjectContent', ['propSet'])
         DynamicProperty = collections.namedtuple('Property', ['name', 'val'])
 
-        obj1 = ObjectContent(propSet=[
-            DynamicProperty(name='Datacenter', val='dc-1'),
-        ])
-        obj2 = ObjectContent(propSet=[
-            DynamicProperty(name='Datacenter', val='folder-2'),
-        ])
-        obj3 = ObjectContent(propSet=[
-            DynamicProperty(name='Datacenter', val='folder-1'),
-        ])
+        obj1 = ObjectContent(
+            propSet=[
+                DynamicProperty(name='Datacenter', val='dc-1'),
+            ]
+        )
+        obj2 = ObjectContent(
+            propSet=[
+                DynamicProperty(name='Datacenter', val='folder-2'),
+            ]
+        )
+        obj3 = ObjectContent(
+            propSet=[
+                DynamicProperty(name='Datacenter', val='folder-1'),
+            ]
+        )
         objects = ['foo', 'bar', obj1, obj2, obj3]
         result = mock.sentinel.objects
         result.objects = objects
@@ -413,9 +456,11 @@ class VimUtilTest(base.TestCase):
         ObjectContent = collections.namedtuple('ObjectContent', ['propSet'])
         DynamicProperty = collections.namedtuple('Property', ['name', 'val'])
 
-        obj1 = ObjectContent(propSet=[
-            DynamicProperty(name='Datacenter', val='dc-1'),
-        ])
+        obj1 = ObjectContent(
+            propSet=[
+                DynamicProperty(name='Datacenter', val='dc-1'),
+            ]
+        )
         objects = ['foo', 'bar', obj1]
         result = mock.sentinel.objects
         result.objects = objects
@@ -429,7 +474,8 @@ class VimUtilTest(base.TestCase):
     def test_get_prop_spec(self):
         client_factory = mock.Mock()
         prop_spec = vim_util.get_prop_spec(
-            client_factory, "VirtualMachine", ["test_path"])
+            client_factory, "VirtualMachine", ["test_path"]
+        )
         self.assertEqual(["test_path"], prop_spec.pathSet)
         self.assertEqual("VirtualMachine", prop_spec.type)
 
@@ -437,7 +483,8 @@ class VimUtilTest(base.TestCase):
         client_factory = mock.Mock()
         mock_obj = mock.Mock()
         obj_spec = vim_util.get_obj_spec(
-            client_factory, mock_obj, select_set=["abc"])
+            client_factory, mock_obj, select_set=["abc"]
+        )
         self.assertEqual(mock_obj, obj_spec.obj)
         self.assertFalse(obj_spec.skip)
         self.assertEqual(["abc"], obj_spec.selectSet)
@@ -446,7 +493,8 @@ class VimUtilTest(base.TestCase):
         client_factory = mock.Mock()
         mock_obj = mock.Mock()
         filter_spec = vim_util.get_prop_filter_spec(
-            client_factory, [mock_obj], ["test_prop"])
+            client_factory, [mock_obj], ["test_prop"]
+        )
         self.assertEqual([mock_obj], filter_spec.objectSet)
         self.assertEqual(["test_prop"], filter_spec.propSet)
 
@@ -454,24 +502,30 @@ class VimUtilTest(base.TestCase):
     @mock.patch('oslo_vmware.vim_util.get_obj_spec')
     @mock.patch('oslo_vmware.vim_util.get_prop_filter_spec')
     def _test_get_properties_for_a_collection_of_objects(
-            self, objs, max_objects,
-            mock_get_prop_filter_spec,
-            mock_get_obj_spec,
-            mock_get_prop_spec):
+        self,
+        objs,
+        max_objects,
+        mock_get_prop_filter_spec,
+        mock_get_obj_spec,
+        mock_get_prop_spec,
+    ):
         vim = mock.Mock()
         if len(objs) == 0:
             self.assertEqual(
-                [], vim_util.get_properties_for_a_collection_of_objects(
-                    vim, 'VirtualMachine', [], {}))
+                [],
+                vim_util.get_properties_for_a_collection_of_objects(
+                    vim, 'VirtualMachine', [], {}
+                ),
+            )
             return
 
         mock_prop_spec = mock.Mock()
         mock_get_prop_spec.return_value = mock_prop_spec
 
-        mock_get_obj_spec.side_effect = [mock.Mock()
-                                         for obj in objs]
-        get_obj_spec_calls = [mock.call(vim.client.factory, obj)
-                              for obj in objs]
+        mock_get_obj_spec.side_effect = [mock.Mock() for obj in objs]
+        get_obj_spec_calls = [
+            mock.call(vim.client.factory, obj) for obj in objs
+        ]
 
         mock_prop_spec = mock.Mock()
         mock_get_prop_spec.return_value = mock_prop_spec
@@ -484,34 +538,35 @@ class VimUtilTest(base.TestCase):
         mock_return_value = mock.Mock()
         vim.RetrievePropertiesEx.return_value = mock_return_value
         res = vim_util.get_properties_for_a_collection_of_objects(
-            vim, 'VirtualMachine', objs, ['runtime'], max_objects)
+            vim, 'VirtualMachine', objs, ['runtime'], max_objects
+        )
         self.assertEqual(mock_return_value, res)
 
-        mock_get_prop_spec.assert_called_once_with(vim.client.factory,
-                                                   'VirtualMachine',
-                                                   ['runtime'])
+        mock_get_prop_spec.assert_called_once_with(
+            vim.client.factory, 'VirtualMachine', ['runtime']
+        )
         self.assertEqual(get_obj_spec_calls, mock_get_obj_spec.mock_calls)
         vim.client.factory.create.assert_called_once_with(
-            'ns0:RetrieveOptions')
-        self.assertEqual(max_objects if max_objects else len(objs),
-                         mock_options.maxObjects)
+            'ns0:RetrieveOptions'
+        )
+        self.assertEqual(
+            max_objects if max_objects else len(objs), mock_options.maxObjects
+        )
         vim.RetrievePropertiesEx.assert_called_once_with(
             vim.service_content.propertyCollector,
             specSet=[mock_prop_filter_spec],
-            options=mock_options)
+            options=mock_options,
+        )
 
-    def test_get_properties_for_a_collection_of_objects(
-            self):
+    def test_get_properties_for_a_collection_of_objects(self):
         objects = ["m1", "m2"]
         self._test_get_properties_for_a_collection_of_objects(objects, None)
 
-    def test_get_properties_for_a_collection_of_objects_max_objects_1(
-            self):
+    def test_get_properties_for_a_collection_of_objects_max_objects_1(self):
         objects = ["m1", "m2"]
         self._test_get_properties_for_a_collection_of_objects(objects, 1)
 
-    def test_get_properties_for_a_collection_of_objects_no_objects(
-            self):
+    def test_get_properties_for_a_collection_of_objects_no_objects(self):
         self._test_get_properties_for_a_collection_of_objects([], None)
 
     def test_propset_dict(self):
@@ -524,9 +579,10 @@ class VimUtilTest(base.TestCase):
             mock_obj.val = "test_val_%d" % i
             mock_propset.append(mock_obj)
 
-        self.assertEqual({"test_name_0": "test_val_0",
-                          "test_name_1": "test_val_1"},
-                         vim_util.propset_dict(mock_propset))
+        self.assertEqual(
+            {"test_name_0": "test_val_0", "test_name_1": "test_val_1"},
+            vim_util.propset_dict(mock_propset),
+        )
 
     def test_serialize_object(self):
         self.assertEqual({}, vim_util.serialize_object({}))
@@ -545,15 +601,11 @@ class VimUtilTest(base.TestCase):
 
         mobj4 = 12
 
-        obj = {
-            'foo': mobj1,
-            'bar': [mobj2, mobj3],
-            'baz': mobj4
-        }
+        obj = {'foo': mobj1, 'bar': [mobj2, mobj3], 'baz': mobj4}
 
         expected = {
             'foo': {'asdf': 1},
             'bar': [mobj2, {'subkey1': 'subvalue1', 'subkey2': True}],
-            'baz': 12
+            'baz': 12,
         }
         self.assertEqual(expected, vim_util.serialize_object(obj))

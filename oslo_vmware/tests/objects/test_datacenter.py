@@ -19,7 +19,6 @@ from oslo_vmware.tests import base
 
 
 class DatacenterTestCase(base.TestCase):
-
     """Test the Datacenter object."""
 
     def test_dc(self):

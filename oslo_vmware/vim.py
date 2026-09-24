@@ -19,9 +19,18 @@ from oslo_vmware import service
 class Vim(service.Service):
     """Service class that provides access to the VIM API."""
 
-    def __init__(self, protocol='https', host='localhost', port=None,
-                 wsdl_url=None, cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None, op_id_prefix='oslo.vmware'):
+    def __init__(
+        self,
+        protocol='https',
+        host='localhost',
+        port=None,
+        wsdl_url=None,
+        cacert=None,
+        insecure=True,
+        pool_maxsize=10,
+        connection_timeout=None,
+        op_id_prefix='oslo.vmware',
+    ):
         """Constructs a VIM service client object.
 
         :param protocol: http or https
@@ -44,9 +53,15 @@ class Vim(service.Service):
         soap_url = base_url + '/sdk'
         if wsdl_url is None:
             wsdl_url = soap_url + '/vimService.wsdl'
-        super().__init__(wsdl_url, soap_url, cacert, insecure,
-                         pool_maxsize, connection_timeout,
-                         op_id_prefix)
+        super().__init__(
+            wsdl_url,
+            soap_url,
+            cacert,
+            insecure,
+            pool_maxsize,
+            connection_timeout,
+            op_id_prefix,
+        )
 
     def retrieve_service_content(self):
         return self.RetrieveServiceContent(service.SERVICE_INSTANCE)
