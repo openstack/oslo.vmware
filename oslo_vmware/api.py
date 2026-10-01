@@ -27,6 +27,7 @@ from oslo_concurrency import lockutils
 from oslo_context import context
 from oslo_service import loopingcall
 from oslo_utils import excutils
+import tenacity
 
 from oslo_vmware._i18n import _
 from oslo_vmware import exceptions
@@ -146,8 +147,13 @@ class VMwareAPISession:
                 self._pbm.set_soap_cookie(self._vim.get_http_cookie())
         return self._pbm
 
-    @loopingcall.RetryDecorator(
-        exceptions=(exceptions.VimConnectionException,))
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(
+            exceptions.VimConnectionException),
+        wait=tenacity.wait_incrementing(start=10, increment=10, max=60),
+        stop=tenacity.stop_never,
+        reraise=True,
+    )
     @lockutils.synchronized('oslo_vmware_api_lock')
     def _create_session(self):
         """Establish session with the server."""
@@ -212,12 +218,20 @@ class VMwareAPISession:
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
+        def _retry_on_overload_or_connection(exc):
+            return isinstance(exc, (exceptions.VimSessionOverLoadException,
+                                    exceptions.VimConnectionException))
 
-        @loopingcall.RetryDecorator(
-            max_retry_count=self._api_retry_count,
-            exceptions=(exceptions.VimSessionOverLoadException,
-                        exceptions.VimConnectionException))
-        def _invoke_api(module, method, *args, **kwargs):
+        @tenacity.retry(
+            retry=tenacity.retry_if_exception(
+                _retry_on_overload_or_connection),
+            wait=tenacity.wait_incrementing(start=10, increment=10, max=60),
+            stop=(tenacity.stop_never if self._api_retry_count == -1
+                  else tenacity.stop_after_attempt(
+                      self._api_retry_count + 1)),
+            reraise=True,
+        )
+        def _invoke_api():
             try:
                 api_method = getattr(module, method)
                 return api_method(*args, **kwargs)
@@ -277,7 +291,7 @@ class VMwareAPISession:
                                    'method': method})
                         self._create_session()
 
-        return _invoke_api(module, method, *args, **kwargs)
+        return _invoke_api()
 
     def is_current_session_active(self):
         """Check if current session is active.
