@@ -91,8 +91,7 @@ def get_port_group_spec(session, name, vlan_id, trunk_mode=False):
     return pg_spec
 
 
-def add_port_group(session, dvs_moref, name, vlan_id=None,
-                   trunk_mode=False):
+def add_port_group(session, dvs_moref, name, vlan_id=None, trunk_mode=False):
     """Add a new port group to the dvs_moref
 
     :param session: vCenter soap session
@@ -103,17 +102,21 @@ def add_port_group(session, dvs_moref, name, vlan_id=None,
                        specific tag above
     :returns: The new portgroup moref
     """
-    pg_spec = get_port_group_spec(session, name, vlan_id,
-                                  trunk_mode=trunk_mode)
-    task = session.invoke_api(session.vim,
-                              'CreateDVPortgroup_Task',
-                              dvs_moref,
-                              spec=pg_spec)
+    pg_spec = get_port_group_spec(
+        session, name, vlan_id, trunk_mode=trunk_mode
+    )
+    task = session.invoke_api(
+        session.vim, 'CreateDVPortgroup_Task', dvs_moref, spec=pg_spec
+    )
     task_info = session.wait_for_task(task)
-    LOG.info("%(name)s create on %(dvs)s with %(value)s.",
-             {'name': name,
-              'dvs': vim_util.get_moref_value(dvs_moref),
-              'value': task_info.result.value})
+    LOG.info(
+        "%(name)s create on %(dvs)s with %(value)s.",
+        {
+            'name': name,
+            'dvs': vim_util.get_moref_value(dvs_moref),
+            'value': task_info.result.value,
+        },
+    )
     return task_info.result
 
 
@@ -126,24 +129,30 @@ def get_portgroups(session, dvs_moref):
               (portgroup name, port group moref)
     """
     pgs = []
-    port_groups = session.invoke_api(vim_util,
-                                     'get_object_properties',
-                                     session.vim,
-                                     dvs_moref,
-                                     ['portgroup'])
+    port_groups = session.invoke_api(
+        vim_util,
+        'get_object_properties',
+        session.vim,
+        dvs_moref,
+        ['portgroup'],
+    )
     while port_groups:
         if len(port_groups) and hasattr(port_groups[0], 'propSet'):
             for prop in port_groups[0].propSet:
                 for val in prop.val[0]:
-                    props = session.invoke_api(vim_util,
-                                               'get_object_properties',
-                                               session.vim,
-                                               val, ['name'])
+                    props = session.invoke_api(
+                        vim_util,
+                        'get_object_properties',
+                        session.vim,
+                        val,
+                        ['name'],
+                    )
                     if len(props) and hasattr(props[0], 'propSet'):
                         for prop in props[0].propSet:
                             pgs.append((prop.val, val))
-        port_groups = session._call_method(vim_util, 'continue_retrieval',
-                                           port_groups)
+        port_groups = session._call_method(
+            vim_util, 'continue_retrieval', port_groups
+        )
     return pgs
 
 
@@ -153,7 +162,5 @@ def delete_port_group(session, portgroup_moref):
     :param session: vCenter soap session
     :param portgroup_moref: managed portgroup object reference
     """
-    task = session.invoke_api(session.vim,
-                              'Destroy_Task',
-                              portgroup_moref)
+    task = session.invoke_api(session.vim, 'Destroy_Task', portgroup_moref)
     session.wait_for_task(task)

@@ -101,8 +101,11 @@ class Response(io.BytesIO):
     def __init__(self, stream, status=200, headers=None):
         self.status = status
         self.headers = headers or {}
-        self.reason = requests.status_codes._codes.get(
-            status, [''])[0].upper().replace('_', ' ')  # nosec
+        self.reason = (
+            requests.status_codes._codes.get(status, [''])[0]
+            .upper()
+            .replace('_', ' ')
+        )  # nosec
         io.BytesIO.__init__(self, stream)
 
     @property
@@ -137,9 +140,11 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
 
     See http://stackoverflow.com/a/22989322
     """
+
     def __init__(self, pool_maxsize=10):
-        super().__init__(pool_connections=pool_maxsize,
-                         pool_maxsize=pool_maxsize)
+        super().__init__(
+            pool_connections=pool_maxsize, pool_maxsize=pool_maxsize
+        )
 
     def _build_response_from_file(self, request):
         file_path = request.url[7:]
@@ -149,24 +154,41 @@ class LocalFileAdapter(requests.adapters.HTTPAdapter):
             resp = Response(buff)
             return self.build_response(request, resp)
 
-    def send(self, request, stream=False, timeout=None,
-             verify=True, cert=None, proxies=None):
+    def send(
+        self,
+        request,
+        stream=False,
+        timeout=None,
+        verify=True,
+        cert=None,
+        proxies=None,
+    ):
         """Sends request for a local file."""
         return self._build_response_from_file(request)
 
 
 class RequestsTransport(transport.Transport):
-    def __init__(self, cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None):
+    def __init__(
+        self,
+        cacert=None,
+        insecure=True,
+        pool_maxsize=10,
+        connection_timeout=None,
+    ):
         transport.Transport.__init__(self)
         # insecure flag is used only if cacert is not
         # specified.
         self.verify = cacert if cacert else not insecure
         self.session = requests.Session()
-        self.session.mount('file:///',
-                           LocalFileAdapter(pool_maxsize=pool_maxsize))
-        self.session.mount('https://', requests.adapters.HTTPAdapter(
-            pool_connections=pool_maxsize, pool_maxsize=pool_maxsize))
+        self.session.mount(
+            'file:///', LocalFileAdapter(pool_maxsize=pool_maxsize)
+        )
+        self.session.mount(
+            'https://',
+            requests.adapters.HTTPAdapter(
+                pool_connections=pool_maxsize, pool_maxsize=pool_maxsize
+            ),
+        )
         self.cookiejar = self.session.cookies
         self._connection_timeout = connection_timeout
 
@@ -175,11 +197,13 @@ class RequestsTransport(transport.Transport):
         return io.BytesIO(resp.content)
 
     def send(self, request):
-        resp = self.session.post(request.url,
-                                 data=request.message,
-                                 headers=request.headers,
-                                 verify=self.verify,
-                                 timeout=self._connection_timeout)
+        resp = self.session.post(
+            request.url,
+            data=request.message,
+            headers=request.headers,
+            verify=self.verify,
+            timeout=self._connection_timeout,
+        )
         return transport.Reply(resp.status_code, resp.headers, resp.content)
 
 
@@ -215,6 +239,7 @@ class CompatibilitySudsClient(client.Client):
     The cookiejar properties allow reading/setting the cookiejar used by the
     underlying transport.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -233,29 +258,43 @@ class Service:
     services
     """
 
-    def __init__(self, wsdl_url=None, soap_url=None,
-                 cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None, op_id_prefix='oslo.vmware'):
+    def __init__(
+        self,
+        wsdl_url=None,
+        soap_url=None,
+        cacert=None,
+        insecure=True,
+        pool_maxsize=10,
+        connection_timeout=None,
+        op_id_prefix='oslo.vmware',
+    ):
         self.wsdl_url = wsdl_url
         self.soap_url = soap_url
         self.op_id_prefix = op_id_prefix
-        LOG.debug("Creating suds client with soap_url='%s' and wsdl_url='%s'",
-                  self.soap_url, self.wsdl_url)
-        transport = RequestsTransport(cacert=cacert,
-                                      insecure=insecure,
-                                      pool_maxsize=pool_maxsize,
-                                      connection_timeout=connection_timeout)
-        self.client = CompatibilitySudsClient(self.wsdl_url,
-                                              transport=transport,
-                                              location=self.soap_url,
-                                              plugins=[ServiceMessagePlugin()],
-                                              cache=_CACHE)
+        LOG.debug(
+            "Creating suds client with soap_url='%s' and wsdl_url='%s'",
+            self.soap_url,
+            self.wsdl_url,
+        )
+        transport = RequestsTransport(
+            cacert=cacert,
+            insecure=insecure,
+            pool_maxsize=pool_maxsize,
+            connection_timeout=connection_timeout,
+        )
+        self.client = CompatibilitySudsClient(
+            self.wsdl_url,
+            transport=transport,
+            location=self.soap_url,
+            plugins=[ServiceMessagePlugin()],
+            cache=_CACHE,
+        )
         self._service_content = None
         self._vc_session_cookie = None
 
     @staticmethod
     def build_base_url(protocol, host, port):
-        proto_str = '%s://' % protocol
+        proto_str = f'{protocol}://'
         host_str = netutils.escape_ipv6(host)
         port_str = '' if port is None else ':%d' % port
         return proto_str + host_str + port_str
@@ -281,9 +320,11 @@ class Service:
             # session. It is as bad as a terminated session for we cannot
             # use the session. Therefore setting fault to NotAuthenticated
             # fault.
-            LOG.debug("RetrievePropertiesEx API response is empty; setting "
-                      "fault to %s.",
-                      exceptions.NOT_AUTHENTICATED)
+            LOG.debug(
+                "RetrievePropertiesEx API response is empty; setting "
+                "fault to %s.",
+                exceptions.NOT_AUTHENTICATED,
+            )
             fault_list = [exceptions.NOT_AUTHENTICATED]
         else:
             for obj_cont in response.objects:
@@ -293,16 +334,18 @@ class Service:
                         f_name = f_type.__class__.__name__
                         fault_list.append(f_name)
                         if f_name == exceptions.NO_PERMISSION:
-                            details['object'] = \
-                                vim_util.get_moref_value(f_type.object)
+                            details['object'] = vim_util.get_moref_value(
+                                f_type.object
+                            )
                             details['privilegeId'] = f_type.privilegeId
 
         if fault_list:
-            fault_string = _("Error occurred while calling "
-                             "RetrievePropertiesEx.")
-            raise exceptions.VimFaultException(fault_list,
-                                               fault_string,
-                                               details=details)
+            fault_string = _(
+                "Error occurred while calling RetrievePropertiesEx."
+            )
+            raise exceptions.VimFaultException(
+                fault_list, fault_string, details=details
+            )
 
     def _set_soap_headers(self, op_id):
         """Set SOAP headers for the next remote call to vCenter.
@@ -315,7 +358,8 @@ class Service:
         headers = []
         if self._vc_session_cookie:
             elem = element.Element('vcSessionCookie').setText(
-                self._vc_session_cookie)
+                self._vc_session_cookie
+            )
             headers.append(elem)
         if op_id:
             elem = element.Element('operationID').setText(op_id)
@@ -356,8 +400,9 @@ class Service:
                 if isinstance(managed_object, str):
                     # For strings, use string value for value and type
                     # of the managed object.
-                    managed_object = vim_util.get_moref(managed_object,
-                                                        managed_object)
+                    managed_object = vim_util.get_moref(
+                        managed_object, managed_object
+                    )
                 if managed_object is None:
                     return
 
@@ -366,16 +411,17 @@ class Service:
                 if not skip_op_id:
                     # Generate opID. It will appear in vCenter and ESX logs for
                     # this particular remote call.
-                    op_id = '{}-{}'.format(self.op_id_prefix,
-                                           uuidutils.generate_uuid())
-                    LOG.debug('Invoking %s.%s with opID=%s',
-                              vim_util.get_moref_type(managed_object),
-                              attr_name,
-                              op_id)
+                    op_id = f'{self.op_id_prefix}-{uuidutils.generate_uuid()}'
+                    LOG.debug(
+                        'Invoking %s.%s with opID=%s',
+                        vim_util.get_moref_type(managed_object),
+                        attr_name,
+                        op_id,
+                    )
                 self._set_soap_headers(op_id)
                 request = getattr(self.client.service, attr_name)
                 response = request(managed_object, **kwargs)
-                if (attr_name.lower() == 'retrievepropertiesex'):
+                if attr_name.lower() == 'retrievepropertiesex':
                     Service._retrieve_properties_ex_fault_checker(response)
                 return response
             except exceptions.VimFaultException:
@@ -403,29 +449,35 @@ class Service:
                         # NOTE(vbala): PBM faults use vim25 namespace. Also,
                         # PBM APIs throw NotAuthenticated in vSphere 6.5 for
                         # session expiry.
-                        if (fault_type.endswith(exceptions.SECURITY_ERROR) or
-                                fault_type.endswith(
-                                    exceptions.NOT_AUTHENTICATED)):
+                        if fault_type.endswith(
+                            exceptions.SECURITY_ERROR
+                        ) or fault_type.endswith(exceptions.NOT_AUTHENTICATED):
                             fault_type = exceptions.NOT_AUTHENTICATED
                         fault_list.append(fault_type)
                         for child in fault.getChildren():
                             details[child.name] = child.getText()
-                raise exceptions.VimFaultException(fault_list, fault_string,
-                                                   excep, details)
+                raise exceptions.VimFaultException(
+                    fault_list, fault_string, excep, details
+                )
 
             except AttributeError as excep:
                 raise exceptions.VimAttributeException(
-                    _("No such SOAP method %s.") % attr_name, excep)
+                    _("No such SOAP method %s.") % attr_name, excep
+                )
 
-            except (httplib.CannotSendRequest,
-                    httplib.ResponseNotReady,
-                    httplib.CannotSendHeader) as excep:
+            except (
+                httplib.CannotSendRequest,
+                httplib.ResponseNotReady,
+                httplib.CannotSendHeader,
+            ) as excep:
                 raise exceptions.VimSessionOverLoadException(
-                    _("httplib error in %s.") % attr_name, excep)
+                    _("httplib error in %s.") % attr_name, excep
+                )
 
             except requests.RequestException as excep:
                 raise exceptions.VimConnectionException(
-                    _("requests error in %s.") % attr_name, excep)
+                    _("requests error in %s.") % attr_name, excep
+                )
 
             except Exception as excep:
                 # TODO(vbala) should catch specific exceptions and raise
@@ -433,18 +485,24 @@ class Service:
 
                 # Socket errors which need special handling; some of these
                 # might be caused by server API call overload.
-                if (str(excep).find(ADDRESS_IN_USE_ERROR) != -1 or
-                        str(excep).find(CONN_ABORT_ERROR)) != -1:
+                if (
+                    str(excep).find(ADDRESS_IN_USE_ERROR) != -1
+                    or str(excep).find(CONN_ABORT_ERROR)
+                ) != -1:
                     raise exceptions.VimSessionOverLoadException(
-                        _("Socket error in %s.") % attr_name, excep)
+                        _("Socket error in %s.") % attr_name, excep
+                    )
                 # Type error which needs special handling; it might be caused
                 # by server API call overload.
                 elif str(excep).find(RESP_NOT_XML_ERROR) != -1:
                     raise exceptions.VimSessionOverLoadException(
-                        _("Type error in %s.") % attr_name, excep)
+                        _("Type error in %s.") % attr_name, excep
+                    )
                 else:
                     raise exceptions.VimException(
-                        _("Exception in %s.") % attr_name, excep)
+                        _("Exception in %s.") % attr_name, excep
+                    )
+
         return request_handler
 
     def __repr__(self):
@@ -463,8 +521,9 @@ class SudsLogFilter(logging.Filter):
 
         # Suds will log vCenter credentials if SessionManager.Login or
         # SessionManager.SessionIsActive fails.
-        login = (record.msg.childAtPath('/Envelope/Body/Login') or
-                 record.msg.childAtPath('/Envelope/Body/SessionIsActive'))
+        login = record.msg.childAtPath(
+            '/Envelope/Body/Login'
+        ) or record.msg.childAtPath('/Envelope/Body/SessionIsActive')
         if login is None:
             return True
 

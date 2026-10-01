@@ -33,5 +33,20 @@ Repository = "https://opendev.org/openstack/oslo.vmware"
 [tool.setuptools.packages.find]
 include = ["oslo_vmware*"]
 
-[tool.bandit]
-exclude_dirs = ["tests"]
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.format]
+quote-style = "preserve"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["E", "F", "G", "LOG", "S", "UP"]
+external = ["H"]
+ignore = [
+    "S101",  # asserts are only used for type narrowing
+    "UP031",  # TODO(tkajinam): Remove this
+]
+
+[tool.ruff.lint.per-file-ignores]
+"oslo_vmware/tests/*" = ["S"]

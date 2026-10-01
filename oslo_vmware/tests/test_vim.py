@@ -49,30 +49,32 @@ class VimTest(base.TestCase):
 
     def test_configure_non_default_host_port(self):
         vim_obj = vim.Vim('https', 'www.test.com', 12345)
-        self.assertEqual('https://www.test.com:12345/sdk/vimService.wsdl',
-                         vim_obj.wsdl_url)
-        self.assertEqual('https://www.test.com:12345/sdk',
-                         vim_obj.soap_url)
+        self.assertEqual(
+            'https://www.test.com:12345/sdk/vimService.wsdl', vim_obj.wsdl_url
+        )
+        self.assertEqual('https://www.test.com:12345/sdk', vim_obj.soap_url)
 
     def test_configure_ipv6(self):
         vim_obj = vim.Vim('https', '::1')
-        self.assertEqual('https://[::1]/sdk/vimService.wsdl',
-                         vim_obj.wsdl_url)
-        self.assertEqual('https://[::1]/sdk',
-                         vim_obj.soap_url)
+        self.assertEqual('https://[::1]/sdk/vimService.wsdl', vim_obj.wsdl_url)
+        self.assertEqual('https://[::1]/sdk', vim_obj.soap_url)
 
     def test_configure_ipv6_and_non_default_host_port(self):
         vim_obj = vim.Vim('https', '::1', 12345)
-        self.assertEqual('https://[::1]:12345/sdk/vimService.wsdl',
-                         vim_obj.wsdl_url)
-        self.assertEqual('https://[::1]:12345/sdk',
-                         vim_obj.soap_url)
+        self.assertEqual(
+            'https://[::1]:12345/sdk/vimService.wsdl', vim_obj.wsdl_url
+        )
+        self.assertEqual('https://[::1]:12345/sdk', vim_obj.soap_url)
 
     def test_configure_with_wsdl_url_override(self):
-        vim_obj = vim.Vim('https', 'www.example.com',
-                          wsdl_url='https://test.com/sdk/vimService.wsdl')
-        self.assertEqual('https://test.com/sdk/vimService.wsdl',
-                         vim_obj.wsdl_url)
+        vim_obj = vim.Vim(
+            'https',
+            'www.example.com',
+            wsdl_url='https://test.com/sdk/vimService.wsdl',
+        )
+        self.assertEqual(
+            'https://test.com/sdk/vimService.wsdl', vim_obj.wsdl_url
+        )
         self.assertEqual('https://www.example.com/sdk', vim_obj.soap_url)
 
 
@@ -83,8 +85,9 @@ class VMwareSudsTest(base.TestCase):
         def new_client_init(self, url, **kwargs):
             return
 
-        mock.patch.object(suds.client.Client,
-                          '__init__', new=new_client_init).start()
+        mock.patch.object(
+            suds.client.Client, '__init__', new=new_client_init
+        ).start()
         self.addCleanup(mock.patch.stopall)
         self.vim = self._vim_create()
 
@@ -103,5 +106,6 @@ class VMwareSudsTest(base.TestCase):
 
     def test_exception_with_deepcopy(self):
         self.assertIsNotNone(self.vim)
-        self.assertRaises(exceptions.VimAttributeException,
-                          copy.deepcopy, self.vim)
+        self.assertRaises(
+            exceptions.VimAttributeException, copy.deepcopy, self.vim
+        )

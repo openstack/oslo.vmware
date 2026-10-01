@@ -38,9 +38,18 @@ LOG = logging.getLogger(__name__)
 class Pbm(service.Service):
     """Service class that provides access to the Storage Policy API."""
 
-    def __init__(self, protocol='https', host='localhost', port=443,
-                 wsdl_url=None, cacert=None, insecure=True, pool_maxsize=10,
-                 connection_timeout=None, op_id_prefix='oslo.vmware'):
+    def __init__(
+        self,
+        protocol='https',
+        host='localhost',
+        port=443,
+        wsdl_url=None,
+        cacert=None,
+        insecure=True,
+        pool_maxsize=10,
+        connection_timeout=None,
+        op_id_prefix='oslo.vmware',
+    ):
         """Constructs a PBM service client object.
 
         :param protocol: http or https
@@ -59,9 +68,15 @@ class Pbm(service.Service):
         """
         base_url = service.Service.build_base_url(protocol, host, port)
         soap_url = base_url + '/pbm'
-        super().__init__(wsdl_url, soap_url, cacert, insecure,
-                         pool_maxsize, connection_timeout,
-                         op_id_prefix)
+        super().__init__(
+            wsdl_url,
+            soap_url,
+            cacert,
+            insecure,
+            pool_maxsize,
+            connection_timeout,
+            op_id_prefix,
+        )
 
     def set_soap_cookie(self, cookie):
         """Set the specified vCenter session cookie in the SOAP header
@@ -95,16 +110,14 @@ def get_all_profiles(session):
     res_type = pbm.client.factory.create('ns0:PbmProfileResourceType')
     res_type.resourceType = 'STORAGE'
     profiles = []
-    profile_ids = session.invoke_api(pbm,
-                                     'PbmQueryProfile',
-                                     profile_manager,
-                                     resourceType=res_type)
+    profile_ids = session.invoke_api(
+        pbm, 'PbmQueryProfile', profile_manager, resourceType=res_type
+    )
     LOG.debug("Fetched profile IDs: %s.", profile_ids)
     if profile_ids:
-        profiles = session.invoke_api(pbm,
-                                      'PbmRetrieveContent',
-                                      profile_manager,
-                                      profileIds=profile_ids)
+        profiles = session.invoke_api(
+            pbm, 'PbmRetrieveContent', profile_manager, profileIds=profile_ids
+        )
     return profiles
 
 
@@ -120,9 +133,10 @@ def get_profile_id_by_name(session, profile_name):
     for profile in get_all_profiles(session):
         if profile.name == profile_name:
             profile_id = profile.profileId
-            LOG.debug("Retrieved profile ID: %(id)s for profile: %(name)s.",
-                      {'id': profile_id,
-                       'name': profile_name})
+            LOG.debug(
+                "Retrieved profile ID: %(id)s for profile: %(name)s.",
+                {'id': profile_id, 'name': profile_name},
+            )
             return profile_id
     return None
 
@@ -136,17 +150,20 @@ def filter_hubs_by_profile(session, hubs, profile_id):
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    LOG.debug("Filtering hubs: %(hubs)s that match profile: %(profile)s.",
-              {'hubs': hubs,
-               'profile': profile_id})
+    LOG.debug(
+        "Filtering hubs: %(hubs)s that match profile: %(profile)s.",
+        {'hubs': hubs, 'profile': profile_id},
+    )
 
     pbm = session.pbm
     placement_solver = pbm.service_content.placementSolver
-    filtered_hubs = session.invoke_api(pbm,
-                                       'PbmQueryMatchingHub',
-                                       placement_solver,
-                                       hubsToSearch=hubs,
-                                       profile=profile_id)
+    filtered_hubs = session.invoke_api(
+        pbm,
+        'PbmQueryMatchingHub',
+        placement_solver,
+        hubsToSearch=hubs,
+        profile=profile_id,
+    )
     LOG.debug("Filtered hubs: %s", filtered_hubs)
     return filtered_hubs
 
@@ -195,8 +212,9 @@ def get_pbm_wsdl_location(vc_version):
     if len(ver) >= 2:
         major_minor = f'{major_minor}.{ver[1]}'
     curr_dir = os.path.abspath(os.path.dirname(__file__))
-    pbm_service_wsdl = os.path.join(curr_dir, 'wsdl', major_minor,
-                                    'pbmService.wsdl')
+    pbm_service_wsdl = os.path.join(
+        curr_dir, 'wsdl', major_minor, 'pbmService.wsdl'
+    )
     if not os.path.exists(pbm_service_wsdl):
         LOG.warning("PBM WSDL file %s not found.", pbm_service_wsdl)
         return
@@ -219,8 +237,9 @@ def get_profiles(session, vm):
     object_ref.key = vim_util.get_moref_value(vm)
     object_ref.objectType = 'virtualMachine'
 
-    return session.invoke_api(pbm, 'PbmQueryAssociatedProfile',
-                              profile_manager, entity=object_ref)
+    return session.invoke_api(
+        pbm, 'PbmQueryAssociatedProfile', profile_manager, entity=object_ref
+    )
 
 
 def get_profiles_by_ids(session, profile_ids):
@@ -234,8 +253,7 @@ def get_profiles_by_ids(session, profile_ids):
     if profile_ids:
         pbm = session.pbm
         profile_manager = pbm.service_content.profileManager
-        profiles = session.invoke_api(pbm,
-                                      'PbmRetrieveContent',
-                                      profile_manager,
-                                      profileIds=profile_ids)
+        profiles = session.invoke_api(
+            pbm, 'PbmRetrieveContent', profile_manager, profileIds=profile_ids
+        )
     return profiles

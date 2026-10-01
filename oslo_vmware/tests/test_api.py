@@ -45,19 +45,22 @@ class VMwareAPISessionTest(base.TestCase):
         self.VimMock.side_effect = lambda *args, **kw: mock.MagicMock()
         self.cert_mock = mock.Mock()
 
-    def _create_api_session(self, _create_session, retry_count=10,
-                            task_poll_interval=1):
-        return api.VMwareAPISession(VMwareAPISessionTest.SERVER_IP,
-                                    VMwareAPISessionTest.USERNAME,
-                                    VMwareAPISessionTest.PASSWORD,
-                                    retry_count,
-                                    task_poll_interval,
-                                    'https',
-                                    _create_session,
-                                    port=VMwareAPISessionTest.PORT,
-                                    cacert=self.cert_mock,
-                                    insecure=False,
-                                    pool_size=VMwareAPISessionTest.POOL_SIZE)
+    def _create_api_session(
+        self, _create_session, retry_count=10, task_poll_interval=1
+    ):
+        return api.VMwareAPISession(
+            VMwareAPISessionTest.SERVER_IP,
+            VMwareAPISessionTest.USERNAME,
+            VMwareAPISessionTest.PASSWORD,
+            retry_count,
+            task_poll_interval,
+            'https',
+            _create_session,
+            port=VMwareAPISessionTest.PORT,
+            cacert=self.cert_mock,
+            insecure=False,
+            pool_size=VMwareAPISessionTest.POOL_SIZE,
+        )
 
     def test_vim(self):
         api_session = self._create_api_session(False)
@@ -71,7 +74,8 @@ class VMwareAPISessionTest(base.TestCase):
             insecure=False,
             pool_maxsize=VMwareAPISessionTest.POOL_SIZE,
             connection_timeout=None,
-            op_id_prefix='oslo.vmware')
+            op_id_prefix='oslo.vmware',
+        )
 
     @mock.patch.object(pbm, 'Pbm')
     def test_pbm(self, pbm_mock):
@@ -103,8 +107,11 @@ class VMwareAPISessionTest(base.TestCase):
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.Login.assert_called_once_with(
-            session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD, locale='en')
+            session_manager,
+            userName=VMwareAPISessionTest.USERNAME,
+            password=VMwareAPISessionTest.PASSWORD,
+            locale='en',
+        )
         self.assertFalse(vim_obj.TerminateSession.called)
         self.assertEqual(session.key, api_session._session_id)
         pbm.set_soap_cookie.assert_called_once_with(cookie)
@@ -124,11 +131,16 @@ class VMwareAPISessionTest(base.TestCase):
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.SessionIsActive.assert_called_once_with(
-            session_manager, sessionID=old_session_key,
-            userName=VMwareAPISessionTest.USERNAME)
+            session_manager,
+            sessionID=old_session_key,
+            userName=VMwareAPISessionTest.USERNAME,
+        )
         vim_obj.Login.assert_called_once_with(
-            session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD, locale='en')
+            session_manager,
+            userName=VMwareAPISessionTest.USERNAME,
+            password=VMwareAPISessionTest.PASSWORD,
+            locale='en',
+        )
         self.assertEqual(new_session_key, api_session._session_id)
 
     def test_create_session_with_existing_active_session(self):
@@ -142,8 +154,10 @@ class VMwareAPISessionTest(base.TestCase):
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.SessionIsActive.assert_called_once_with(
-            session_manager, sessionID=old_session_key,
-            userName=VMwareAPISessionTest.USERNAME)
+            session_manager,
+            sessionID=old_session_key,
+            userName=VMwareAPISessionTest.USERNAME,
+        )
         self.assertFalse(vim_obj.Login.called)
         self.assertEqual(old_session_key, api_session._session_id)
 
@@ -203,11 +217,13 @@ class VMwareAPISessionTest(base.TestCase):
         api_session._create_session()
         session_manager = vim_obj.service_content.sessionManager
         vim_obj.Login.assert_called_once_with(
-            session_manager, userName=VMwareAPISessionTest.USERNAME,
-            password=VMwareAPISessionTest.PASSWORD, locale='en')
+            session_manager,
+            userName=VMwareAPISessionTest.USERNAME,
+            password=VMwareAPISessionTest.PASSWORD,
+            locale='en',
+        )
         api_session.logout()
-        vim_obj.Logout.assert_called_once_with(
-            session_manager)
+        vim_obj.Logout.assert_called_once_with(session_manager)
         self.assertIsNone(api_session._session_id)
 
     def test_invoke_api_with_expected_exception(self):
@@ -271,10 +287,12 @@ class VMwareAPISessionTest(base.TestCase):
         module = mock.Mock()
         module.api = api
         with mock.patch('time.sleep'):
-            self.assertRaises(exceptions.VimConnectionException,
-                              api_session.invoke_api,
-                              module,
-                              'api')
+            self.assertRaises(
+                exceptions.VimConnectionException,
+                api_session.invoke_api,
+                module,
+                'api',
+            )
         # 1 initial attempt + 3 retries = 4 total calls
         self.assertEqual(retry_count + 1, call_count[0])
 
@@ -295,12 +313,15 @@ class VMwareAPISessionTest(base.TestCase):
         module = mock.Mock()
         module.api = api
         sleep_times = []
-        with mock.patch('time.sleep',
-                        side_effect=lambda t: sleep_times.append(t)):
-            self.assertRaises(exceptions.VimConnectionException,
-                              api_session.invoke_api,
-                              module,
-                              'api')
+        with mock.patch(
+            'time.sleep', side_effect=lambda t: sleep_times.append(t)
+        ):
+            self.assertRaises(
+                exceptions.VimConnectionException,
+                api_session.invoke_api,
+                module,
+                'api',
+            )
         # Original RetryDecorator: sleep_time starts at 0, incremented by
         # inc_sleep_time (10) before each sleep, capped at max_sleep_time (60).
         # Sequence: 10, 20, 30, 40, 50, 60, 60
@@ -314,10 +335,9 @@ class VMwareAPISessionTest(base.TestCase):
 
         module = mock.Mock()
         module.api = api
-        self.assertRaises(exceptions.VimFaultException,
-                          api_session.invoke_api,
-                          module,
-                          'api')
+        self.assertRaises(
+            exceptions.VimFaultException, api_session.invoke_api, module, 'api'
+        )
 
     def test_invoke_api_with_vim_fault_exception_details(self):
         api_session = self._create_api_session(True)
@@ -326,17 +346,19 @@ class VMwareAPISessionTest(base.TestCase):
         details = {'name': suds.sax.text.Text('фира')}
 
         module = mock.Mock()
-        module.api.side_effect = exceptions.VimFaultException(fault_list,
-                                                              fault_string,
-                                                              details=details)
-        e = self.assertRaises(exceptions.InvalidPropertyException,
-                              api_session.invoke_api,
-                              module,
-                              'api')
+        module.api.side_effect = exceptions.VimFaultException(
+            fault_list, fault_string, details=details
+        )
+        e = self.assertRaises(
+            exceptions.InvalidPropertyException,
+            api_session.invoke_api,
+            module,
+            'api',
+        )
         details_str = "{'name': 'фира'}"
-        expected_str = "{}\nFaults: {}\nDetails: {}".format(fault_string,
-                                                            fault_list,
-                                                            details_str)
+        expected_str = (
+            f"{fault_string}\nFaults: {fault_list}\nDetails: {details_str}"
+        )
         self.assertEqual(expected_str, str(e))
         self.assertEqual(details, e.details)
 
@@ -347,7 +369,8 @@ class VMwareAPISessionTest(base.TestCase):
 
         def api(*args, **kwargs):
             raise exceptions.VimFaultException(
-                [exceptions.NOT_AUTHENTICATED], None)
+                [exceptions.NOT_AUTHENTICATED], None
+            )
 
         module = mock.Mock()
         module.api = api
@@ -356,7 +379,8 @@ class VMwareAPISessionTest(base.TestCase):
         vim_obj.SessionIsActive.assert_called_once_with(
             vim_obj.service_content.sessionManager,
             sessionID=api_session._session_id,
-            userName=api_session._session_username)
+            userName=api_session._session_username,
+        )
 
     def test_invoke_api_with_stale_session(self):
         api_session = self._create_api_session(True)
@@ -364,8 +388,10 @@ class VMwareAPISessionTest(base.TestCase):
         vim_obj = api_session.vim
         vim_obj.SessionIsActive.return_value = False
         result = mock.Mock()
-        responses = [exceptions.VimFaultException(
-            [exceptions.NOT_AUTHENTICATED], None), result]
+        responses = [
+            exceptions.VimFaultException([exceptions.NOT_AUTHENTICATED], None),
+            result,
+        ]
 
         def api(*args, **kwargs):
             response = responses.pop(0)
@@ -381,7 +407,8 @@ class VMwareAPISessionTest(base.TestCase):
         vim_obj.SessionIsActive.assert_called_once_with(
             vim_obj.service_content.sessionManager,
             sessionID=api_session._session_id,
-            userName=api_session._session_username)
+            userName=api_session._session_username,
+        )
         api_session._create_session.assert_called_once_with()
 
     def test_invoke_api_with_unknown_fault(self):
@@ -389,12 +416,12 @@ class VMwareAPISessionTest(base.TestCase):
         fault_list = ['NotAFile']
 
         module = mock.Mock()
-        module.api.side_effect = exceptions.VimFaultException(fault_list,
-                                                              'Not a file.')
-        ex = self.assertRaises(exceptions.VimFaultException,
-                               api_session.invoke_api,
-                               module,
-                               'api')
+        module.api.side_effect = exceptions.VimFaultException(
+            fault_list, 'Not a file.'
+        )
+        ex = self.assertRaises(
+            exceptions.VimFaultException, api_session.invoke_api, module, 'api'
+        )
         self.assertEqual(fault_list, ex.fault_list)
 
     @mock.patch.object(context, 'get_current')
@@ -420,13 +447,17 @@ class VMwareAPISessionTest(base.TestCase):
             ret = api_session.wait_for_task(task)
             self.assertEqual('success', ret.state)
             self.assertEqual(100, ret.progress)
-        api_session.invoke_api.assert_called_with(vim_util,
-                                                  'get_object_property',
-                                                  api_session.vim, task,
-                                                  'info',
-                                                  skip_op_id=True)
-        self.assertEqual(task_info_list_size,
-                         api_session.invoke_api.call_count)
+        api_session.invoke_api.assert_called_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            task,
+            'info',
+            skip_op_id=True,
+        )
+        self.assertEqual(
+            task_info_list_size, api_session.invoke_api.call_count
+        )
         mock_curr_ctx.assert_called_once()
         self.assertEqual(3, ctx.update_store.call_count)
 
@@ -451,13 +482,17 @@ class VMwareAPISessionTest(base.TestCase):
             ret = api_session.wait_for_task(task)
             self.assertEqual('success', ret.state)
             self.assertEqual(100, ret.progress)
-        api_session.invoke_api.assert_called_with(vim_util,
-                                                  'get_object_property',
-                                                  api_session.vim, task,
-                                                  'info',
-                                                  skip_op_id=True)
-        self.assertEqual(task_info_list_size,
-                         api_session.invoke_api.call_count)
+        api_session.invoke_api.assert_called_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            task,
+            'info',
+            skip_op_id=True,
+        )
+        self.assertEqual(
+            task_info_list_size, api_session.invoke_api.call_count
+        )
         mock_curr_ctx.assert_called_once()
 
     @mock.patch.object(context, 'get_current')
@@ -476,33 +511,41 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         task = mock.Mock()
         with mock.patch('time.sleep'):
-            self.assertRaises(exceptions.VimFaultException,
-                              api_session.wait_for_task,
-                              task)
-        api_session.invoke_api.assert_called_with(vim_util,
-                                                  'get_object_property',
-                                                  api_session.vim, task,
-                                                  'info',
-                                                  skip_op_id=True)
-        self.assertEqual(task_info_list_size,
-                         api_session.invoke_api.call_count)
+            self.assertRaises(
+                exceptions.VimFaultException, api_session.wait_for_task, task
+            )
+        api_session.invoke_api.assert_called_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            task,
+            'info',
+            skip_op_id=True,
+        )
+        self.assertEqual(
+            task_info_list_size, api_session.invoke_api.call_count
+        )
         mock_curr_ctx.assert_called_once()
 
     @mock.patch.object(context, 'get_current')
     def test_wait_for_task_with_invoke_api_exception(self, mock_curr_ctx):
         api_session = self._create_api_session(True)
         api_session.invoke_api = mock.Mock(
-            side_effect=exceptions.VimException(None))
+            side_effect=exceptions.VimException(None)
+        )
         task = mock.Mock()
         with mock.patch('time.sleep'):
-            self.assertRaises(exceptions.VimException,
-                              api_session.wait_for_task,
-                              task)
-        api_session.invoke_api.assert_called_once_with(vim_util,
-                                                       'get_object_property',
-                                                       api_session.vim, task,
-                                                       'info',
-                                                       skip_op_id=True)
+            self.assertRaises(
+                exceptions.VimException, api_session.wait_for_task, task
+            )
+        api_session.invoke_api.assert_called_once_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            task,
+            'info',
+            skip_op_id=True,
+        )
         mock_curr_ctx.assert_called_once()
 
     def test_wait_for_lease_ready(self):
@@ -517,11 +560,14 @@ class VMwareAPISessionTest(base.TestCase):
         lease = mock.Mock()
         with mock.patch('time.sleep'):
             api_session.wait_for_lease_ready(lease)
-        api_session.invoke_api.assert_called_with(vim_util,
-                                                  'get_object_property',
-                                                  api_session.vim, lease,
-                                                  'state',
-                                                  skip_op_id=True)
+        api_session.invoke_api.assert_called_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            lease,
+            'state',
+            skip_op_id=True,
+        )
         self.assertEqual(num_states, api_session.invoke_api.call_count)
 
     def test_wait_for_lease_ready_with_error_state(self):
@@ -534,14 +580,30 @@ class VMwareAPISessionTest(base.TestCase):
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
         with mock.patch('time.sleep'):
-            self.assertRaises(exceptions.VimException,
-                              api_session.wait_for_lease_ready,
-                              lease)
-        exp_calls = [mock.call(vim_util, 'get_object_property',
-                               api_session.vim, lease, 'state',
-                               skip_op_id=True)] * 2
-        exp_calls.append(mock.call(vim_util, 'get_object_property',
-                                   api_session.vim, lease, 'error'))
+            self.assertRaises(
+                exceptions.VimException,
+                api_session.wait_for_lease_ready,
+                lease,
+            )
+        exp_calls = [
+            mock.call(
+                vim_util,
+                'get_object_property',
+                api_session.vim,
+                lease,
+                'state',
+                skip_op_id=True,
+            )
+        ] * 2
+        exp_calls.append(
+            mock.call(
+                vim_util,
+                'get_object_property',
+                api_session.vim,
+                lease,
+                'error',
+            )
+        )
         self.assertEqual(exp_calls, api_session.invoke_api.call_args_list)
 
     def test_wait_for_lease_ready_with_unknown_state(self):
@@ -552,29 +614,37 @@ class VMwareAPISessionTest(base.TestCase):
 
         api_session.invoke_api = mock.Mock(side_effect=invoke_api_side_effect)
         lease = mock.Mock()
-        self.assertRaises(exceptions.VimException,
-                          api_session.wait_for_lease_ready,
-                          lease)
-        api_session.invoke_api.assert_called_once_with(vim_util,
-                                                       'get_object_property',
-                                                       api_session.vim,
-                                                       lease, 'state',
-                                                       skip_op_id=True)
+        self.assertRaises(
+            exceptions.VimException, api_session.wait_for_lease_ready, lease
+        )
+        api_session.invoke_api.assert_called_once_with(
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            lease,
+            'state',
+            skip_op_id=True,
+        )
 
     def test_wait_for_lease_ready_with_invoke_api_exception(self):
         api_session = self._create_api_session(True)
         api_session.invoke_api = mock.Mock(
-            side_effect=exceptions.VimException(None))
+            side_effect=exceptions.VimException(None)
+        )
         lease = mock.Mock()
-        self.assertRaises(exceptions.VimException,
-                          api_session.wait_for_lease_ready,
-                          lease)
+        self.assertRaises(
+            exceptions.VimException, api_session.wait_for_lease_ready, lease
+        )
         api_session.invoke_api.assert_called_once_with(
-            vim_util, 'get_object_property', api_session.vim, lease,
-            'state', skip_op_id=True)
+            vim_util,
+            'get_object_property',
+            api_session.vim,
+            lease,
+            'state',
+            skip_op_id=True,
+        )
 
-    def _poll_task_well_known_exceptions(self, fault,
-                                         expected_exception):
+    def _poll_task_well_known_exceptions(self, fault, expected_exception):
         api_session = self._create_api_session(False)
 
         def fake_invoke_api(self, module, method, *args, **kwargs):
@@ -589,15 +659,12 @@ class VMwareAPISessionTest(base.TestCase):
             task_info.error = error
             return task_info
 
-        with (
-            mock.patch.object(api_session, 'invoke_api', fake_invoke_api)
-        ):
+        with mock.patch.object(api_session, 'invoke_api', fake_invoke_api):
             fake_task = vim_util.get_moref('Task', 'task-1')
             ctx = mock.Mock()
-            self.assertRaises(expected_exception,
-                              api_session._poll_task,
-                              fake_task,
-                              ctx)
+            self.assertRaises(
+                expected_exception, api_session._poll_task, fake_task, ctx
+            )
 
     def test_poll_task_well_known_exceptions(self):
         for k, v in exceptions._fault_classes_registry.items():
@@ -606,7 +673,7 @@ class VMwareAPISessionTest(base.TestCase):
     def test_poll_task_unknown_exception(self):
         _unknown_exceptions = {
             'NotAFile': exceptions.VimFaultException,
-            'RuntimeFault': exceptions.VimFaultException
+            'RuntimeFault': exceptions.VimFaultException,
         }
 
         for k, v in _unknown_exceptions.items():

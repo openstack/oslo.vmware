@@ -24,14 +24,12 @@ from oslo_vmware import vim_util
 
 
 class HostMount:
-
     def __init__(self, key, mountInfo):
         self.key = key
         self.mountInfo = mountInfo
 
 
 class MountInfo:
-
     def __init__(self, accessMode, mounted, accessible):
         self.accessMode = accessMode
         self.mounted = mounted
@@ -39,12 +37,12 @@ class MountInfo:
 
 
 class DatastoreTestCase(base.TestCase):
-
     """Test the Datastore object."""
 
     def test_ds(self):
         ds = datastore.Datastore(
-            "fake_ref", "ds_name", 2 * units.Gi, 1 * units.Gi, 1 * units.Gi)
+            "fake_ref", "ds_name", 2 * units.Gi, 1 * units.Gi, 1 * units.Gi
+        )
         self.assertEqual('ds_name', ds.name)
         self.assertEqual('fake_ref', ds.ref)
         self.assertEqual(2 * units.Gi, ds.capacity)
@@ -52,10 +50,22 @@ class DatastoreTestCase(base.TestCase):
         self.assertEqual(1 * units.Gi, ds.uncommitted)
 
     def test_ds_invalid_space(self):
-        self.assertRaises(ValueError, datastore.Datastore,
-                          "fake_ref", "ds_name", 1 * units.Gi, 2 * units.Gi)
-        self.assertRaises(ValueError, datastore.Datastore,
-                          "fake_ref", "ds_name", None, 2 * units.Gi)
+        self.assertRaises(
+            ValueError,
+            datastore.Datastore,
+            "fake_ref",
+            "ds_name",
+            1 * units.Gi,
+            2 * units.Gi,
+        )
+        self.assertRaises(
+            ValueError,
+            datastore.Datastore,
+            "fake_ref",
+            "ds_name",
+            None,
+            2 * units.Gi,
+        )
 
     def test_ds_no_capacity_no_freespace(self):
         ds = datastore.Datastore("fake_ref", "ds_name")
@@ -91,13 +101,13 @@ class DatastoreTestCase(base.TestCase):
         session.invoke_api.return_value = summary
         ret = ds.get_summary(session)
         self.assertEqual(summary, ret)
-        session.invoke_api.assert_called_once_with(vim_util,
-                                                   'get_object_property',
-                                                   session.vim,
-                                                   ds.ref, 'summary')
+        session.invoke_api.assert_called_once_with(
+            vim_util, 'get_object_property', session.vim, ds.ref, 'summary'
+        )
 
-    def _test_get_connected_hosts(self, in_maintenance_mode,
-                                  m1_accessible=True):
+    def _test_get_connected_hosts(
+        self, in_maintenance_mode, m1_accessible=True
+    ):
         session = mock.Mock()
         ds_ref = vim_util.get_moref('ds-0', 'Datastore')
         ds = datastore.Datastore(ds_ref, 'ds-name')
@@ -130,13 +140,22 @@ class DatastoreTestCase(base.TestCase):
 
         session.invoke_api = mock.Mock(side_effect=[Prop(), Runtime()])
         hosts = ds.get_connected_hosts(session)
-        calls = [mock.call(vim_util, 'get_object_property',
-                           session.vim, ds_ref, 'host')]
+        calls = [
+            mock.call(
+                vim_util, 'get_object_property', session.vim, ds_ref, 'host'
+            )
+        ]
         if m1_accessible:
             calls.append(
-                mock.call(vim_util,
-                          'get_properties_for_a_collection_of_objects',
-                          session.vim, 'HostSystem', ["m1"], ['runtime']))
+                mock.call(
+                    vim_util,
+                    'get_properties_for_a_collection_of_objects',
+                    session.vim,
+                    'HostSystem',
+                    ["m1"],
+                    ['runtime'],
+                )
+            )
         self.assertEqual(calls, session.invoke_api.mock_calls)
         return hosts
 
@@ -171,22 +190,23 @@ class DatastoreTestCase(base.TestCase):
 
 
 class DatastoreClusterTestCase(base.TestCase):
-
     def test_get_dsc_with_moid(self):
         session = mock.Mock()
         session.invoke_api = mock.Mock()
         session.invoke_api.return_value = 'ds-cluster'
         dsc_moid = 'group-p123'
         dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, dsc_moid)
-        self.assertEqual((dsc_moid, 'StoragePod'),
-                         (vim_util.get_moref_value(dsc_ref),
-                          vim_util.get_moref_type(dsc_ref)))
+        self.assertEqual(
+            (dsc_moid, 'StoragePod'),
+            (
+                vim_util.get_moref_value(dsc_ref),
+                vim_util.get_moref_type(dsc_ref),
+            ),
+        )
         self.assertEqual('ds-cluster', dsc_name)
-        session.invoke_api.assert_called_once_with(vim_util,
-                                                   'get_object_property',
-                                                   session.vim,
-                                                   mock.ANY,
-                                                   'name')
+        session.invoke_api.assert_called_once_with(
+            vim_util, 'get_object_property', session.vim, mock.ANY, 'name'
+        )
 
     @mock.patch('oslo_vmware.vim_util.continue_retrieval')
     @mock.patch('oslo_vmware.vim_util.cancel_retrieval')
@@ -206,14 +226,19 @@ class DatastoreClusterTestCase(base.TestCase):
         session.invoke_api.return_value = retrieve_result
         name = 'ds-cluster'
         dsc_ref, dsc_name = datastore.get_dsc_ref_and_name(session, name)
-        self.assertEqual((vim_util.get_moref_value(pod_ref),
-                          vim_util.get_moref_type(pod_ref)),
-                         (vim_util.get_moref_value(dsc_ref),
-                          vim_util.get_moref_type(dsc_ref)))
+        self.assertEqual(
+            (
+                vim_util.get_moref_value(pod_ref),
+                vim_util.get_moref_type(pod_ref),
+            ),
+            (
+                vim_util.get_moref_value(dsc_ref),
+                vim_util.get_moref_type(dsc_ref),
+            ),
+        )
 
 
 class DatastorePathTestCase(base.TestCase):
-
     """Test the DatastorePath object."""
 
     def test_ds_path(self):
@@ -227,13 +252,9 @@ class DatastorePathTestCase(base.TestCase):
         self.assertEqual('a/b/c', p.dirname)
 
     def test_ds_path_no_ds_name(self):
-        bad_args = [
-            ('', ['a/b/c', 'file.iso']),
-            (None, ['a/b/c', 'file.iso'])]
+        bad_args = [('', ['a/b/c', 'file.iso']), (None, ['a/b/c', 'file.iso'])]
         for t in bad_args:
-            self.assertRaises(
-                ValueError, datastore.DatastorePath,
-                t[0], *t[1])
+            self.assertRaises(ValueError, datastore.DatastorePath, t[0], *t[1])
 
     def test_ds_path_invalid_path_components(self):
         bad_args = [
@@ -242,17 +263,14 @@ class DatastorePathTestCase(base.TestCase):
             ('dsname', ['a', None]),
             ('dsname', ['a', None, 'b']),
             ('dsname', [None, '']),
-            ('dsname', [None, 'b'])]
+            ('dsname', [None, 'b']),
+        ]
 
         for t in bad_args:
-            self.assertRaises(
-                ValueError, datastore.DatastorePath,
-                t[0], *t[1])
+            self.assertRaises(ValueError, datastore.DatastorePath, t[0], *t[1])
 
     def test_ds_path_no_subdir(self):
-        args = [
-            ('dsname', ['', 'x.vmdk']),
-            ('dsname', ['x.vmdk'])]
+        args = [('dsname', ['', 'x.vmdk']), ('dsname', ['x.vmdk'])]
 
         canonical_p = datastore.DatastorePath('dsname', 'x.vmdk')
         self.assertEqual('[dsname] x.vmdk', str(canonical_p))
@@ -264,10 +282,7 @@ class DatastorePathTestCase(base.TestCase):
             self.assertEqual(str(canonical_p), str(p))
 
     def test_ds_path_ds_only(self):
-        args = [
-            ('dsname', []),
-            ('dsname', ['']),
-            ('dsname', ['', ''])]
+        args = [('dsname', []), ('dsname', ['']), ('dsname', ['', ''])]
 
         canonical_p = datastore.DatastorePath('dsname')
         self.assertEqual('[dsname]', str(canonical_p))
@@ -284,7 +299,8 @@ class DatastorePathTestCase(base.TestCase):
             ('dsname', ['a/b/c/', 'x.vmdk']),
             ('dsname', ['a/', 'b/c/', 'x.vmdk']),
             ('dsname', ['a', 'b', 'c', 'x.vmdk']),
-            ('dsname', ['a/b/c', 'x.vmdk'])]
+            ('dsname', ['a/b/c', 'x.vmdk']),
+        ]
 
         canonical_p = datastore.DatastorePath('dsname', 'a/b/c', 'x.vmdk')
         for t in args:
@@ -306,7 +322,8 @@ class DatastorePathTestCase(base.TestCase):
             ('dsname', [' a', 'b', 'c', 'x.vmdk']),
             # trailing space
             ('dsname', ['/a/b/c/', 'x.vmdk ']),
-            ('dsname', ['a/b/c/ ', 'x.vmdk'])]
+            ('dsname', ['a/b/c/ ', 'x.vmdk']),
+        ]
 
         canonical_p = datastore.DatastorePath('dsname', 'a/b/c', 'x.vmdk')
         for t in args:
@@ -325,11 +342,7 @@ class DatastorePathTestCase(base.TestCase):
 
         p = datastore.DatastorePath('ds_name', 'a')
         ds_path = p.join()
-        bad_args = [
-            [None],
-            ['', None],
-            ['a', None],
-            ['a', None, 'b']]
+        bad_args = [[None], ['', None], ['a', None], ['a', None, 'b']]
         for arg in bad_args:
             self.assertRaises(ValueError, p.join, *arg)
 
@@ -354,7 +367,6 @@ class DatastorePathTestCase(base.TestCase):
 
 
 class DatastoreURLTestCase(base.TestCase):
-
     """Test the DatastoreURL object."""
 
     def test_path_strip(self):
@@ -366,8 +378,7 @@ class DatastoreURLTestCase(base.TestCase):
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
-        expected_url = '{}://{}/folder/{}?{}'.format(
-            scheme, server, path, query)
+        expected_url = f'{scheme}://{server}/folder/{path}?{query}'
         self.assertEqual(expected_url, str(url))
 
     def test_path_lstrip(self):
@@ -380,7 +391,8 @@ class DatastoreURLTestCase(base.TestCase):
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
         expected_url = '{}://{}/folder/{}?{}'.format(
-            scheme, server, path.lstrip('/'), query)
+            scheme, server, path.lstrip('/'), query
+        )
         self.assertEqual(expected_url, str(url))
 
     def test_path_rstrip(self):
@@ -393,7 +405,8 @@ class DatastoreURLTestCase(base.TestCase):
         query = urlparse.urlencode(params)
         url = datastore.DatastoreURL(scheme, server, path, dc_path, ds_name)
         expected_url = '{}://{}/folder/{}?{}'.format(
-            scheme, server, path.rstrip('/'), query)
+            scheme, server, path.rstrip('/'), query
+        )
         self.assertEqual(expected_url, str(url))
 
     def test_urlparse(self):
@@ -401,7 +414,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_name = 'datastore-1'
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        url = f'https://13.37.73.31/folder/images/aa.vmdk?{query}'
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(url, str(ds_url))
 
@@ -410,7 +423,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_name = 'datastore-1'
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        url = f'https://13.37.73.31/folder/images/aa.vmdk?{query}'
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(ds_name, ds_url.datastore_name)
 
@@ -419,7 +432,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_name = 'datastore-1'
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        url = f'https://13.37.73.31/folder/images/aa.vmdk?{query}'
         ds_url = datastore.DatastoreURL.urlparse(url)
         self.assertEqual(dc_path, ds_url.datacenter_path)
 
@@ -439,7 +452,7 @@ class DatastoreURLTestCase(base.TestCase):
         ds_name = 'datastore-1'
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        url = f'https://13.37.73.31/folder/images/aa.vmdk?{query}'
         ds_url = datastore.DatastoreURL.urlparse(url)
         cookie = mock.Mock()
         ds_url.connect('PUT', 128, cookie)
@@ -450,25 +463,29 @@ class DatastoreURLTestCase(base.TestCase):
         ds_name = 'datastore-1'
         params = {'dcPath': dc_path, 'dsName': ds_name}
         query = urlparse.urlencode(params)
-        url = 'https://13.37.73.31/folder/images/aa.vmdk?%s' % query
+        url = f'https://13.37.73.31/folder/images/aa.vmdk?{query}'
         session = mock.Mock()
         session.invoke_api = mock.Mock()
 
         class Ticket:
             id = 'fake_id'
+
         session.invoke_api.return_value = Ticket()
         ds_url = datastore.DatastoreURL.urlparse(url)
         ticket = ds_url.get_transfer_ticket(session, 'PUT')
-        self.assertEqual('{}="{}"'.format(constants.CGI_COOKIE_KEY, 'fake_id'),
-                         ticket)
+        self.assertEqual(
+            '{}="{}"'.format(constants.CGI_COOKIE_KEY, 'fake_id'), ticket
+        )
 
     def test_get_datastore_by_ref(self):
         session = mock.Mock()
         ds_ref = mock.Mock()
-        expected_props = {'summary.name': 'datastore1',
-                          'summary.type': 'NFS',
-                          'summary.freeSpace': 1000,
-                          'summary.capacity': 2000}
+        expected_props = {
+            'summary.name': 'datastore1',
+            'summary.type': 'NFS',
+            'summary.freeSpace': 1000,
+            'summary.capacity': 2000,
+        }
         session.invoke_api = mock.Mock()
         session.invoke_api.return_value = expected_props
         ds_obj = datastore.get_datastore_by_ref(session, ds_ref)

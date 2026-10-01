@@ -20,8 +20,9 @@ from oslo_vmware.tests import base
 
 class HackingTestCase(base.TestCase):
     def test_no_log_translations(self):
-        for log, hint in itertools.product(checks._all_log_levels,
-                                           checks._all_hints):
+        for log, hint in itertools.product(
+            checks._all_log_levels, checks._all_hints
+        ):
             bad = f'LOG.{log}({hint}("Bad"))'
             self.assertEqual(1, len(list(checks.no_translate_logs(bad, 'f'))))
             # Catch abuses when used with a variable and not a literal

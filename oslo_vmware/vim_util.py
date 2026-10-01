@@ -114,129 +114,145 @@ def build_recursive_traversal_spec(client_factory):
     :param client_factory: factory to get API input specs
     :returns: recursive traversal spec
     """
-    visit_folders_select_spec = build_selection_spec(client_factory,
-                                                     'visitFolders')
+    visit_folders_select_spec = build_selection_spec(
+        client_factory, 'visitFolders'
+    )
     # Next hop from Datacenter
-    dc_to_hf = build_traversal_spec(client_factory,
-                                    'dc_to_hf',
-                                    'Datacenter',
-                                    'hostFolder',
-                                    False,
-                                    [visit_folders_select_spec])
-    dc_to_vmf = build_traversal_spec(client_factory,
-                                     'dc_to_vmf',
-                                     'Datacenter',
-                                     'vmFolder',
-                                     False,
-                                     [visit_folders_select_spec])
-    dc_to_netf = build_traversal_spec(client_factory,
-                                      'dc_to_netf',
-                                      'Datacenter',
-                                      'networkFolder',
-                                      False,
-                                      [visit_folders_select_spec])
-    dc_to_df = build_traversal_spec(client_factory,
-                                    'dc_to_df',
-                                    'Datacenter',
-                                    'datastoreFolder',
-                                    False,
-                                    [visit_folders_select_spec])
+    dc_to_hf = build_traversal_spec(
+        client_factory,
+        'dc_to_hf',
+        'Datacenter',
+        'hostFolder',
+        False,
+        [visit_folders_select_spec],
+    )
+    dc_to_vmf = build_traversal_spec(
+        client_factory,
+        'dc_to_vmf',
+        'Datacenter',
+        'vmFolder',
+        False,
+        [visit_folders_select_spec],
+    )
+    dc_to_netf = build_traversal_spec(
+        client_factory,
+        'dc_to_netf',
+        'Datacenter',
+        'networkFolder',
+        False,
+        [visit_folders_select_spec],
+    )
+    dc_to_df = build_traversal_spec(
+        client_factory,
+        'dc_to_df',
+        'Datacenter',
+        'datastoreFolder',
+        False,
+        [visit_folders_select_spec],
+    )
 
     # Next hop from HostSystem
-    h_to_vm = build_traversal_spec(client_factory,
-                                   'h_to_vm',
-                                   'HostSystem',
-                                   'vm',
-                                   False,
-                                   [visit_folders_select_spec])
+    h_to_vm = build_traversal_spec(
+        client_factory,
+        'h_to_vm',
+        'HostSystem',
+        'vm',
+        False,
+        [visit_folders_select_spec],
+    )
 
     # Next hop from ComputeResource
-    cr_to_h = build_traversal_spec(client_factory,
-                                   'cr_to_h',
-                                   'ComputeResource',
-                                   'host',
-                                   False,
-                                   [])
-    cr_to_ds = build_traversal_spec(client_factory,
-                                    'cr_to_ds',
-                                    'ComputeResource',
-                                    'datastore',
-                                    False,
-                                    [])
+    cr_to_h = build_traversal_spec(
+        client_factory, 'cr_to_h', 'ComputeResource', 'host', False, []
+    )
+    cr_to_ds = build_traversal_spec(
+        client_factory, 'cr_to_ds', 'ComputeResource', 'datastore', False, []
+    )
 
     rp_to_rp_select_spec = build_selection_spec(client_factory, 'rp_to_rp')
     rp_to_vm_select_spec = build_selection_spec(client_factory, 'rp_to_vm')
 
-    cr_to_rp = build_traversal_spec(client_factory,
-                                    'cr_to_rp',
-                                    'ComputeResource',
-                                    'resourcePool',
-                                    False,
-                                    [rp_to_rp_select_spec,
-                                     rp_to_vm_select_spec])
+    cr_to_rp = build_traversal_spec(
+        client_factory,
+        'cr_to_rp',
+        'ComputeResource',
+        'resourcePool',
+        False,
+        [rp_to_rp_select_spec, rp_to_vm_select_spec],
+    )
 
     # Next hop from ClusterComputeResource
-    ccr_to_h = build_traversal_spec(client_factory,
-                                    'ccr_to_h',
-                                    'ClusterComputeResource',
-                                    'host',
-                                    False,
-                                    [])
-    ccr_to_ds = build_traversal_spec(client_factory,
-                                     'ccr_to_ds',
-                                     'ClusterComputeResource',
-                                     'datastore',
-                                     False,
-                                     [])
-    ccr_to_rp = build_traversal_spec(client_factory,
-                                     'ccr_to_rp',
-                                     'ClusterComputeResource',
-                                     'resourcePool',
-                                     False,
-                                     [rp_to_rp_select_spec,
-                                      rp_to_vm_select_spec])
+    ccr_to_h = build_traversal_spec(
+        client_factory, 'ccr_to_h', 'ClusterComputeResource', 'host', False, []
+    )
+    ccr_to_ds = build_traversal_spec(
+        client_factory,
+        'ccr_to_ds',
+        'ClusterComputeResource',
+        'datastore',
+        False,
+        [],
+    )
+    ccr_to_rp = build_traversal_spec(
+        client_factory,
+        'ccr_to_rp',
+        'ClusterComputeResource',
+        'resourcePool',
+        False,
+        [rp_to_rp_select_spec, rp_to_vm_select_spec],
+    )
     # Next hop from ResourcePool
-    rp_to_rp = build_traversal_spec(client_factory,
-                                    'rp_to_rp',
-                                    'ResourcePool',
-                                    'resourcePool',
-                                    False,
-                                    [rp_to_rp_select_spec,
-                                     rp_to_vm_select_spec])
-    rp_to_vm = build_traversal_spec(client_factory,
-                                    'rp_to_vm',
-                                    'ResourcePool',
-                                    'vm',
-                                    False,
-                                    [rp_to_rp_select_spec,
-                                     rp_to_vm_select_spec])
+    rp_to_rp = build_traversal_spec(
+        client_factory,
+        'rp_to_rp',
+        'ResourcePool',
+        'resourcePool',
+        False,
+        [rp_to_rp_select_spec, rp_to_vm_select_spec],
+    )
+    rp_to_vm = build_traversal_spec(
+        client_factory,
+        'rp_to_vm',
+        'ResourcePool',
+        'vm',
+        False,
+        [rp_to_rp_select_spec, rp_to_vm_select_spec],
+    )
 
     # Get the assorted traversal spec which takes care of the objects to
     # be searched for from the rootFolder
-    traversal_spec = build_traversal_spec(client_factory,
-                                          'visitFolders',
-                                          'Folder',
-                                          'childEntity',
-                                          False,
-                                          [visit_folders_select_spec,
-                                           h_to_vm,
-                                           dc_to_hf,
-                                           dc_to_vmf,
-                                           dc_to_netf,
-                                           dc_to_df,
-                                           cr_to_ds,
-                                           cr_to_h,
-                                           cr_to_rp,
-                                           ccr_to_h,
-                                           ccr_to_ds,
-                                           ccr_to_rp,
-                                           rp_to_rp,
-                                           rp_to_vm])
+    traversal_spec = build_traversal_spec(
+        client_factory,
+        'visitFolders',
+        'Folder',
+        'childEntity',
+        False,
+        [
+            visit_folders_select_spec,
+            h_to_vm,
+            dc_to_hf,
+            dc_to_vmf,
+            dc_to_netf,
+            dc_to_df,
+            cr_to_ds,
+            cr_to_h,
+            cr_to_rp,
+            ccr_to_h,
+            ccr_to_ds,
+            ccr_to_rp,
+            rp_to_rp,
+            rp_to_vm,
+        ],
+    )
     return traversal_spec
 
 
-def build_property_spec(client_factory, type_='VirtualMachine',
-                        properties_to_collect=None, all_properties=False):
+def build_property_spec(
+    client_factory,
+    type_='VirtualMachine',
+    properties_to_collect=None,
+    all_properties=False,
+):
     """Builds the property spec.
 
     :param client_factory: factory to get API input specs
@@ -286,8 +302,9 @@ def build_property_filter_spec(client_factory, property_specs, object_specs):
     return property_filter_spec
 
 
-def get_objects(vim, type_, max_objects, properties_to_collect=None,
-                all_properties=False):
+def get_objects(
+    vim, type_, max_objects, properties_to_collect=None, all_properties=False
+):
     """Get all managed object references of the given type.
 
     It is the caller's responsibility to continue or cancel retrieval.
@@ -309,22 +326,25 @@ def get_objects(vim, type_, max_objects, properties_to_collect=None,
 
     client_factory = vim.client.factory
     recur_trav_spec = build_recursive_traversal_spec(client_factory)
-    object_spec = build_object_spec(client_factory,
-                                    vim.service_content.rootFolder,
-                                    [recur_trav_spec])
+    object_spec = build_object_spec(
+        client_factory, vim.service_content.rootFolder, [recur_trav_spec]
+    )
     property_spec = build_property_spec(
         client_factory,
         type_=type_,
         properties_to_collect=properties_to_collect,
-        all_properties=all_properties)
-    property_filter_spec = build_property_filter_spec(client_factory,
-                                                      [property_spec],
-                                                      [object_spec])
+        all_properties=all_properties,
+    )
+    property_filter_spec = build_property_filter_spec(
+        client_factory, [property_spec], [object_spec]
+    )
     options = client_factory.create('ns0:RetrieveOptions')
     options.maxObjects = max_objects
-    return vim.RetrievePropertiesEx(vim.service_content.propertyCollector,
-                                    specSet=[property_filter_spec],
-                                    options=options)
+    return vim.RetrievePropertiesEx(
+        vim.service_content.propertyCollector,
+        specSet=[property_filter_spec],
+        options=options,
+    )
 
 
 def get_object_properties(vim, moref, properties_to_collect, skip_op_id=False):
@@ -343,17 +363,19 @@ def get_object_properties(vim, moref, properties_to_collect, skip_op_id=False):
         return None
 
     client_factory = vim.client.factory
-    all_properties = (properties_to_collect is None or
-                      len(properties_to_collect) == 0)
+    all_properties = (
+        properties_to_collect is None or len(properties_to_collect) == 0
+    )
     property_spec = build_property_spec(
         client_factory,
         type_=get_moref_type(moref),
         properties_to_collect=properties_to_collect,
-        all_properties=all_properties)
+        all_properties=all_properties,
+    )
     object_spec = build_object_spec(client_factory, moref, [])
-    property_filter_spec = build_property_filter_spec(client_factory,
-                                                      [property_spec],
-                                                      [object_spec])
+    property_filter_spec = build_property_filter_spec(
+        client_factory, [property_spec], [object_spec]
+    )
 
     options = client_factory.create('ns0:RetrieveOptions')
     options.maxObjects = 1
@@ -361,7 +383,8 @@ def get_object_properties(vim, moref, properties_to_collect, skip_op_id=False):
         vim.service_content.propertyCollector,
         specSet=[property_filter_spec],
         options=options,
-        skip_op_id=skip_op_id)
+        skip_op_id=skip_op_id,
+    )
     cancel_retrieval(vim, retrieve_result)
     return retrieve_result.objects
 
@@ -389,10 +412,10 @@ def get_object_properties_dict(vim, moref, properties_to_collect):
     # The object may have information useful for logging
     if hasattr(obj_contents[0], 'missingSet'):
         for m in obj_contents[0].missingSet:
-            LOG.warning("Unable to retrieve value for %(path)s "
-                        "Reason: %(reason)s",
-                        {'path': m.path,
-                         'reason': m.fault.localizedMessage})
+            LOG.warning(
+                "Unable to retrieve value for %(path)s Reason: %(reason)s",
+                {'path': m.path, 'reason': m.fault.localizedMessage},
+            )
     return property_dict
 
 
@@ -462,7 +485,8 @@ class WithRetrieval:
         while self.retrieve_result:
             yield from self.retrieve_result.objects
             self.retrieve_result = continue_retrieval(
-                self.vim, self.retrieve_result)
+                self.vim, self.retrieve_result
+            )
 
 
 def get_object_property(vim, moref, property_name, skip_op_id=False):
@@ -476,8 +500,9 @@ def get_object_property(vim, moref, property_name, skip_op_id=False):
     :raises: VimException, VimFaultException, VimAttributeException,
              VimSessionOverLoadException, VimConnectionException
     """
-    props = get_object_properties(vim, moref, [property_name],
-                                  skip_op_id=skip_op_id)
+    props = get_object_properties(
+        vim, moref, [property_name], skip_op_id=skip_op_id
+    )
     prop_val = None
     if props:
         prop = None
@@ -501,8 +526,14 @@ def find_extension(vim, key):
     return vim.FindExtension(extension_manager, extensionKey=key)
 
 
-def register_extension(vim, key, type, label='OpenStack',
-                       summary='OpenStack services', version='1.0'):
+def register_extension(
+    vim,
+    key,
+    type,
+    label='OpenStack',
+    summary='OpenStack services',
+    version='1.0',
+):
     """Create a new extension.
 
     :param vim: Vim object
@@ -551,21 +582,27 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
     client_factory = vim.client.factory
     property_collector = vim.service_content.propertyCollector
 
-    prop_spec = build_property_spec(client_factory, 'ManagedEntity',
-                                    ['name', 'parent'])
+    prop_spec = build_property_spec(
+        client_factory, 'ManagedEntity', ['name', 'parent']
+    )
     select_set = build_selection_spec(client_factory, 'ParentTraversalSpec')
     select_set = build_traversal_spec(
-        client_factory, 'ParentTraversalSpec', 'ManagedEntity', 'parent',
-        False, [select_set])
+        client_factory,
+        'ParentTraversalSpec',
+        'ManagedEntity',
+        'parent',
+        False,
+        [select_set],
+    )
     obj_spec = build_object_spec(client_factory, entity_ref, select_set)
-    prop_filter_spec = build_property_filter_spec(client_factory,
-                                                  [prop_spec], [obj_spec])
+    prop_filter_spec = build_property_filter_spec(
+        client_factory, [prop_spec], [obj_spec]
+    )
     options = client_factory.create('ns0:RetrieveOptions')
     options.maxObjects = max_objects
     retrieve_result = vim.RetrievePropertiesEx(
-        property_collector,
-        specSet=[prop_filter_spec],
-        options=options)
+        property_collector, specSet=[prop_filter_spec], options=options
+    )
     entity_name = None
     propSet = None
     path = ""
@@ -579,7 +616,7 @@ def get_inventory_path(vim, entity_ref, max_objects=100):
                     path = f'{propSet[0].val}/{path}'
     # NOTE(arnaud): slice to exclude the root folder from the result.
     if propSet is not None and len(propSet) > 0:
-        path = path[len(propSet[0].val):]
+        path = path[len(propSet[0].val) :]
     if entity_name is None:
         entity_name = ""
     return f'{path}{entity_name}'
@@ -593,7 +630,8 @@ def get_http_service_request_spec(client_factory, method, uri):
     :param uri: target URL
     """
     http_service_request_spec = client_factory.create(
-        'ns0:SessionManagerHttpServiceRequestSpec')
+        'ns0:SessionManagerHttpServiceRequestSpec'
+    )
     http_service_request_spec.method = method
     http_service_request_spec.url = uri
     return http_service_request_spec
@@ -625,9 +663,9 @@ def get_prop_filter_spec(client_factory, obj_spec, prop_spec):
     return prop_filter_spec
 
 
-def get_properties_for_a_collection_of_objects(vim, type_,
-                                               obj_list, properties,
-                                               max_objects=None):
+def get_properties_for_a_collection_of_objects(
+    vim, type_, obj_list, properties, max_objects=None
+):
     """Gets the list of properties for the collection of
     objects of the type specified.
     """
@@ -638,13 +676,16 @@ def get_properties_for_a_collection_of_objects(vim, type_,
     lst_obj_specs = []
     for obj in obj_list:
         lst_obj_specs.append(get_obj_spec(client_factory, obj))
-    prop_filter_spec = get_prop_filter_spec(client_factory,
-                                            lst_obj_specs, [prop_spec])
+    prop_filter_spec = get_prop_filter_spec(
+        client_factory, lst_obj_specs, [prop_spec]
+    )
     options = client_factory.create('ns0:RetrieveOptions')
     options.maxObjects = max_objects if max_objects else len(obj_list)
     return vim.RetrievePropertiesEx(
         vim.service_content.propertyCollector,
-        specSet=[prop_filter_spec], options=options)
+        specSet=[prop_filter_spec],
+        options=options,
+    )
 
 
 def propset_dict(propset):
@@ -667,17 +708,19 @@ def propset_dict(propset):
     return {prop.name: prop.val for prop in propset}
 
 
-def storage_placement_spec(client_factory,
-                           dsc_ref,
-                           type,
-                           clone_spec=None,
-                           config_spec=None,
-                           relocate_spec=None,
-                           vm_ref=None,
-                           folder=None,
-                           clone_name=None,
-                           res_pool_ref=None,
-                           host_ref=None):
+def storage_placement_spec(
+    client_factory,
+    dsc_ref,
+    type,
+    clone_spec=None,
+    config_spec=None,
+    relocate_spec=None,
+    vm_ref=None,
+    folder=None,
+    clone_name=None,
+    res_pool_ref=None,
+    host_ref=None,
+):
     pod_sel_spec = client_factory.create('ns0:StorageDrsPodSelectionSpec')
     pod_sel_spec.storagePod = dsc_ref
 

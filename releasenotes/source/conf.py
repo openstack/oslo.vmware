@@ -194,10 +194,8 @@ htmlhelp_basename = 'oslo.vmwareReleaseNotesDoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     # 'preamble': '',
 }
@@ -206,9 +204,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'oslo.vmwareReleaseNotes.tex',
-     'oslo.vmware Release Notes Documentation',
-     'oslo.vmware Developers', 'manual'),
+    (
+        'index',
+        'oslo.vmwareReleaseNotes.tex',
+        'oslo.vmware Release Notes Documentation',
+        'oslo.vmware Developers',
+        'manual',
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,9 +239,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'oslo.vmwareReleaseNotes',
-     'oslo.vmware Release Notes Documentation',
-     ['oslo.vmware Developers'], 1)
+    (
+        'index',
+        'oslo.vmwareReleaseNotes',
+        'oslo.vmware Release Notes Documentation',
+        ['oslo.vmware Developers'],
+        1,
+    )
 ]
 
 # If true, show URL addresses after external links.
@@ -252,12 +258,16 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'oslo.vmwareReleaseNotes',
-     'oslo.vmware Release Notes Documentation',
-     'oslo.vmware Developers', 'oslo.vmwareReleaseNotes',
-     'The Oslo VMware library provides support for common VMware operations'
-     ' and APIs.',
-     'Miscellaneous'),
+    (
+        'index',
+        'oslo.vmwareReleaseNotes',
+        'oslo.vmware Release Notes Documentation',
+        'oslo.vmware Developers',
+        'oslo.vmwareReleaseNotes',
+        'The Oslo VMware library provides support for common VMware operations'
+        ' and APIs.',
+        'Miscellaneous',
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.

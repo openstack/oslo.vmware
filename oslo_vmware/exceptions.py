@@ -49,6 +49,7 @@ class VMwareDriverException(Exception):
     with the keyword arguments provided to the constructor.
 
     """
+
     msg_fmt = _("An unknown exception occurred.")
 
     def __str__(self):
@@ -76,8 +77,9 @@ class VMwareDriverException(Exception):
                 # log the issue and the kwargs
                 LOG.exception('Exception in string format operation')
                 for name, value in kwargs.items():
-                    LOG.error("%(name)s: %(value)s",
-                              {'name': name, 'value': value})
+                    LOG.error(
+                        "%(name)s: %(value)s", {'name': name, 'value': value}
+                    )
                 # at least get the core message out if something happened
                 message = self.msg_fmt
 
@@ -148,8 +150,9 @@ class VimFaultException(VimException):
             descr += '\nFaults: ' + str(self.fault_list)
         if self.details:
             # details may contain non-ASCII values
-            details = '{%s}' % ', '.join([f"'{k}': '{v}'" for k, v in
-                                          self.details.items()])
+            details = '{{{}}}'.format(
+                ', '.join([f"'{k}': '{v}'" for k, v in self.details.items()])
+            )
             descr += '\nDetails: ' + details
         return descr
 
@@ -163,18 +166,19 @@ class ImageTransferException(VMwareDriverException):
 
 
 def _print_deprecation_warning(clazz):
-    LOG.warning("Exception %s is deprecated, it will be removed in the "
-                "next release.", clazz.__name__)
+    LOG.warning(
+        "Exception %s is deprecated, it will be removed in the next release.",
+        clazz.__name__,
+    )
 
 
 class VMwareDriverConfigurationException(VMwareDriverException):
-    """Base class for all configuration exceptions.
-    """
+    """Base class for all configuration exceptions."""
+
     msg_fmt = _("VMware Driver configuration fault.")
 
     def __init__(self, message=None, details=None, **kwargs):
-        super().__init__(
-            message, details, **kwargs)
+        super().__init__(message, details, **kwargs)
         _print_deprecation_warning(self.__class__)
 
 
@@ -309,9 +313,13 @@ def translate_fault(localized_method_fault, excep_msg=None):
         else:
             ex = VimFaultException([name], excep_msg)
     except Exception as e:
-        LOG.debug("Unexpected exception thrown (%s) while translating"
-                  " fault (%s) with message: %s.",
-                  e, localized_method_fault, excep_msg)
+        LOG.debug(
+            "Unexpected exception thrown (%s) while translating"
+            " fault (%s) with message: %s.",
+            e,
+            localized_method_fault,
+            excep_msg,
+        )
         ex = VimException(message=excep_msg, cause=e)
 
     return ex
@@ -320,8 +328,7 @@ def translate_fault(localized_method_fault, excep_msg=None):
 def register_fault_class(name, exception):
     fault_class = _fault_classes_registry.get(name)
     if not issubclass(exception, VimException):
-        raise TypeError(_("exception should be a subclass of "
-                          "VimException"))
+        raise TypeError(_("exception should be a subclass of VimException"))
     if fault_class:
         LOG.debug('Overriding exception for %s', name)
     _fault_classes_registry[name] = exception

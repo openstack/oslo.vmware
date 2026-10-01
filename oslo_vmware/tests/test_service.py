@@ -35,16 +35,20 @@ class ServiceMessagePluginTest(base.TestCase):
         super().setUp()
         self.plugin = service.ServiceMessagePlugin()
 
-    @ddt.data(('value', 'foo', 'string'), ('removeKey', '1', 'int'),
-              ('removeKey', 'foo', 'string'))
+    @ddt.data(
+        ('value', 'foo', 'string'),
+        ('removeKey', '1', 'int'),
+        ('removeKey', 'foo', 'string'),
+    )
     @ddt.unpack
     def test_add_attribute_for_value(self, name, text, expected_xsd_type):
         node = mock.Mock()
         node.name = name
         node.text = text
         self.plugin.add_attribute_for_value(node)
-        node.set.assert_called_once_with('xsi:type',
-                                         'xsd:%s' % expected_xsd_type)
+        node.set.assert_called_once_with(
+            'xsi:type', f'xsd:{expected_xsd_type}'
+        )
 
     def test_marshalled(self):
         context = mock.Mock()
@@ -52,12 +56,12 @@ class ServiceMessagePluginTest(base.TestCase):
         self.plugin.marshalled(context)
         self.plugin.prune.assert_called_once_with(context.envelope)
         context.envelope.walk.assert_called_once_with(
-            self.plugin.add_attribute_for_value)
+            self.plugin.add_attribute_for_value
+        )
 
 
 @ddt.ddt
 class ServiceTest(base.TestCase):
-
     def setUp(self):
         super().setUp()
         patcher = mock.patch('oslo_vmware.service.CompatibilitySudsClient')
@@ -68,9 +72,9 @@ class ServiceTest(base.TestCase):
         ex = self.assertRaises(
             exceptions.VimFaultException,
             service.Service._retrieve_properties_ex_fault_checker,
-            None)
-        self.assertEqual([exceptions.NOT_AUTHENTICATED],
-                         ex.fault_list)
+            None,
+        )
+        self.assertEqual([exceptions.NOT_AUTHENTICATED], ex.fault_list)
 
     def test_retrieve_properties_ex_fault_checker(self):
         fault_list = ['FileFault', 'VimFault']
@@ -87,7 +91,8 @@ class ServiceTest(base.TestCase):
         ex = self.assertRaises(
             exceptions.VimFaultException,
             service.Service._retrieve_properties_ex_fault_checker,
-            response)
+            response,
+        )
         self.assertEqual(fault_list, ex.fault_list)
 
     def test_request_handler(self):
@@ -118,9 +123,11 @@ class ServiceTest(base.TestCase):
         attr_name = 'retrievePropertiesEx'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimFaultException,
-                          svc_obj.retrievePropertiesEx,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimFaultException,
+            svc_obj.retrievePropertiesEx,
+            managed_object,
+        )
 
     def test_request_handler_with_web_fault(self):
         managed_object = 'VirtualMachine'
@@ -148,8 +155,9 @@ class ServiceTest(base.TestCase):
         service_mock = svc_obj.client.service
         setattr(service_mock, 'powerOn', side_effect)
 
-        ex = self.assertRaises(exceptions.VimFaultException, svc_obj.powerOn,
-                               managed_object)
+        ex = self.assertRaises(
+            exceptions.VimFaultException, svc_obj.powerOn, managed_object
+        )
 
         self.assertEqual(fault_list, ex.fault_list)
         self.assertEqual({'name': 'value'}, ex.details)
@@ -166,9 +174,9 @@ class ServiceTest(base.TestCase):
         service_mock = svc_obj.client.service
         setattr(service_mock, 'powerOn', side_effect)
 
-        ex = self.assertRaises(exceptions.VimFaultException,
-                               svc_obj.powerOn,
-                               'VirtualMachine')
+        ex = self.assertRaises(
+            exceptions.VimFaultException, svc_obj.powerOn, 'VirtualMachine'
+        )
         self.assertEqual([], ex.fault_list)
         self.assertEqual({}, ex.details)
         self.assertEqual("MyFault", ex.msg)
@@ -199,14 +207,17 @@ class ServiceTest(base.TestCase):
         service_mock = svc_obj.client.service
         setattr(service_mock, 'powerOn', side_effect)
 
-        ex = self.assertRaises(exceptions.VimFaultException, svc_obj.powerOn,
-                               managed_object)
+        ex = self.assertRaises(
+            exceptions.VimFaultException, svc_obj.powerOn, managed_object
+        )
 
         self.assertEqual(fault_list, ex.fault_list)
         self.assertEqual({'name': 'value'}, ex.details)
         self.assertEqual("MyFault", ex.msg)
-        exp_calls = [mock.call('/detail'),
-                     mock.call('/Envelope/Body/Fault/detail')]
+        exp_calls = [
+            mock.call('/detail'),
+            mock.call('/Envelope/Body/Fault/detail'),
+        ]
         self.assertEqual(exp_calls, doc.childAtPath.call_args_list)
 
     @ddt.data('vim25:SecurityError', 'vim25:NotAuthenticated')
@@ -234,9 +245,11 @@ class ServiceTest(base.TestCase):
         service_mock = svc_obj.client.service
         setattr(service_mock, 'get_profile_id_by_name', side_effect)
 
-        ex = self.assertRaises(exceptions.VimFaultException,
-                               svc_obj.get_profile_id_by_name,
-                               managed_object)
+        ex = self.assertRaises(
+            exceptions.VimFaultException,
+            svc_obj.get_profile_id_by_name,
+            managed_object,
+        )
 
         self.assertEqual([exceptions.NOT_AUTHENTICATED], ex.fault_list)
         self.assertEqual({'name': 'value'}, ex.details)
@@ -249,9 +262,9 @@ class ServiceTest(base.TestCase):
         # no powerOn method in Service
         service_mock = mock.Mock(spec=service.Service)
         svc_obj.client.service = service_mock
-        self.assertRaises(exceptions.VimAttributeException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimAttributeException, svc_obj.powerOn, managed_object
+        )
 
     def test_request_handler_with_http_cannot_send_error(self):
         managed_object = 'VirtualMachine'
@@ -265,9 +278,11 @@ class ServiceTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimSessionOverLoadException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimSessionOverLoadException,
+            svc_obj.powerOn,
+            managed_object,
+        )
 
     def test_request_handler_with_http_response_not_ready_error(self):
         managed_object = 'VirtualMachine'
@@ -281,9 +296,11 @@ class ServiceTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimSessionOverLoadException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimSessionOverLoadException,
+            svc_obj.powerOn,
+            managed_object,
+        )
 
     def test_request_handler_with_http_cannot_send_header_error(self):
         managed_object = 'VirtualMachine'
@@ -297,9 +314,11 @@ class ServiceTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimSessionOverLoadException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimSessionOverLoadException,
+            svc_obj.powerOn,
+            managed_object,
+        )
 
     def test_request_handler_with_connection_error(self):
         managed_object = 'VirtualMachine'
@@ -313,9 +332,9 @@ class ServiceTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimConnectionException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimConnectionException, svc_obj.powerOn, managed_object
+        )
 
     def test_request_handler_with_http_error(self):
         managed_object = 'VirtualMachine'
@@ -329,9 +348,9 @@ class ServiceTest(base.TestCase):
         attr_name = 'powerOn'
         service_mock = svc_obj.client.service
         setattr(service_mock, attr_name, side_effect)
-        self.assertRaises(exceptions.VimConnectionException,
-                          svc_obj.powerOn,
-                          managed_object)
+        self.assertRaises(
+            exceptions.VimConnectionException, svc_obj.powerOn, managed_object
+        )
 
     @mock.patch.object(vim_util, 'get_moref', return_value=None)
     def test_request_handler_no_value(self, mock_moref):
@@ -357,19 +376,23 @@ class ServiceTest(base.TestCase):
     def test_request_handler_with_address_in_use_error(self):
         self._test_request_handler_with_exception(
             service.ADDRESS_IN_USE_ERROR,
-            exceptions.VimSessionOverLoadException)
+            exceptions.VimSessionOverLoadException,
+        )
 
     def test_request_handler_with_conn_abort_error(self):
         self._test_request_handler_with_exception(
-            service.CONN_ABORT_ERROR, exceptions.VimSessionOverLoadException)
+            service.CONN_ABORT_ERROR, exceptions.VimSessionOverLoadException
+        )
 
     def test_request_handler_with_resp_not_xml_error(self):
         self._test_request_handler_with_exception(
-            service.RESP_NOT_XML_ERROR, exceptions.VimSessionOverLoadException)
+            service.RESP_NOT_XML_ERROR, exceptions.VimSessionOverLoadException
+        )
 
     def test_request_handler_with_generic_error(self):
         self._test_request_handler_with_exception(
-            'GENERIC_ERROR', exceptions.VimException)
+            'GENERIC_ERROR', exceptions.VimException
+        )
 
     def test_get_session_cookie(self):
         svc_obj = service.Service()
@@ -457,22 +480,26 @@ class RequestsTransportTest(base.TestCase):
         transport.session.get = mock.Mock(return_value=resp)
 
         request = mock.Mock(url=mock.sentinel.url)
-        self.assertEqual(data,
-                         transport.open(request).getvalue())
-        transport.session.get.assert_called_once_with(mock.sentinel.url,
-                                                      verify=transport.verify)
+        self.assertEqual(data, transport.open(request).getvalue())
+        transport.session.get.assert_called_once_with(
+            mock.sentinel.url, verify=transport.verify
+        )
 
     def test_send(self):
         transport = service.RequestsTransport()
 
-        resp = mock.Mock(status_code=mock.sentinel.status_code,
-                         headers=mock.sentinel.headers,
-                         content=mock.sentinel.content)
+        resp = mock.Mock(
+            status_code=mock.sentinel.status_code,
+            headers=mock.sentinel.headers,
+            content=mock.sentinel.content,
+        )
         transport.session.post = mock.Mock(return_value=resp)
 
-        request = mock.Mock(url=mock.sentinel.url,
-                            message=mock.sentinel.message,
-                            headers=mock.sentinel.req_headers)
+        request = mock.Mock(
+            url=mock.sentinel.url,
+            message=mock.sentinel.message,
+            headers=mock.sentinel.req_headers,
+        )
         reply = transport.send(request)
 
         self.assertEqual(mock.sentinel.status_code, reply.code)
@@ -501,10 +528,10 @@ class RequestsTransportTest(base.TestCase):
         def read_mock():
             return data
 
-        open_mock = mock.MagicMock(name='file_handle',
-                                   spec=open)
-        file_spec = list(set(dir(io.TextIOWrapper)).union(
-            set(dir(io.BytesIO))))
+        open_mock = mock.MagicMock(name='file_handle', spec=open)
+        file_spec = list(
+            set(dir(io.TextIOWrapper)).union(set(dir(io.BytesIO)))
+        )
 
         file_handle = mock.MagicMock(spec=file_spec)
         file_handle.write.return_value = None
@@ -519,9 +546,11 @@ class RequestsTransportTest(base.TestCase):
     def test_send_with_connection_timeout(self):
         transport = service.RequestsTransport(connection_timeout=120)
 
-        request = mock.Mock(url=mock.sentinel.url,
-                            message=mock.sentinel.message,
-                            headers=mock.sentinel.req_headers)
+        request = mock.Mock(
+            url=mock.sentinel.url,
+            message=mock.sentinel.message,
+            headers=mock.sentinel.req_headers,
+        )
         with mock.patch.object(transport.session, "post") as mock_post:
             transport.send(request)
             mock_post.assert_called_once_with(
@@ -529,7 +558,8 @@ class RequestsTransportTest(base.TestCase):
                 data=mock.sentinel.message,
                 headers=mock.sentinel.req_headers,
                 timeout=120,
-                verify=transport.verify)
+                verify=transport.verify,
+            )
 
 
 class SudsLogFilterTest(base.TestCase):
@@ -542,9 +572,11 @@ class SudsLogFilterTest(base.TestCase):
         self.login = mock.Mock(spec=suds.sax.element.Element)
         self.username = suds.sax.element.Element('username').setText('admin')
         self.password = suds.sax.element.Element('password').setText(
-            'password')
+            'password'
+        )
         self.session_id = suds.sax.element.Element('session_id').setText(
-            'abcdef')
+            'abcdef'
+        )
 
         def login_child_at_path_mock(path):
             if path == 'userName':

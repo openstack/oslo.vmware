@@ -37,11 +37,13 @@ class PBMUtilityTest(base.TestCase):
         def invoke_api_side_effect(module, method, *args, **kwargs):
             self.assertEqual(session.pbm, module)
             self.assertIn(method, ['PbmQueryProfile', 'PbmRetrieveContent'])
-            self.assertEqual(session.pbm.service_content.profileManager,
-                             args[0])
+            self.assertEqual(
+                session.pbm.service_content.profileManager, args[0]
+            )
             if method == 'PbmQueryProfile':
-                self.assertEqual('STORAGE',
-                                 kwargs['resourceType'].resourceType)
+                self.assertEqual(
+                    'STORAGE', kwargs['resourceType'].resourceType
+                )
                 return profile_ids
             self.assertEqual(profile_ids, kwargs['profileIds'])
 
@@ -58,7 +60,8 @@ class PBMUtilityTest(base.TestCase):
             session.pbm,
             'PbmQueryProfile',
             session.pbm.service_content.profileManager,
-            resourceType=session.pbm.client.factory.create())
+            resourceType=session.pbm.client.factory.create(),
+        )
         self.assertEqual([], profiles)
 
     def _create_profile(self, profile_id, name):
@@ -69,27 +72,32 @@ class PBMUtilityTest(base.TestCase):
 
     @mock.patch.object(pbm, 'get_all_profiles')
     def test_get_profile_id_by_name(self, get_all_profiles):
-        profiles = [self._create_profile(str(i), 'profile-%d' % i)
-                    for i in range(0, 10)]
+        profiles = [
+            self._create_profile(str(i), 'profile-%d' % i)
+            for i in range(0, 10)
+        ]
         get_all_profiles.return_value = profiles
 
         session = mock.Mock()
         exp_profile_id = '5'
-        profile_id = pbm.get_profile_id_by_name(session,
-                                                'profile-%s' % exp_profile_id)
+        profile_id = pbm.get_profile_id_by_name(
+            session, f'profile-{exp_profile_id}'
+        )
         self.assertEqual(exp_profile_id, profile_id)
         get_all_profiles.assert_called_once_with(session)
 
     @mock.patch.object(pbm, 'get_all_profiles')
-    def test_get_profile_id_by_name_with_invalid_profile(self,
-                                                         get_all_profiles):
-        profiles = [self._create_profile(str(i), 'profile-%d' % i)
-                    for i in range(0, 10)]
+    def test_get_profile_id_by_name_with_invalid_profile(
+        self, get_all_profiles
+    ):
+        profiles = [
+            self._create_profile(str(i), 'profile-%d' % i)
+            for i in range(0, 10)
+        ]
         get_all_profiles.return_value = profiles
 
         session = mock.Mock()
-        profile_id = pbm.get_profile_id_by_name(session,
-                                                ('profile-%s' % 11))
+        profile_id = pbm.get_profile_id_by_name(session, (f'profile-{11}'))
         self.assertFalse(profile_id)
         get_all_profiles.assert_called_once_with(session)
 
@@ -106,7 +114,8 @@ class PBMUtilityTest(base.TestCase):
             'PbmQueryMatchingHub',
             pbm_client.service_content.placementSolver,
             hubsToSearch=hubs,
-            profile=profile_id)
+            profile=profile_id,
+        )
 
     def _create_datastore(self, value):
         ds = vim_util.get_moref(value, 'Datastore')
@@ -136,7 +145,7 @@ class PBMUtilityTest(base.TestCase):
             datastores.append(self._create_datastore(value))
 
         hubs = []
-        hub_ids = ds_values[0:int(len(ds_values) / 2)]
+        hub_ids = ds_values[0 : int(len(ds_values) / 2)]
         for hub_id in hub_ids:
             hub = mock.Mock()
             hub.hubId = hub_id
@@ -144,8 +153,9 @@ class PBMUtilityTest(base.TestCase):
 
         filtered_ds = pbm.filter_datastores_by_hubs(hubs, datastores)
         self.assertEqual(len(hubs), len(filtered_ds))
-        filtered_ds_values = [vim_util.get_moref_value(ds)
-                              for ds in filtered_ds]
+        filtered_ds_values = [
+            vim_util.get_moref_value(ds) for ds in filtered_ds
+        ]
         self.assertEqual(set(hub_ids), set(filtered_ds_values))
 
     def test_get_pbm_wsdl_location(self):
@@ -154,8 +164,9 @@ class PBMUtilityTest(base.TestCase):
 
         def expected_wsdl(version):
             driver_abs_dir = os.path.abspath(os.path.dirname(pbm.__file__))
-            path = os.path.join(driver_abs_dir, 'wsdl', version,
-                                'pbmService.wsdl')
+            path = os.path.join(
+                driver_abs_dir, 'wsdl', version, 'pbmService.wsdl'
+            )
             return urlparse.urljoin('file:', urllib.pathname2url(path))
 
         with mock.patch('os.path.exists') as path_exists:
@@ -189,7 +200,8 @@ class PBMUtilityTest(base.TestCase):
             pbm_service,
             'PbmQueryAssociatedProfile',
             pbm_service.service_content.profileManager,
-            entity=object_ref)
+            entity=object_ref,
+        )
         self.assertEqual(value, object_ref.key)
         self.assertEqual('virtualMachine', object_ref.objectType)
 
@@ -208,7 +220,8 @@ class PBMUtilityTest(base.TestCase):
             pbm_service,
             'PbmRetrieveContent',
             pbm_service.service_content.profileManager,
-            profileIds=profile_ids)
+            profileIds=profile_ids,
+        )
 
     def test_get_profiles_by_empty_ids(self):
         session = mock.Mock()

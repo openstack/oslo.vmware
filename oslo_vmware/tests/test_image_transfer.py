@@ -37,10 +37,11 @@ class ImageTransferUtilityTest(base.TestCase):
     @mock.patch('oslo_vmware.rw_handles.ImageReadHandle')
     @mock.patch.object(image_transfer, '_start_transfer')
     def test_download_flat_image(
-            self,
-            fake_transfer,
-            fake_rw_handles_ImageReadHandle,
-            fake_rw_handles_FileWriteHandle):
+        self,
+        fake_transfer,
+        fake_rw_handles_ImageReadHandle,
+        fake_rw_handles_FileWriteHandle,
+    ):
 
         context = mock.Mock()
         image_id = mock.Mock()
@@ -73,7 +74,8 @@ class ImageTransferUtilityTest(base.TestCase):
             data_center_name=dc_path,
             datastore_name=ds_name,
             cookies=cookies,
-            file_path=file_path)
+            file_path=file_path,
+        )
 
         image_service.download.assert_called_once_with(context, image_id)
 
@@ -87,12 +89,12 @@ class ImageTransferUtilityTest(base.TestCase):
             cookies,
             file_path,
             image_size,
-            cacerts=None)
+            cacerts=None,
+        )
 
         fake_transfer.assert_called_once_with(
-            fake_ImageReadHandle,
-            fake_FileWriteHandle,
-            timeout_secs)
+            fake_ImageReadHandle, fake_FileWriteHandle, timeout_secs
+        )
 
     @mock.patch('oslo_vmware.rw_handles.FileWriteHandle')
     @mock.patch.object(image_transfer, '_start_transfer')
@@ -111,19 +113,37 @@ class ImageTransferUtilityTest(base.TestCase):
         cacerts = mock.sentinel.cacerts
         timeout_secs = mock.sentinel.timeout_secs
         image_transfer.download_file(
-            read_handle, host, port, dc_name, ds_name, cookies,
-            upload_file_path, file_size, cacerts, timeout_secs)
+            read_handle,
+            host,
+            port,
+            dc_name,
+            ds_name,
+            cookies,
+            upload_file_path,
+            file_size,
+            cacerts,
+            timeout_secs,
+        )
 
         file_write_handle_cls.assert_called_once_with(
-            host, port, dc_name, ds_name, cookies, upload_file_path,
-            file_size, cacerts=cacerts)
+            host,
+            port,
+            dc_name,
+            ds_name,
+            cookies,
+            upload_file_path,
+            file_size,
+            cacerts=cacerts,
+        )
         start_transfer.assert_called_once_with(
-            read_handle, write_handle, timeout_secs)
+            read_handle, write_handle, timeout_secs
+        )
 
     @mock.patch('oslo_vmware.rw_handles.VmdkWriteHandle')
     @mock.patch.object(image_transfer, '_start_transfer')
-    def test_download_stream_optimized_data(self, fake_transfer,
-                                            fake_rw_handles_VmdkWriteHandle):
+    def test_download_stream_optimized_data(
+        self, fake_transfer, fake_rw_handles_VmdkWriteHandle
+    ):
 
         context = mock.Mock()
         session = mock.Mock()
@@ -150,7 +170,8 @@ class ImageTransferUtilityTest(base.TestCase):
             resource_pool=resource_pool,
             vm_folder=vm_folder,
             vm_import_spec=vm_import_spec,
-            image_size=image_size)
+            image_size=image_size,
+        )
 
         fake_rw_handles_VmdkWriteHandle.assert_called_once_with(
             session,
@@ -160,11 +181,12 @@ class ImageTransferUtilityTest(base.TestCase):
             vm_folder,
             vm_import_spec,
             image_size,
-            'PUT')
+            'PUT',
+        )
 
-        fake_transfer.assert_called_once_with(read_handle,
-                                              fake_VmdkWriteHandle,
-                                              timeout_secs)
+        fake_transfer.assert_called_once_with(
+            read_handle, fake_VmdkWriteHandle, timeout_secs
+        )
 
         fake_VmdkWriteHandle.get_imported_vm.assert_called_once_with()
 
@@ -192,8 +214,10 @@ class ImageTransferUtilityTest(base.TestCase):
 
         self.assertEqual(vmdk_handle, ret)
         tar_open.assert_called_once_with(mode="r|", fileobj=ova_handle)
-        self.assertEqual([mock.call(ovf_info), mock.call(vmdk_info)],
-                         tar.extractfile.call_args_list)
+        self.assertEqual(
+            [mock.call(ovf_info), mock.call(vmdk_info)],
+            tar.extractfile.call_args_list,
+        )
         get_vmdk_name_from_ovf.assert_called_once_with(ovf_handle)
 
     @mock.patch('tarfile.open')
@@ -216,12 +240,13 @@ class ImageTransferUtilityTest(base.TestCase):
     @mock.patch.object(image_transfer, 'download_stream_optimized_data')
     @mock.patch.object(image_transfer, '_get_vmdk_handle')
     def _test_download_stream_optimized_image(
-            self,
-            get_vmdk_handle,
-            download_stream_optimized_data,
-            image_read_handle,
-            container=None,
-            invalid_ova=False):
+        self,
+        get_vmdk_handle,
+        download_stream_optimized_data,
+        image_read_handle,
+        container=None,
+        invalid_ova=False,
+    ):
 
         image_service = mock.Mock()
         if container:
@@ -253,19 +278,21 @@ class ImageTransferUtilityTest(base.TestCase):
         vm_import_spec = mock.sentinel.vm_import_spec
 
         if container == 'ova' and invalid_ova:
-            self.assertRaises(exceptions.ImageTransferException,
-                              image_transfer.download_stream_optimized_image,
-                              context,
-                              timeout_secs,
-                              image_service,
-                              image_id,
-                              session=session,
-                              host=host,
-                              port=port,
-                              resource_pool=resource_pool,
-                              vm_folder=vm_folder,
-                              vm_import_spec=vm_import_spec,
-                              image_size=image_size)
+            self.assertRaises(
+                exceptions.ImageTransferException,
+                image_transfer.download_stream_optimized_image,
+                context,
+                timeout_secs,
+                image_service,
+                image_id,
+                session=session,
+                host=host,
+                port=port,
+                resource_pool=resource_pool,
+                vm_folder=vm_folder,
+                vm_import_spec=vm_import_spec,
+                image_size=image_size,
+            )
         else:
             ret = image_transfer.download_stream_optimized_image(
                 context,
@@ -278,7 +305,8 @@ class ImageTransferUtilityTest(base.TestCase):
                 resource_pool=resource_pool,
                 vm_folder=vm_folder,
                 vm_import_spec=vm_import_spec,
-                image_size=image_size)
+                image_size=image_size,
+            )
 
             self.assertEqual(imported_vm, ret)
             image_service.show.assert_called_once_with(context, image_id)
@@ -299,7 +327,8 @@ class ImageTransferUtilityTest(base.TestCase):
                 resource_pool=resource_pool,
                 vm_folder=vm_folder,
                 vm_import_spec=vm_import_spec,
-                image_size=image_size)
+                image_size=image_size,
+            )
 
     def test_download_stream_optimized_image(self):
         self._test_download_stream_optimized_image()
@@ -308,14 +337,16 @@ class ImageTransferUtilityTest(base.TestCase):
         self._test_download_stream_optimized_image(container='ova')
 
     def test_download_stream_optimized_image_invalid_ova(self):
-        self._test_download_stream_optimized_image(container='ova',
-                                                   invalid_ova=True)
+        self._test_download_stream_optimized_image(
+            container='ova', invalid_ova=True
+        )
 
     @mock.patch.object(image_transfer, '_start_transfer')
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
     @mock.patch('oslo_service.loopingcall.FixedIntervalLoopingCall')
     def test_copy_stream_optimized_disk(
-            self, loopingcall, vmdk_read_handle, start_transfer):
+        self, loopingcall, vmdk_read_handle, start_transfer
+    ):
 
         read_handle = mock.Mock()
         vmdk_read_handle.return_value = read_handle
@@ -334,17 +365,27 @@ class ImageTransferUtilityTest(base.TestCase):
         vmdk_size = mock.sentinel.vmdk_size
 
         image_transfer.copy_stream_optimized_disk(
-            context, timeout, write_handle, session=session, host=host,
-            port=port, vm=vm, vmdk_file_path=vmdk_file_path,
-            vmdk_size=vmdk_size)
+            context,
+            timeout,
+            write_handle,
+            session=session,
+            host=host,
+            port=port,
+            vm=vm,
+            vmdk_file_path=vmdk_file_path,
+            vmdk_size=vmdk_size,
+        )
 
         vmdk_read_handle.assert_called_once_with(
-            session, host, port, vm, vmdk_file_path, vmdk_size)
+            session, host, port, vm, vmdk_file_path, vmdk_size
+        )
         loopingcall.assert_called_once_with(read_handle.update_progress)
         updater.start.assert_called_once_with(
-            interval=image_transfer.NFC_LEASE_UPDATE_PERIOD)
-        start_transfer.assert_called_once_with(read_handle, write_handle,
-                                               timeout)
+            interval=image_transfer.NFC_LEASE_UPDATE_PERIOD
+        )
+        start_transfer.assert_called_once_with(
+            read_handle, write_handle, timeout
+        )
         updater.stop.assert_called_once_with()
 
     @mock.patch('oslo_vmware.rw_handles.VmdkReadHandle')
@@ -376,36 +417,39 @@ class ImageTransferUtilityTest(base.TestCase):
         fake_VmdkReadHandle = mock.Mock()
         fake_rw_handles_VmdkReadHandle.return_value = fake_VmdkReadHandle
 
-        image_transfer.upload_image(context,
-                                    timeout_secs,
-                                    image_service,
-                                    image_id,
-                                    owner_id,
-                                    session=session,
-                                    host=host,
-                                    port=port,
-                                    vm=vm,
-                                    vmdk_file_path=file_path,
-                                    vmdk_size=image_size,
-                                    is_public=is_public,
-                                    image_name=image_name,
-                                    image_version=image_version,
-                                    store_id=store_id,
-                                    base_image_ref=base_image_ref)
+        image_transfer.upload_image(
+            context,
+            timeout_secs,
+            image_service,
+            image_id,
+            owner_id,
+            session=session,
+            host=host,
+            port=port,
+            vm=vm,
+            vmdk_file_path=file_path,
+            vmdk_size=image_size,
+            is_public=is_public,
+            image_name=image_name,
+            image_version=image_version,
+            store_id=store_id,
+            base_image_ref=base_image_ref,
+        )
 
-        fake_rw_handles_VmdkReadHandle.assert_called_once_with(session,
-                                                               host,
-                                                               port,
-                                                               vm,
-                                                               file_path,
-                                                               image_size)
+        fake_rw_handles_VmdkReadHandle.assert_called_once_with(
+            session, host, port, vm, file_path, image_size
+        )
 
         ver_str = str(image_version)
-        image_metadata = {'disk_format': 'vmdk',
-                          'name': image_name,
-                          'properties': {'vmware_image_version': ver_str,
-                                         'vmware_disktype': 'streamOptimized',
-                                         'owner_id': owner_id}}
+        image_metadata = {
+            'disk_format': 'vmdk',
+            'name': image_name,
+            'properties': {
+                'vmware_image_version': ver_str,
+                'vmware_disktype': 'streamOptimized',
+                'owner_id': owner_id,
+            },
+        }
 
         image_service.update.assert_called_once_with(
             context,
@@ -413,4 +457,5 @@ class ImageTransferUtilityTest(base.TestCase):
             image_metadata,
             data=fake_VmdkReadHandle,
             store_id=store_id,
-            base_image_ref=base_image_ref)
+            base_image_ref=base_image_ref,
+        )

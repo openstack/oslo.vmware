@@ -56,11 +56,24 @@ class VMwareAPISession:
                                         api_session.vim, 'HostSystem', 100)
     """
 
-    def __init__(self, host, server_username, server_password,
-                 api_retry_count, task_poll_interval, scheme='https',
-                 create_session=True, wsdl_loc=None, pbm_wsdl_loc=None,
-                 port=443, cacert=None, insecure=True, pool_size=10,
-                 connection_timeout=None, op_id_prefix='oslo.vmware'):
+    def __init__(
+        self,
+        host,
+        server_username,
+        server_password,
+        api_retry_count,
+        task_poll_interval,
+        scheme='https',
+        create_session=True,
+        wsdl_loc=None,
+        pbm_wsdl_loc=None,
+        port=443,
+        cacert=None,
+        insecure=True,
+        pool_size=10,
+        connection_timeout=None,
+        op_id_prefix='oslo.vmware',
+    ):
         """Initializes the API session with given parameters.
 
         :param host: ESX/VC server IP address or host name
@@ -117,29 +130,33 @@ class VMwareAPISession:
     @property
     def vim(self):
         if not self._vim:
-            self._vim = vim.Vim(protocol=self._scheme,
-                                host=self._host,
-                                port=self._port,
-                                wsdl_url=self._vim_wsdl_loc,
-                                cacert=self._cacert,
-                                insecure=self._insecure,
-                                pool_maxsize=self._pool_size,
-                                connection_timeout=self._connection_timeout,
-                                op_id_prefix=self._op_id_prefix)
+            self._vim = vim.Vim(
+                protocol=self._scheme,
+                host=self._host,
+                port=self._port,
+                wsdl_url=self._vim_wsdl_loc,
+                cacert=self._cacert,
+                insecure=self._insecure,
+                pool_maxsize=self._pool_size,
+                connection_timeout=self._connection_timeout,
+                op_id_prefix=self._op_id_prefix,
+            )
         return self._vim
 
     @property
     def pbm(self):
         if not self._pbm and self._pbm_wsdl_loc:
-            self._pbm = pbm.Pbm(protocol=self._scheme,
-                                host=self._host,
-                                port=self._port,
-                                wsdl_url=self._pbm_wsdl_loc,
-                                cacert=self._cacert,
-                                insecure=self._insecure,
-                                pool_maxsize=self._pool_size,
-                                connection_timeout=self._connection_timeout,
-                                op_id_prefix=self._op_id_prefix)
+            self._pbm = pbm.Pbm(
+                protocol=self._scheme,
+                host=self._host,
+                port=self._port,
+                wsdl_url=self._pbm_wsdl_loc,
+                cacert=self._cacert,
+                insecure=self._insecure,
+                pool_maxsize=self._pool_size,
+                connection_timeout=self._connection_timeout,
+                op_id_prefix=self._op_id_prefix,
+            )
             if self._session_id:
                 # To handle the case where pbm property is accessed after
                 # session creation. If pbm property is accessed before session
@@ -149,7 +166,8 @@ class VMwareAPISession:
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(
-            exceptions.VimConnectionException),
+            exceptions.VimConnectionException
+        ),
         wait=tenacity.wait_incrementing(start=10, increment=10, max=60),
         stop=tenacity.stop_never,
         reraise=True,
@@ -160,17 +178,20 @@ class VMwareAPISession:
         # Another thread might have created the session while the current one
         # was waiting for the lock.
         if self._session_id and self.is_current_session_active():
-            LOG.debug("Current session: %s is active.",
-                      _trunc_id(self._session_id))
+            LOG.debug(
+                "Current session: %s is active.", _trunc_id(self._session_id)
+            )
             return
 
         session_manager = self.vim.service_content.sessionManager
         # Login and create new session with the server for making API calls.
         LOG.debug("Logging into host: %s.", self._host)
-        session = self.vim.Login(session_manager,
-                                 userName=self._server_username,
-                                 password=self._server_password,
-                                 locale='en')
+        session = self.vim.Login(
+            session_manager,
+            userName=self._server_username,
+            password=self._server_password,
+            locale='en',
+        )
         self._session_id = session.key
         # We need to save the username in the session since we may need it
         # later to check active session. The SessionIsActive method requires
@@ -178,9 +199,10 @@ class VMwareAPISession:
         # object. We can't use the username used for login since the Login
         # method ignores the case.
         self._session_username = session.userName
-        LOG.info("Successfully established new session; session ID is "
-                 "%s.",
-                 _trunc_id(self._session_id))
+        LOG.info(
+            "Successfully established new session; session ID is %s.",
+            _trunc_id(self._session_id),
+        )
 
         # Set PBM client cookie.
         if self._pbm is not None:
@@ -189,17 +211,21 @@ class VMwareAPISession:
     def logout(self):
         """Log out and terminate the current session."""
         if self._session_id:
-            LOG.info("Logging out and terminating the current session "
-                     "with ID = %s.",
-                     _trunc_id(self._session_id))
+            LOG.info(
+                "Logging out and terminating the current session "
+                "with ID = %s.",
+                _trunc_id(self._session_id),
+            )
             try:
                 self.vim.Logout(self.vim.service_content.sessionManager)
                 self._session_id = None
             except Exception:
-                LOG.exception("Error occurred while logging out and "
-                              "terminating the current session with "
-                              "ID = %s.",
-                              _trunc_id(self._session_id))
+                LOG.exception(
+                    "Error occurred while logging out and "
+                    "terminating the current session with "
+                    "ID = %s.",
+                    _trunc_id(self._session_id),
+                )
         else:
             LOG.debug("No session exists to log out.")
 
@@ -218,17 +244,26 @@ class VMwareAPISession:
         :raises: VimException, VimFaultException, VimAttributeException,
                  VimSessionOverLoadException, VimConnectionException
         """
+
         def _retry_on_overload_or_connection(exc):
-            return isinstance(exc, (exceptions.VimSessionOverLoadException,
-                                    exceptions.VimConnectionException))
+            return isinstance(
+                exc,
+                (
+                    exceptions.VimSessionOverLoadException,
+                    exceptions.VimConnectionException,
+                ),
+            )
 
         @tenacity.retry(
             retry=tenacity.retry_if_exception(
-                _retry_on_overload_or_connection),
+                _retry_on_overload_or_connection
+            ),
             wait=tenacity.wait_incrementing(start=10, increment=10, max=60),
-            stop=(tenacity.stop_never if self._api_retry_count == -1
-                  else tenacity.stop_after_attempt(
-                      self._api_retry_count + 1)),
+            stop=(
+                tenacity.stop_never
+                if self._api_retry_count == -1
+                else tenacity.stop_after_attempt(self._api_retry_count + 1)
+            ),
             reraise=True,
         )
         def _invoke_api():
@@ -247,24 +282,28 @@ class VMwareAPISession:
                     # case of an inactive session. Therefore, we need a way to
                     # differentiate between these two cases.
                     if self.is_current_session_active():
-                        LOG.debug("Returning empty response for "
-                                  "%(module)s.%(method)s invocation.",
-                                  {'module': module,
-                                   'method': method})
+                        LOG.debug(
+                            "Returning empty response for "
+                            "%(module)s.%(method)s invocation.",
+                            {'module': module, 'method': method},
+                        )
                         return []
                     else:
                         # empty response is due to an inactive session
-                        excep_msg = (
-                            _("Current session: %(session)s is inactive; "
-                              "re-creating the session while invoking "
-                              "method %(module)s.%(method)s.") %
-                            {'session': _trunc_id(self._session_id),
-                             'module': module,
-                             'method': method})
+                        excep_msg = _(
+                            "Current session: %(session)s is inactive; "
+                            "re-creating the session while invoking "
+                            "method %(module)s.%(method)s."
+                        ) % {
+                            'session': _trunc_id(self._session_id),
+                            'module': module,
+                            'method': method,
+                        }
                         LOG.debug(excep_msg)
                         self._create_session()
-                        raise exceptions.VimConnectionException(excep_msg,
-                                                                excep)
+                        raise exceptions.VimConnectionException(
+                            excep_msg, excep
+                        )
                 else:
                     # no need to retry for other VIM faults like
                     # InvalidArgument
@@ -274,8 +313,7 @@ class VMwareAPISession:
                         fault = excep.fault_list[0]
                         clazz = exceptions.get_fault_class(fault)
                         if clazz:
-                            raise clazz(str(excep),
-                                        details=excep.details)
+                            raise clazz(str(excep), details=excep.details)
                     raise
 
             except exceptions.VimConnectionException:
@@ -284,11 +322,12 @@ class VMwareAPISession:
                     # if the session has expired. Otherwise, it could be
                     # a transient issue.
                     if not self.is_current_session_active():
-                        LOG.debug("Re-creating session due to connection "
-                                  "problems while invoking method "
-                                  "%(module)s.%(method)s.",
-                                  {'module': module,
-                                   'method': method})
+                        LOG.debug(
+                            "Re-creating session due to connection "
+                            "problems while invoking method "
+                            "%(module)s.%(method)s.",
+                            {'module': module, 'method': method},
+                        )
                         self._create_session()
 
         return _invoke_api()
@@ -298,20 +337,24 @@ class VMwareAPISession:
 
         :returns: True if the session is active; False otherwise
         """
-        LOG.debug("Checking if the current session: %s is active.",
-                  _trunc_id(self._session_id))
+        LOG.debug(
+            "Checking if the current session: %s is active.",
+            _trunc_id(self._session_id),
+        )
 
         is_active = False
         try:
             is_active = self.vim.SessionIsActive(
                 self.vim.service_content.sessionManager,
                 sessionID=self._session_id,
-                userName=self._session_username)
+                userName=self._session_username,
+            )
         except exceptions.VimException as ex:
-            LOG.debug("Error: %(error)s occurred while checking whether the "
-                      "current session: %(session)s is active.",
-                      {'error': str(ex),
-                       'session': _trunc_id(self._session_id)})
+            LOG.debug(
+                "Error: %(error)s occurred while checking whether the "
+                "current session: %(session)s is active.",
+                {'error': str(ex), 'session': _trunc_id(self._session_id)},
+            )
 
         return is_active
 
@@ -348,17 +391,19 @@ class VMwareAPISession:
         try:
             # we poll tasks too often, so skip logging the opID as it generates
             # too much noise in the logs
-            task_info = self.invoke_api(vim_util,
-                                        'get_object_property',
-                                        self.vim,
-                                        task,
-                                        'info',
-                                        skip_op_id=True)
+            task_info = self.invoke_api(
+                vim_util,
+                'get_object_property',
+                self.vim,
+                task,
+                'info',
+                skip_op_id=True,
+            )
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception("Error occurred while reading info of "
-                              "task: %s.",
-                              task)
+                LOG.exception(
+                    "Error occurred while reading info of task: %s.", task
+                )
         else:
             task_detail = {'id': vim_util.get_moref_value(task)}
             # some internal tasks do not have 'name' set
@@ -367,18 +412,22 @@ class VMwareAPISession:
 
             if task_info.state in ['queued', 'running']:
                 if hasattr(task_info, 'progress'):
-                    LOG.debug("Task: %(task)s progress is %(progress)s%%.",
-                              {'task': task_detail,
-                               'progress': task_info.progress})
+                    LOG.debug(
+                        "Task: %(task)s progress is %(progress)s%%.",
+                        {'task': task_detail, 'progress': task_info.progress},
+                    )
             elif task_info.state == 'success':
+
                 def get_completed_task():
                     complete_time = getattr(task_info, 'completeTime', None)
                     if complete_time:
                         duration = complete_time - task_info.queueTime
                         task_detail['duration_secs'] = duration.total_seconds()
                     return task_detail
-                LOG.debug("Task: %s completed successfully.",
-                          get_completed_task())
+
+                LOG.debug(
+                    "Task: %s completed successfully.", get_completed_task()
+                )
                 raise loopingcall.LoopingCallDone(task_info)
             else:
                 raise exceptions.translate_fault(task_info.error)
@@ -407,17 +456,19 @@ class VMwareAPISession:
         :param lease: lease whose state is to be polled
         """
         try:
-            state = self.invoke_api(vim_util,
-                                    'get_object_property',
-                                    self.vim,
-                                    lease,
-                                    'state',
-                                    skip_op_id=True)
+            state = self.invoke_api(
+                vim_util,
+                'get_object_property',
+                self.vim,
+                lease,
+                'state',
+                skip_op_id=True,
+            )
         except exceptions.VimException:
             with excutils.save_and_reraise_exception():
-                LOG.exception("Error occurred while checking "
-                              "state of lease: %s.",
-                              lease)
+                LOG.exception(
+                    "Error occurred while checking state of lease: %s.", lease
+                )
         else:
             if state == 'ready':
                 LOG.debug("Lease: %s is ready.", lease)
@@ -425,33 +476,32 @@ class VMwareAPISession:
             elif state == 'initializing':
                 LOG.debug("Lease: %s is initializing.", lease)
             elif state == 'error':
-                LOG.debug("Invoking VIM API to read lease: %s error.",
-                          lease)
+                LOG.debug("Invoking VIM API to read lease: %s error.", lease)
                 error_msg = self._get_error_message(lease)
-                excep_msg = _("Lease: %(lease)s is in error state. Details: "
-                              "%(error_msg)s.") % {'lease': lease,
-                                                   'error_msg': error_msg}
+                excep_msg = _(
+                    "Lease: %(lease)s is in error state. Details: "
+                    "%(error_msg)s."
+                ) % {'lease': lease, 'error_msg': error_msg}
                 LOG.error(excep_msg)
                 raise exceptions.translate_fault(error_msg, excep_msg)
             else:
                 # unknown state
-                excep_msg = _("Unknown state: %(state)s for lease: "
-                              "%(lease)s.") % {'state': state,
-                                               'lease': lease}
+                excep_msg = _(
+                    "Unknown state: %(state)s for lease: %(lease)s."
+                ) % {'state': state, 'lease': lease}
                 LOG.error(excep_msg)
                 raise exceptions.VimException(excep_msg)
 
     def _get_error_message(self, lease):
         """Get error message associated with the given lease."""
         try:
-            return self.invoke_api(vim_util,
-                                   'get_object_property',
-                                   self.vim,
-                                   lease,
-                                   'error')
+            return self.invoke_api(
+                vim_util, 'get_object_property', self.vim, lease, 'error'
+            )
         except exceptions.VimException:
-            LOG.warning("Error occurred while reading error message for "
-                        "lease: %s.",
-                        lease,
-                        exc_info=True)
+            LOG.warning(
+                "Error occurred while reading error message for lease: %s.",
+                lease,
+                exc_info=True,
+            )
             return "Unknown"
