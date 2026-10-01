@@ -296,7 +296,7 @@ class Service:
     def build_base_url(protocol, host, port):
         proto_str = f'{protocol}://'
         host_str = netutils.escape_ipv6(host)
-        port_str = '' if port is None else ':%d' % port
+        port_str = '' if port is None else f':{port}'
         return proto_str + host_str + port_str
 
     @staticmethod

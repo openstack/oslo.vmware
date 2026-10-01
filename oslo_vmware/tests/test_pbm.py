@@ -73,8 +73,7 @@ class PBMUtilityTest(base.TestCase):
     @mock.patch.object(pbm, 'get_all_profiles')
     def test_get_profile_id_by_name(self, get_all_profiles):
         profiles = [
-            self._create_profile(str(i), 'profile-%d' % i)
-            for i in range(0, 10)
+            self._create_profile(str(i), f'profile-{i}') for i in range(0, 10)
         ]
         get_all_profiles.return_value = profiles
 
@@ -91,13 +90,12 @@ class PBMUtilityTest(base.TestCase):
         self, get_all_profiles
     ):
         profiles = [
-            self._create_profile(str(i), 'profile-%d' % i)
-            for i in range(0, 10)
+            self._create_profile(str(i), f'profile-{i}') for i in range(0, 10)
         ]
         get_all_profiles.return_value = profiles
 
         session = mock.Mock()
-        profile_id = pbm.get_profile_id_by_name(session, (f'profile-{11}'))
+        profile_id = pbm.get_profile_id_by_name(session, ('profile-11'))
         self.assertFalse(profile_id)
         get_all_profiles.assert_called_once_with(session)
 
@@ -125,7 +123,7 @@ class PBMUtilityTest(base.TestCase):
         ds_values = []
         datastores = []
         for i in range(0, 10):
-            value = "ds-%d" % i
+            value = f"ds-{i}"
             ds_values.append(value)
             datastores.append(self._create_datastore(value))
 
@@ -140,7 +138,7 @@ class PBMUtilityTest(base.TestCase):
         ds_values = []
         datastores = []
         for i in range(0, 10):
-            value = "ds-%d" % i
+            value = f"ds-{i}"
             ds_values.append(value)
             datastores.append(self._create_datastore(value))
 
