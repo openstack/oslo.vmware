@@ -1,8 +1,0 @@
-[run]
-branch = True
-source = oslo_vmware
-omit = oslo_vmware/tests/*
-
-[report]
-ignore_errors = True
-precision = 2

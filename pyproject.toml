@@ -33,6 +33,19 @@ Repository = "https://opendev.org/openstack/oslo.vmware"
 [tool.setuptools.packages.find]
 include = ["oslo_vmware*"]
 
+[tool.coverage.run]
+source = [
+    "oslo_vmware"
+]
+branch = true
+omit = [
+    "oslo_vmware/tests/*"
+]
+
+[tool.coverage.report]
+ignore_errors = true
+show_missing = true
+
 [tool.ruff]
 line-length = 79
 
