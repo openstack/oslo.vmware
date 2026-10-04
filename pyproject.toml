@@ -38,6 +38,7 @@ source = [
     "oslo_vmware"
 ]
 branch = true
+parallel = true
 omit = [
     "oslo_vmware/tests/*"
 ]
